@@ -1,5 +1,14 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Lượt chơi, điểm và quà thưởng
+
+- [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.
+- [x] Thêm bộ chọn dạng bài bình thường, tìm thành phần và cả hai cho Cộng, Trừ, Nhân, Chia.
+- [x] Ghi nhận số câu đúng, sai, thời lượng, điểm và quà theo lượt chơi.
+- [x] Tạo màn tổng kết lượt chơi với nút lưu ảnh kỷ niệm.
+- [x] Kiểm tra vòng chơi, thống kê, phần thưởng và tải ảnh trên máy tính, điện thoại.
+- [x] Lưu checkpoint và bàn giao phiên bản hoàn thiện.
+
 ## Hoàn thiện menu và bài tìm thành phần
 
 - [x] Đối chiếu dạng tìm thành phần chưa biết phù hợp Toán lớp 3 cho từng phép tính.

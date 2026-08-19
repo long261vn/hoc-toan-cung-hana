@@ -93,3 +93,4 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Menu hoạt động dùng bốn thẻ trực quan có màu và biểu tượng riêng cho Ôn theo hành trình, Luyện từng phép, Bảng cửu chương và Bài kiểm tra. Mỗi thẻ nêu một câu ngắn giải thích để trẻ chọn đúng nhu cầu.
 - Trong màn chơi luôn có nút Menu rõ ràng ở đầu trang để trẻ đổi hoạt động mà không cần dựa vào trình duyệt.
 - Menu sáu hoạt động không dùng lại Bản đồ hành trình; thay vào đó, mỗi thẻ có một tinh thể và ký hiệu riêng để giữ cảm giác phiêu lưu mà vẫn rõ ràng cho học sinh lớp 3.
+- Các màn chính dùng quỹ đạo chấm sáng, tinh thể và lời dẫn của Hana như tín hiệu hành trình trang trí; không đưa lại Bản đồ hành trình hoặc lộ trình bắt buộc vì không phù hợp yêu cầu sản phẩm.

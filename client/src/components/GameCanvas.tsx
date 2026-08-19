@@ -29,6 +29,7 @@ import {
   type QuizQuestion,
   type TablePracticeKind,
 } from "@/game/quiz";
+import { formatDuration, practiceFormatMeta, rewardsForPoints, sessionRewards, type PracticeFormat } from "@/game/session";
 
 const ASSETS = {
   mascot: "/manus-storage/robot-mit_d342b189.png",
@@ -36,7 +37,7 @@ const ASSETS = {
   logo: "/manus-storage/phi-hanh-tinh-logo_cbefb56f.png",
 } as const;
 
-type AppScreen = "welcome" | "menu" | "game";
+type AppScreen = "welcome" | "menu" | "game" | "summary";
 type ActivityId = "add" | "subtract" | "multiply" | "divide" | "tables" | "test";
 
 const activityMeta: Record<ActivityId, { label: string; kicker: string; description: string }> = {
@@ -136,6 +137,7 @@ export default function GameCanvas() {
   const isDemo = demoParams.has("demo");
   const isTableDemo = demoParams.has("tables");
   const isMenuPreview = demoParams.has("menu");
+  const isSummaryDemo = demoParams.has("summary");
   const missingDemoOperation = demoParams.get("missing");
   const isMissingDemo = missingDemoOperation === "add" || missingDemoOperation === "subtract" || missingDemoOperation === "multiply" || missingDemoOperation === "divide";
   const tableDemoKind: TablePracticeKind = demoParams.get("tables") === "divide" ? "divide" : demoParams.get("tables") === "mixed" ? "mixed" : "multiply";
@@ -145,10 +147,11 @@ export default function GameCanvas() {
     ? (tableDemoKind === "divide" ? "divide" : "multiply")
     : "add";
 
-  const [screen, setScreen] = useState<AppScreen>(isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
+  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo ? "summary" : isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
   const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "practice");
   const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isMissingDemo ? initialOperation : isDemo ? "multiply" : "add");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
+  const [practiceFormat, setPracticeFormat] = useState<PracticeFormat>("mixed");
   const [operation, setOperation] = useState<Operation>(initialOperation);
   const [question, setQuestion] = useState<QuizQuestion>(() => isTableDemo
     ? generateTableQuestion({ kind: tableDemoKind, tables: [2, 4, 6] })
@@ -165,6 +168,21 @@ export default function GameCanvas() {
   const [testCorrect, setTestCorrect] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [sessionPoints, setSessionPoints] = useState(isSummaryDemo ? 100 : 0);
+  const [correctCount, setCorrectCount] = useState(isSummaryDemo ? 10 : 0);
+  const [wrongCount, setWrongCount] = useState(isSummaryDemo ? 2 : 0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(isSummaryDemo ? 93 : 0);
+  const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
+
+  const generatePracticeQuestion = useCallback(
+    (nextOperation: Operation, nextDifficulty: Difficulty, nextFormat = practiceFormat) => {
+      const shouldFindComponent = nextFormat === "missing" || (nextFormat === "mixed" && Math.random() < 0.5);
+      return shouldFindComponent
+        ? generateMissingComponentQuestion(nextOperation, nextDifficulty)
+        : generateQuestion(nextOperation, nextDifficulty);
+    },
+    [practiceFormat],
+  );
 
   const createNextQuestion = useCallback(
     (nextMode = mode, nextOperation = operation, nextDifficulty = difficulty) => {
@@ -184,12 +202,12 @@ export default function GameCanvas() {
       }
       const operationForQuestion = nextMode === "test" ? pickTestOperation() : nextOperation;
       setOperation(operationForQuestion);
-      setQuestion(generateQuestion(operationForQuestion, nextDifficulty));
+      setQuestion(generatePracticeQuestion(operationForQuestion, nextDifficulty));
       setAnswered(null);
       setFeedback("idle");
       handleRef.current?.setActivePlanet(operationForQuestion);
     },
-    [difficulty, mode, operation, selectedTables, tableKind],
+    [difficulty, generatePracticeQuestion, mode, operation, selectedTables, tableKind],
   );
 
   useEffect(() => {
@@ -233,7 +251,7 @@ export default function GameCanvas() {
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
-    setQuestion(generateQuestion(nextOperation, difficulty));
+    setQuestion(generatePracticeQuestion(nextOperation, difficulty));
     setAnswered(null);
     setFeedback("idle");
     handleRef.current?.setActivePlanet(nextOperation);
@@ -244,7 +262,14 @@ export default function GameCanvas() {
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
-    setQuestion(generateQuestion(operation, nextDifficulty));
+    setQuestion(generatePracticeQuestion(operation, nextDifficulty));
+    setAnswered(null);
+    setFeedback("idle");
+  };
+
+  const selectPracticeFormat = (nextFormat: PracticeFormat) => {
+    setPracticeFormat(nextFormat);
+    setQuestion(generatePracticeQuestion(operation, difficulty, nextFormat));
     setAnswered(null);
     setFeedback("idle");
   };
@@ -291,6 +316,11 @@ export default function GameCanvas() {
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
+    setSessionPoints(0);
+    setCorrectCount(0);
+    setWrongCount(0);
+    setElapsedSeconds(0);
+    setSessionStartedAt(Date.now());
     handleRef.current?.setEnergy(0);
     setScreen("game");
     setSelectedActivity(nextActivity);
@@ -331,6 +361,8 @@ export default function GameCanvas() {
       setAnswered(choice);
       if (choice === question.answer) {
         setFeedback("correct");
+        setCorrectCount((current) => current + 1);
+        setSessionPoints((current) => current + 10);
         setEnergy((current) => {
           const next = Math.min(5, current + 1);
           handleRef.current?.setEnergy(next);
@@ -341,6 +373,7 @@ export default function GameCanvas() {
         handleRef.current?.celebrate();
       } else {
         setFeedback("wrong");
+        setWrongCount((current) => current + 1);
       }
     },
     [answered, mode, question.answer, selectedTables.length, testComplete],
@@ -379,6 +412,75 @@ export default function GameCanvas() {
     return () => window.removeEventListener("keydown", onKey);
   }, [answerQuestion, feedback, question.options, screen]);
 
+  useEffect(() => {
+    if (screen !== "game" || sessionStartedAt === null) return;
+    const timer = window.setInterval(() => setElapsedSeconds(Math.floor((Date.now() - sessionStartedAt) / 1000)), 1000);
+    return () => window.clearInterval(timer);
+  }, [screen, sessionStartedAt]);
+
+  const currentDuration = () => sessionStartedAt === null
+    ? elapsedSeconds
+    : Math.max(elapsedSeconds, Math.floor((Date.now() - sessionStartedAt) / 1000));
+
+  const finishSession = () => {
+    setElapsedSeconds(currentDuration());
+    setScreen("summary");
+  };
+
+  const earnedRewards = rewardsForPoints(sessionPoints);
+
+  const saveSessionImage = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 760;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const background = context.createLinearGradient(0, 0, 1200, 760);
+    background.addColorStop(0, "#101b62");
+    background.addColorStop(1, "#2b175e");
+    context.fillStyle = background;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "rgba(255,255,255,0.08)";
+    for (let index = 0; index < 34; index += 1) {
+      context.beginPath();
+      context.arc((index * 89) % 1180 + 12, (index * 53) % 600 + 18, index % 3 === 0 ? 4 : 2, 0, Math.PI * 2);
+      context.fill();
+    }
+    context.fillStyle = "#fdf7e5";
+    context.font = "800 64px Baloo 2, sans-serif";
+    context.fillText("Phi Hành Tinh Phép Tính", 72, 112);
+    context.fillStyle = "#7de4d1";
+    context.font = "700 25px Be Vietnam Pro, sans-serif";
+    context.fillText("KỶ NIỆM LƯỢT HỌC CÙNG ROBOT HANA", 76, 154);
+    context.fillStyle = "#fff8df";
+    context.roundRect(72, 208, 1056, 310, 32);
+    context.fill();
+    const stats = [["Điểm", `${sessionPoints}`], ["Đúng", `${correctCount}`], ["Sai", `${wrongCount}`], ["Thời gian", formatDuration(currentDuration())]];
+    stats.forEach(([label, value], index) => {
+      const x = 118 + index * 254;
+      context.fillStyle = "#766f94";
+      context.font = "700 23px Be Vietnam Pro, sans-serif";
+      context.fillText(label, x, 290);
+      context.fillStyle = "#292963";
+      context.font = "800 64px Baloo 2, sans-serif";
+      context.fillText(value, x, 365);
+    });
+    context.fillStyle = "#f3eee0";
+    context.roundRect(72, 560, 1056, 126, 26);
+    context.fill();
+    context.fillStyle = "#5f5d89";
+    context.font = "700 21px Be Vietnam Pro, sans-serif";
+    context.fillText("QUÀ BẠN NHẬN ĐƯỢC", 108, 610);
+    context.fillStyle = "#2b2e69";
+    context.font = "800 30px Baloo 2, sans-serif";
+    const rewardText = earnedRewards.length ? earnedRewards.map((reward) => `${reward.symbol} ${reward.label}`).join("   •   ") : "Hãy trả lời đúng để nhận quà ở lượt sau nhé!";
+    context.fillText(rewardText, 108, 654);
+    const link = document.createElement("a");
+    link.download = `hanh-trinh-hana-${Date.now()}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
   const missionCount = mode === "test" ? `${Math.min(testStep + 1, 8)}/8` : `${energy}/5`;
   const isTableMode = mode === "tables";
   const hasSelectedTables = selectedTables.length > 0;
@@ -392,6 +494,34 @@ export default function GameCanvas() {
 
       {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("menu")} onGuide={() => setShowGuide(true)} />}
       {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} />}
+      {screen === "summary" && <section className="summary-screen" aria-label="Tổng kết lượt chơi">
+        <div className="summary-orbit" aria-hidden="true" />
+        <div className="summary-stars" aria-hidden="true"><span>✦</span><span>★</span><span>✦</span></div>
+        <div className="summary-robot"><div className="robot-fallback"><span /><span /><i /></div></div>
+        <p className="summary-kicker">ROBOT HANA CHÚC MỪNG</p>
+        <h2>Lượt học của bạn<br /><em>thật đáng tự hào!</em></h2>
+        <p className="summary-intro">Dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.</p>
+        <p className="summary-hana-line">Hana đã cất quà của bạn vào khoang phi thuyền!</p>
+        <div className="summary-stats">
+          <div><span>Điểm</span><strong>{sessionPoints}</strong></div>
+          <div><span>Đúng</span><strong>{correctCount}</strong></div>
+          <div><span>Sai</span><strong>{wrongCount}</strong></div>
+          <div><span>Thời gian</span><strong>{formatDuration(elapsedSeconds)}</strong></div>
+        </div>
+        <section className="reward-board" aria-label="Quà nhận được trong lượt chơi">
+          <div className="reward-board-heading"><span>QUÀ TRONG LƯỢT NÀY</span><strong>{earnedRewards.length ? `${earnedRewards.length}/${sessionRewards.length} quà` : "Chưa có quà"}</strong></div>
+          <div className="reward-grid">
+            {sessionRewards.map((reward) => {
+              const unlocked = earnedRewards.some((earned) => earned.id === reward.id);
+              return <div key={reward.id} className={unlocked ? "reward-chip is-earned" : "reward-chip"}><b>{reward.symbol}</b><span><strong>{reward.label}</strong><small>{unlocked ? reward.detail : `Đạt ${reward.threshold} điểm để nhận`}</small></span></div>;
+            })}
+          </div>
+        </section>
+        <div className="summary-actions">
+          <button type="button" className="save-memory" onClick={saveSessionImage}>Lưu ảnh kỷ niệm <Sparkles size={18} /></button>
+          <button type="button" className="summary-again" onClick={() => setScreen("menu")}>Chơi lượt mới <Rocket size={18} /></button>
+        </div>
+      </section>}
 
       {screen === "game" && <>
       <header className="mission-header">
@@ -417,10 +547,10 @@ export default function GameCanvas() {
             ))}
           </div>
         </div>
-        <button className="mission-menu-button" type="button" onClick={() => setScreen("menu")}><span>☰</span> Menu</button>
+        <button className="mission-menu-button" type="button" onClick={finishSession}><span>■</span> Dừng lượt</button>
         <button className="star-bank" type="button" onClick={() => setShowGuide(true)} aria-label="Xem thông tin tiến độ">
           <span className="star-icon"><Star size={20} fill="currentColor" /></span>
-          <span><strong>{stars}</strong> sao</span>
+          <span><strong>{sessionPoints}</strong> điểm</span>
           <HelpCircle size={16} />
         </button>
       </header>
@@ -455,11 +585,11 @@ export default function GameCanvas() {
           <div className="completion-card">
             <div className="completion-icon"><Trophy size={30} /></div>
             <div>
-              <p>Con đã hoàn thành 8 nhiệm vụ!</p>
+              <p>Bạn đã hoàn thành 8 nhiệm vụ!</p>
               <h3>{testCorrect}/8 câu đúng · {testCorrect >= 6 ? "Bay thật giỏi!" : "Cố gắng rất đáng khen!"}</h3>
             </div>
-            <button type="button" className="primary-action" onClick={() => selectMode("test")}>
-              Làm lại <ChevronRight size={18} />
+            <button type="button" className="primary-action" onClick={finishSession}>
+              Xem tổng kết <ChevronRight size={18} />
             </button>
           </div>
         ) : (
@@ -551,8 +681,12 @@ export default function GameCanvas() {
           </>
         )}
 
+        {!isTableMode && mode !== "test" && <div className="practice-format" aria-label="Chọn dạng bài">
+          <span>DẠNG BÀI</span>
+          <div>{(Object.keys(practiceFormatMeta) as PracticeFormat[]).map((format) => <button key={format} type="button" className={practiceFormat === format ? "is-active" : ""} onClick={() => selectPracticeFormat(format)}>{practiceFormatMeta[format].shortLabel}</button>)}</div>
+        </div>}
         <div className="control-row">
-          <button type="button" className="change-activity" onClick={() => setScreen("menu")}><Rocket size={15} /> Chọn hoạt động khác</button>
+          <button type="button" className="change-activity" onClick={finishSession}><Trophy size={15} /> Kết thúc lượt</button>
           {!isTableMode && <div className="level-switch" aria-label="Chọn cấp độ">
             {(Object.keys(difficultyMeta) as Difficulty[]).map((key) => (
               <button key={key} type="button" className={difficulty === key ? "is-active" : ""} onClick={() => selectDifficulty(key)}>{difficultyMeta[key].label}</button>

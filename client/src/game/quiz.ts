@@ -130,7 +130,6 @@ export function generateQuestion(
   operation: Operation,
   difficulty: Difficulty,
 ): QuizQuestion {
-  if (Math.random() < 0.42) return generateMissingComponentQuestion(operation, difficulty);
   let a = 0;
   let b = 0;
   let answer = 0;
