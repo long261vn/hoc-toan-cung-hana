@@ -179,6 +179,7 @@ export default function GameCanvas() {
   const isScoreDemo = demoParams.has("score");
   const isGuideDemo = demoParams.has("guide");
   const isMaxRewardDemo = demoParams.has("maxrewards");
+  const forceCanvasFallback = demoParams.has("nowebgl");
   const missingDemoOperation = demoParams.get("missing");
   const formatDemoOperation = demoParams.get("format");
   const isMissingDemo = missingDemoOperation === "add" || missingDemoOperation === "subtract" || missingDemoOperation === "multiply" || missingDemoOperation === "divide";
@@ -219,6 +220,7 @@ export default function GameCanvas() {
   const [wrongCount, setWrongCount] = useState(isMaxRewardDemo ? 5 : isSummaryDemo || isScoreDemo ? 2 : 0);
   const [elapsedSeconds, setElapsedSeconds] = useState(isMaxRewardDemo ? 721 : isSummaryDemo || isScoreDemo ? 93 : 0);
   const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
+  const [webglUnavailable, setWebglUnavailable] = useState(false);
   const displayName = playerName.trim() || "Phi hành gia nhỏ";
 
   const generatePracticeQuestion = useCallback(
@@ -271,12 +273,26 @@ export default function GameCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || startedRef.current) return;
+    const supportsWebGL = !forceCanvasFallback && Engine.IsSupported;
+    if (!supportsWebGL) {
+      setWebglUnavailable(true);
+      return;
+    }
+
+    let engine: Engine;
+    try {
+      engine = new Engine(canvas, true, {
+        preserveDrawingBuffer: true,
+        stencil: true,
+        adaptToDeviceRatio: true,
+      });
+    } catch (error) {
+      console.warn("Thiết bị không hỗ trợ WebGL; dùng nền vũ trụ 2D.", error);
+      setWebglUnavailable(true);
+      return;
+    }
+
     startedRef.current = true;
-    const engine = new Engine(canvas, true, {
-      preserveDrawingBuffer: true,
-      stencil: true,
-      adaptToDeviceRatio: true,
-    });
     let disposed = false;
 
     createGameScene(engine, canvas)
@@ -289,7 +305,14 @@ export default function GameCanvas() {
         handle.setActivePlanet(initialOperation);
         engine.runRenderLoop(() => handle.scene.render());
       })
-      .catch((error) => console.error("Không thể khởi tạo bản đồ hành tinh", error));
+      .catch((error) => {
+        console.warn("Không thể khởi tạo bản đồ hành tinh; dùng nền vũ trụ 2D.", error);
+        if (!disposed) {
+          engine.dispose();
+          startedRef.current = false;
+          setWebglUnavailable(true);
+        }
+      });
 
     const onResize = () => engine.resize();
     window.addEventListener("resize", onResize);
@@ -301,7 +324,7 @@ export default function GameCanvas() {
       engine.dispose();
       startedRef.current = false;
     };
-  }, [initialOperation, isDemo, isTableDemo]);
+  }, [forceCanvasFallback, initialOperation, isDemo, isTableDemo]);
 
   const selectOperation = (nextOperation: Operation) => {
     setOperation(nextOperation);
@@ -565,7 +588,8 @@ export default function GameCanvas() {
 
   return (
     <main className="game-shell">
-      <canvas ref={canvasRef} className="game-canvas" aria-label="Không gian trò chơi toán học" />
+      <canvas ref={canvasRef} className={webglUnavailable ? "game-canvas is-hidden" : "game-canvas"} aria-label="Không gian trò chơi toán học" />
+      {webglUnavailable && <div className="space-fallback" aria-hidden="true"><span className="fallback-planet coral" /><span className="fallback-planet lavender" /><span className="fallback-planet mint" /><span className="fallback-orbit one" /><span className="fallback-orbit two" /><span className="fallback-stars">✦ · ✧ · ★ · ✦ · ✧</span></div>}
       <div className="space-atmosphere" aria-hidden="true" />
 
       {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("profile")} onGuide={() => setShowGuide(true)} />}

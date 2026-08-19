@@ -34,6 +34,13 @@
 - [x] Chơi thử toàn bộ luồng như học sinh lớp 3, ghi nhận và sửa các lỗi thao tác, trạng thái và bố cục.
 - [x] Kiểm tra lại trên máy tính/điện thoại, dựng bản phát hành, lưu checkpoint và bàn giao.
 
+## Khắc phục lỗi WebGL
+
+- [x] Rà soát luồng khởi tạo Babylon để xác định điểm phát sinh lỗi WebGL not supported.
+- [x] Kiểm tra khả năng WebGL trước khi tạo Babylon Engine và hiển thị nền 2D dự phòng khi không hỗ trợ.
+- [x] Bảo vệ luồng lỗi khởi tạo để giao diện trò chơi không bị hỏng nếu Babylon thất bại ngoài dự kiến.
+- [x] Kiểm thử khởi động, dựng bản phát hành, lưu checkpoint và bàn giao bản sửa lỗi.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.
