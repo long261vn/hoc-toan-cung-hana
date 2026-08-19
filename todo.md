@@ -188,3 +188,9 @@
 - [x] Đặt Đổi nhiệm vụ và Kết thúc lượt ở vùng điều khiển dễ thấy, dễ chạm trên điện thoại.
 - [x] Giữ các điều khiển này khả dụng khi thanh menu trên cùng tự thu gọn.
 - [x] Kiểm tra luồng đổi nhiệm vụ/kết thúc lượt, bố cục desktop/mobile, TypeScript và build trước khi lưu checkpoint.
+
+## Xác nhận kết thúc lượt
+
+- [x] Hiển thị hộp thoại xác nhận thân thiện trước khi kết thúc lượt ở mọi vị trí điều khiển.
+- [x] Hiển thị nhanh điểm, số câu đúng và số câu sai hiện tại; dịch đầy đủ Tiếng Việt/English.
+- [x] Cho phép quay lại học tiếp hoặc xác nhận kết thúc, sau đó kiểm tra desktop/mobile, TypeScript và build.

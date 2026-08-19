@@ -26,6 +26,14 @@ import { getStoredEffectsVolume, getStoredMusicVolume, getStoredSoundPreference,
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   generateQuestion,
   generateMissingComponentQuestion,
   generateTableQuestion,
@@ -326,6 +334,7 @@ export default function GameCanvas() {
   const isGuideDemo = demoParams.has("guide");
   const isSoundSettingsDemo = demoParams.has("soundsettings");
   const isMenuCollapsedDemo = demoParams.has("menucollapsed");
+  const isEndSessionConfirmDemo = demoParams.has("endconfirm");
   const isMaxRewardDemo = demoParams.has("maxrewards");
   const forceCanvasFallback = demoParams.has("nowebgl");
   const missingDemoOperation = demoParams.get("missing");
@@ -341,7 +350,7 @@ export default function GameCanvas() {
     ? (tableDemoKind === "divide" ? "divide" : "multiply")
     : "add";
 
-  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo || isMaxRewardDemo ? "summary" : isProfileDemo ? "profile" : isFormatDemo ? "format" : isScoreDemo || isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
+  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo || isMaxRewardDemo ? "summary" : isProfileDemo ? "profile" : isFormatDemo ? "format" : isScoreDemo || isDemo || isTableDemo || isMissingDemo || isEndSessionConfirmDemo ? "game" : isMenuPreview ? "menu" : "welcome");
   const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "practice");
   const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isMissingDemo || isFormatDemo ? initialOperation : isDemo ? "multiply" : "add");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
@@ -364,6 +373,7 @@ export default function GameCanvas() {
   const [testComplete, setTestComplete] = useState(false);
   const [showGuide, setShowGuide] = useState(isGuideDemo);
   const [showScorePanel, setShowScorePanel] = useState(isScoreDemo);
+  const [showEndSessionConfirm, setShowEndSessionConfirm] = useState(isEndSessionConfirmDemo);
   const [playerName, setPlayerName] = useState(isSummaryDemo || isProfileDemo || isScoreDemo || isMaxRewardDemo ? "Minh Anh" : "");
   const [sessionPoints, setSessionPoints] = useState(isMaxRewardDemo ? 1000 : isSummaryDemo || isScoreDemo ? 100 : 0);
   const [correctCount, setCorrectCount] = useState(isMaxRewardDemo ? 100 : isSummaryDemo || isScoreDemo ? 10 : 0);
@@ -746,7 +756,7 @@ export default function GameCanvas() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (screen !== "game" || showScorePanel) return;
+      if (screen !== "game" || showScorePanel || showEndSessionConfirm) return;
       const numeric = Number(event.key);
       if (numeric >= 1 && numeric <= 4) {
         const option = question.options[numeric - 1];
@@ -756,7 +766,7 @@ export default function GameCanvas() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [answerQuestion, feedback, question.options, screen, showScorePanel]);
+  }, [answerQuestion, feedback, question.options, screen, showEndSessionConfirm, showScorePanel]);
 
   useEffect(() => {
     if (screen !== "game" || sessionStartedAt === null) return;
@@ -769,9 +779,15 @@ export default function GameCanvas() {
     : Math.max(elapsedSeconds, Math.floor((Date.now() - sessionStartedAt) / 1000));
 
   const finishSession = () => {
+    setShowEndSessionConfirm(false);
     playSound("reward");
     setElapsedSeconds(currentDuration());
     setScreen("summary");
+  };
+
+  const requestEndSession = () => {
+    playSound("tap");
+    setShowEndSessionConfirm(true);
   };
 
   const earnedRewards = rewardsForPoints(sessionPoints);
@@ -1097,7 +1113,7 @@ export default function GameCanvas() {
         </div>
         <div className="mission-actions">
           <button className="mission-menu-button" type="button" onClick={() => setScreen("menu")}><span>↔</span> Đổi nhiệm vụ</button>
-          <button className="mission-menu-button mission-end-button" type="button" onClick={finishSession}><span>■</span> Kết thúc lượt</button>
+          <button className="mission-menu-button mission-end-button" type="button" onClick={requestEndSession}><span>■</span> Kết thúc lượt</button>
           <LanguageControl className="mission-language-control" language={language} onToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />
         </div>
       </header>
@@ -1140,7 +1156,7 @@ export default function GameCanvas() {
         </div>
         <div className="mobile-mission-actions" aria-label={copy("Điều khiển nhiệm vụ", "Mission controls")}>
           <button className="mobile-change-mission" type="button" onClick={() => { playSound("tap"); setMenuCollapsed(false); setScreen("menu"); }}><span>↔</span>{copy("Đổi nhiệm vụ", "Change mission")}</button>
-          <button className="mobile-end-session" type="button" onClick={finishSession}><span>■</span>{copy("Kết thúc lượt", "End session")}</button>
+          <button className="mobile-end-session" type="button" onClick={requestEndSession}><span>■</span>{copy("Kết thúc lượt", "End session")}</button>
         </div>
 
         {testComplete ? (
@@ -1250,7 +1266,7 @@ export default function GameCanvas() {
             ))}
           </div>}
         </div>
-        {!testComplete && <button className="end-session-footer" type="button" onClick={finishSession}>
+        {!testComplete && <button className="end-session-footer" type="button" onClick={requestEndSession}>
           <span className="end-session-footer-icon">■</span>
           <span><small>{copy("ĐÃ HOÀN THÀNH LƯỢT HỌC?", "FINISHED THIS LEARNING SESSION?")}</small><strong>{copy("Kết thúc lượt", "End session")}</strong></span>
           <ChevronRight size={20} />
@@ -1304,6 +1320,26 @@ export default function GameCanvas() {
           </section>
         </div>
       )}
+
+      <AlertDialog open={showEndSessionConfirm} onOpenChange={setShowEndSessionConfirm}>
+        <AlertDialogContent className="end-session-confirm-card" aria-describedby="end-session-confirm-description">
+          <div className="end-session-confirm-hana" aria-hidden="true"><div className="robot-fallback"><span /><span /><i /></div></div>
+          <p className="end-session-confirm-kicker">{copy("ROBOT HANA HỎI BẠN", "ROBOT HANA ASKS")}</p>
+          <AlertDialogTitle>{copy("Bạn muốn kết thúc lượt học không?", "Would you like to end this learning session?")}</AlertDialogTitle>
+          <AlertDialogDescription id="end-session-confirm-description">
+            {copy("Hana sẽ lưu kết quả hiện tại và đưa bạn đến màn tổng kết.", "Hana will save your current results and take you to the session summary.")}
+          </AlertDialogDescription>
+          <div className="end-session-confirm-stats" aria-label={copy("Kết quả hiện tại", "Current results")}>
+            <div><span>{copy("Điểm", "Points")}</span><strong data-dynamic-text>{sessionPoints}</strong></div>
+            <div><span>{copy("Đúng", "Correct")}</span><strong data-dynamic-text>{correctCount}</strong></div>
+            <div><span>{copy("Sai", "Incorrect")}</span><strong data-dynamic-text>{wrongCount}</strong></div>
+          </div>
+          <div className="end-session-confirm-actions">
+            <AlertDialogCancel className="end-session-confirm-cancel">{copy("Quay lại học tiếp", "Keep learning")}</AlertDialogCancel>
+            <AlertDialogAction className="end-session-confirm-action" onClick={finishSession}>{copy("Kết thúc lượt", "End session")} <ChevronRight size={18} /></AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }
