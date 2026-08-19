@@ -70,6 +70,12 @@
 - [x] Kiểm thử đổi ngôn ngữ khi đang ở từng màn và trong lúc làm bài trên máy tính/điện thoại.
 - [x] Dựng bản phát hành, lưu checkpoint và bàn giao phiên bản song ngữ.
 
+## Di chuyển nút ngôn ngữ
+
+- [x] Chuyển nút Việt/EN từ góc dưới phải lên vùng phía trên, không che điều khiển quan trọng.
+- [x] Kiểm tra khoảng cách với logo, nút Hướng dẫn và thanh điều khiển trên màn hình máy tính/điện thoại.
+- [x] Dựng bản phát hành, lưu checkpoint và bàn giao cập nhật vị trí nút.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.
