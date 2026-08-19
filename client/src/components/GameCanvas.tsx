@@ -234,7 +234,7 @@ function ActivityMenu({ onBack, onGuide, onChoose, language, onLanguageToggle }:
     { id: "add", eyebrow: "PHÉP TÍNH CỘNG", detail: "Gộp các nhóm và tìm tổng.", tone: "add", symbol: "+" },
     { id: "subtract", eyebrow: "PHÉP TÍNH TRỪ", detail: "Tìm phần còn lại.", tone: "subtract", symbol: "−" },
     { id: "tables", eyebrow: "BẢNG NHÂN VÀ CHIA", detail: "Chọn từng bảng hoặc luyện cả nhân và chia.", tone: "tables", symbol: "×÷" },
-    { id: "multiply", eyebrow: "PHÉP TÍNH NHÂN", detail: "Xếp những nhóm bằng nhau.", tone: "multiply", symbol: "×" },
+    { id: "multiply", eyebrow: "PHÉP TÍNH NHÂN", detail: "Xếp những nhóm bằng nhau.", tone: "multiply", symbol: "▦" },
     { id: "divide", eyebrow: "PHÉP TÍNH CHIA", detail: "Chia đều các nhóm số.", tone: "divide", symbol: "÷" },
     { id: "test", eyebrow: "8 CÂU THỬ THÁCH", detail: "Thử sức và nhận sao.", tone: "test", symbol: "★" },
   ];
@@ -1243,6 +1243,11 @@ export default function GameCanvas() {
             ))}
           </div>}
         </div>
+        {!testComplete && <button className="end-session-footer" type="button" onClick={finishSession}>
+          <span className="end-session-footer-icon">■</span>
+          <span><small>{copy("ĐÃ HOÀN THÀNH LƯỢT HỌC?", "FINISHED THIS LEARNING SESSION?")}</small><strong>{copy("Kết thúc lượt", "End session")}</strong></span>
+          <ChevronRight size={20} />
+        </button>}
       </section>
       </>}
 

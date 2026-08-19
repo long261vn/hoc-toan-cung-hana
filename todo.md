@@ -157,3 +157,9 @@
 - [x] Sửa cơ chế khởi động nhạc nền và hiệu ứng để tương thích chính sách phát âm thanh của trình duyệt.
 - [x] Xác minh mức âm lượng cũ 0% được tự khôi phục thành 50%, đồng thời giữ luồng phát nhạc/hiệu ứng gắn với thao tác đầu tiên của người chơi.
 - [x] Kiểm tra TypeScript, build và lưu checkpoint sau khi âm thanh đã hoạt động.
+
+## Nhận diện phép Nhân và kết thúc lượt
+
+- [x] Thay biểu tượng phép Nhân trong menu bằng hình dễ phân biệt với dấu nhân.
+- [x] Thêm nút Kết thúc lượt nổi bật ở cuối khu vực câu hỏi/đáp án và giữ luồng tổng kết hiện có.
+- [x] Kiểm tra bố cục desktop/mobile, TypeScript và build trước khi lưu checkpoint.
