@@ -175,3 +175,10 @@
 - [x] Tự thu gọn thanh menu trên cùng khi học sinh bắt đầu tương tác với câu hỏi.
 - [x] Thêm nút nhỏ dễ thấy để mở lại thanh menu và giữ truy cập đến điểm, đổi nhiệm vụ, kết thúc lượt.
 - [x] Kiểm tra luồng trả lời, desktop/mobile, TypeScript và build trước khi lưu checkpoint.
+
+## Sửa đồng bộ điểm và thanh điều khiển
+
+- [x] Tái hiện điểm hiện tại không cập nhật và xác định hai vị trí hiển thị bị trùng.
+- [x] Chỉ giữ một hiển thị điểm hiện tại, bảo đảm cập nhật ngay sau đáp án đúng/sai.
+- [x] Bỏ ký hiệu thừa cạnh điều khiển đổi ngôn ngữ và kiểm tra bố cục thanh trên.
+- [x] Kiểm thử hành trình trả lời, TypeScript, build và giao diện desktop/mobile trước khi lưu checkpoint.

@@ -53,7 +53,7 @@ function LanguageControl({ language, onToggle, className = "" }: { language: Lan
   const code = language === "vi" ? "VIE" : "ENG";
   const title = language === "vi" ? "Tiếng Việt" : "English";
   return <button className={`language-control ${className}`.trim()} type="button" onClick={onToggle} aria-label={language === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}>
-    <span className="language-glyph">A↔</span><span className="language-code">{code}</span><small>{title}</small>
+    <span className="language-code">{code}</span><small>{title}</small>
   </button>;
 }
 
@@ -114,7 +114,7 @@ function localizeVisibleText(language: Language) {
   const nodes: Text[] = [];
   while (walker.nextNode()) nodes.push(walker.currentNode as Text);
   nodes.forEach((node) => {
-    if (node.parentElement?.closest(".language-control, [data-brand-wordmark], [data-sound-control]")) return;
+    if (node.parentElement?.closest(".language-control, [data-brand-wordmark], [data-sound-control], [data-dynamic-text]")) return;
     const original = textOrigins.get(node) ?? node.nodeValue ?? "";
     if (!textOrigins.has(node)) textOrigins.set(node, original);
     if (language === "vi") { node.nodeValue = original; return; }
@@ -1065,10 +1065,10 @@ export default function GameCanvas() {
         <p className="summary-intro">{language === "en" ? `${displayName}, whether right or wrong, you kept going through a session with Hana.` : `${displayName}, dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.`}</p>
         <p className="summary-hana-line">{language === "en" ? `Hana has stored ${displayName}'s badges in the spaceship cabin!` : `Hana đã cất các huy hiệu của ${displayName} vào khoang phi thuyền!`}</p>
         <div className="summary-stats">
-          <div><span>Điểm</span><strong>{sessionPoints}</strong></div>
-          <div><span>Đúng</span><strong>{correctCount}</strong></div>
-          <div><span>Sai</span><strong>{wrongCount}</strong></div>
-          <div><span>Thời gian</span><strong>{formatDuration(elapsedSeconds)}</strong></div>
+          <div><span>Điểm</span><strong data-dynamic-text>{sessionPoints}</strong></div>
+          <div><span>Đúng</span><strong data-dynamic-text>{correctCount}</strong></div>
+          <div><span>Sai</span><strong data-dynamic-text>{wrongCount}</strong></div>
+          <div><span>Thời gian</span><strong data-dynamic-text>{formatDuration(elapsedSeconds)}</strong></div>
         </div>
         <section className="reward-board highest-reward-board" aria-label="Phần thưởng cao nhất trong lượt chơi">
           <div className="reward-board-heading"><span>PHẦN THƯỞNG CAO NHẤT</span><strong>{earnedRewards.length ? `Cấp ${highestReward?.level}/${sessionRewards.length}` : "Chưa mở"}</strong></div>
@@ -1100,10 +1100,6 @@ export default function GameCanvas() {
           <button className="mission-menu-button mission-end-button" type="button" onClick={finishSession}><span>■</span> Kết thúc lượt</button>
           <LanguageControl className="mission-language-control" language={language} onToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />
         </div>
-        <button className="reward-progress" type="button" onClick={() => setShowScorePanel(true)} aria-label="Xem điểm hiện tại và tiến độ nhận quà">
-          <span className="reward-progress-icon">{nextReward?.symbol ?? "♛"}</span>
-          <span><small>{copy("ĐIỂM HIỆN TẠI", "CURRENT POINTS")}</small><strong>{sessionPoints}</strong><em>{nextReward ? language === "en" ? `${pointsUntilReward} points until ${rewardLabel(nextReward)}` : `Còn ${pointsUntilReward} điểm nhận ${rewardLabel(nextReward)}` : copy("Đã mở đủ phần thưởng!", "All rewards unlocked!")}</em></span>
-        </button>
       </header>
       {menuCollapsed && <button type="button" className="mission-menu-reveal" onClick={() => { playSound("tap"); setMenuCollapsed(false); }} aria-label={copy("Mở lại thanh menu", "Show menu bar")}><Menu size={17} /><span>{copy("Menu", "Menu")}</span></button>}
 
@@ -1137,10 +1133,10 @@ export default function GameCanvas() {
             <p>{isTableMode ? copy("Học Bảng Nhân và Chia", "Learn multiplication & division") : operationLabel(operation)} <span>•</span> {isTableMode ? tableSubtitle(tableKind) : mode === "test" ? copy("8 câu thử thách", "8-question challenge") : practiceFormatMeta[practiceFormat].shortLabel}</p>
             <h3>{testComplete ? copy("Hoàn thành kiểm tra!", "Test complete!") : isTableMode && !hasSelectedTables ? copy("Hãy chọn ít nhất một bảng để bắt đầu.", "Choose at least one table to begin.") : translateLearningText(question.mission, language)}</h3>
           </div>
-          <div className="mission-counter">
+          <button className="mission-counter current-score-button" data-current-score type="button" onClick={() => setShowScorePanel(true)} aria-label={copy("Xem điểm hiện tại và tiến độ phần thưởng", "View current points and reward progress")}>
             <span>{mode === "test" ? copy("Câu", "Question") : copy("Điểm hiện tại", "Current points")}</span>
-            <strong>{mode === "test" ? (testComplete ? "8/8" : `${Math.min(testStep + 1, 8)}/8`) : sessionPoints}</strong>
-          </div>
+            <strong data-dynamic-text>{mode === "test" ? (testComplete ? "8/8" : `${Math.min(testStep + 1, 8)}/8`) : sessionPoints}</strong>
+          </button>
         </div>
 
         {testComplete ? (
@@ -1204,7 +1200,7 @@ export default function GameCanvas() {
             {(!isTableMode || hasSelectedTables) ? <>
             <div className="question-panel" key={`prompt-${question.id}`}>
               <span className="question-label">{isTableMode ? "NHIỆM VỤ BẢNG NHÂN VÀ CHIA" : question.kind === "missing" ? "TÌM THÀNH PHẦN CHƯA BIẾT" : "NHIỆM VỤ TOÁN HỌC"}</span>
-              <p className="math-expression">{question.expression}</p>
+            <p className="math-expression" data-dynamic-text>{question.expression}</p>
               <p className="math-helper">{question.kind === "missing" ? "Tìm số còn thiếu để hoàn thành phép tính." : "Chọn đáp án đúng để nhận điểm thưởng."}</p>
             </div>
             <div className="answer-grid" key={`answers-${question.id}`} aria-label={`Đáp án cho ${question.expression}`}>
@@ -1220,7 +1216,7 @@ export default function GameCanvas() {
                 return (
                   <button className={classNames} key={`${question.id}-${choice}`} type="button" onClick={() => answerQuestion(choice)}>
                     <span className="answer-index">{index + 1}</span>
-                    <strong>{choice}</strong>
+                    <strong data-dynamic-text>{choice}</strong>
                     {feedback === "correct" && isCorrect && <Check className="answer-status" size={19} />}
                     {feedback === "wrong" && isChosen && <X className="answer-status" size={19} />}
                   </button>
@@ -1291,10 +1287,10 @@ export default function GameCanvas() {
               <div><p className="eyebrow">{copy("TIẾN ĐỘ CỦA", "PROGRESS FOR")} {displayName.toUpperCase()}</p><h2>{copy("Điểm hiện tại", "Current points")}</h2><p>{nextReward ? language === "en" ? `${pointsUntilReward} points to unlock ${rewardLabel(nextReward)}.` : `Còn ${pointsUntilReward} điểm để mở ${rewardLabel(nextReward)}.` : copy("Bạn đã mở trọn bộ 100 phần thưởng rồi!", "You have unlocked all 100 rewards!")}</p></div>
             </div>
             <div className="score-stats">
-              <div><span>Điểm</span><strong>{sessionPoints}</strong></div>
-              <div><span>Đúng</span><strong>{correctCount}</strong></div>
-              <div><span>Sai</span><strong>{wrongCount}</strong></div>
-              <div><span>Thời gian</span><strong>{formatDuration(currentDuration())}</strong></div>
+              <div><span>Điểm</span><strong data-dynamic-text>{sessionPoints}</strong></div>
+              <div><span>Đúng</span><strong data-dynamic-text>{correctCount}</strong></div>
+              <div><span>Sai</span><strong data-dynamic-text>{wrongCount}</strong></div>
+              <div><span>Thời gian</span><strong data-dynamic-text>{formatDuration(currentDuration())}</strong></div>
             </div>
             <section className="score-reward-board" aria-label="Phần thưởng đã mở">
               <div><span>PHẦN THƯỞNG GẦN NHẤT</span><strong>{earnedRewards.length}/{sessionRewards.length}</strong></div>

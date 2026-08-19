@@ -27,14 +27,19 @@ try {
   await waitFor(".answer-button");
   const before = await evaluate(`({ headerCollapsed: document.querySelector(".mission-header")?.classList.contains("is-collapsed"), revealVisible: Boolean(document.querySelector(".mission-menu-reveal")) })`);
   if (before.headerCollapsed || before.revealVisible) throw new Error(`Thanh menu bị ẩn trước khi trả lời: ${JSON.stringify(before)}`);
+  const initialScore = await evaluate(`({ count: document.querySelectorAll("[data-current-score]").length, value: document.querySelector("[data-current-score] strong")?.textContent, hasLegacyReward: Boolean(document.querySelector(".reward-progress")), hasLanguageGlyph: Boolean(document.querySelector(".language-glyph")) })`);
+  if (initialScore.count !== 1 || initialScore.value !== "0" || initialScore.hasLegacyReward || initialScore.hasLanguageGlyph) throw new Error(`Hiển thị điểm/ngôn ngữ trước đáp án chưa đúng: ${JSON.stringify(initialScore)}`);
   const answer = await evaluate(`(() => { const expression = document.querySelector(".math-expression")?.textContent ?? ""; const [left] = expression.split("="); return Function('"use strict"; return (' + left.replace("×", "*").replace("÷", "/").replace("−", "-") + ');')(); })()`);
   await evaluate(`Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) === ${answer})?.click()`);
   await waitFor(".mission-header.is-collapsed");
+  await sleep(120);
+  const updatedScore = await evaluate(`document.querySelector("[data-current-score] strong")?.textContent`);
+  if (updatedScore !== "10") throw new Error(`Điểm hiện tại không cập nhật ngay sau đáp án đúng: ${updatedScore}`);
   const collapsed = await evaluate(`({ headerCollapsed: document.querySelector(".mission-header")?.classList.contains("is-collapsed"), revealVisible: Boolean(document.querySelector(".mission-menu-reveal")), consoleRaised: document.querySelector(".mission-control")?.classList.contains("is-menu-collapsed") })`);
   if (!collapsed.headerCollapsed || !collapsed.revealVisible || !collapsed.consoleRaised) throw new Error(`Thanh menu chưa thu gọn đúng sau đáp án: ${JSON.stringify(collapsed)}`);
   await evaluate(`document.querySelector(".mission-menu-reveal")?.click()`);
   await sleep(120);
   const reopened = await evaluate(`({ headerCollapsed: document.querySelector(".mission-header")?.classList.contains("is-collapsed"), revealVisible: Boolean(document.querySelector(".mission-menu-reveal")), consoleRaised: document.querySelector(".mission-control")?.classList.contains("is-menu-collapsed") })`);
   if (reopened.headerCollapsed || reopened.revealVisible || reopened.consoleRaised) throw new Error(`Không mở lại được thanh menu: ${JSON.stringify(reopened)}`);
-  console.log(JSON.stringify({ before, collapsed, reopened, status: "auto-collapse menu valid" }));
+  console.log(JSON.stringify({ before, initialScore, updatedScore, collapsed, reopened, status: "auto-collapse and current score valid" }));
 } finally { socket.close(); }
