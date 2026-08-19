@@ -121,3 +121,11 @@
 - [x] Hiển thị Robot Hana và phần hướng dẫn rõ ràng khi người chơi trả lời sai.
 - [x] Kiểm tra gợi ý, phản hồi sai và giao diện trên máy tính, điện thoại.
 - [x] Lưu checkpoint và bàn giao phiên bản hoàn thiện.
+
+## Âm thanh cho hành trình cùng Hana
+
+- [x] Xác định các thời điểm phát nhạc nền và hiệu ứng âm thanh phù hợp, không gây phân tán cho học sinh lớp 3.
+- [x] Tạo nhạc nền không lời êm dịu và các hiệu ứng ngắn cho bắt đầu, chọn đáp án, đúng, sai, mở quà và chuyển nhiệm vụ.
+- [x] Tích hợp trình quản lý âm thanh tôn trọng cài đặt của người chơi, tự phát sau thao tác đầu tiên và lưu trạng thái bật/tắt.
+- [x] Thêm nút bật/tắt âm thanh dễ nhận biết ở màn hình chính và phản ánh trạng thái hiện tại bằng tiếng Việt/English.
+- [x] Kiểm thử âm thanh, thao tác bật/tắt, fallback trình duyệt, TypeScript, build, desktop/mobile rồi lưu checkpoint.

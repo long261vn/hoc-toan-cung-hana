@@ -15,9 +15,12 @@ import {
   Sparkles,
   Star,
   Trophy,
+  Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 import { createGameScene, type GameHandle } from "@/game/scene";
+import { getStoredSoundPreference, HanaAudio, type SoundEffect } from "@/game/audio";
 import {
   generateQuestion,
   generateMissingComponentQuestion,
@@ -46,6 +49,13 @@ function LanguageControl({ language, onToggle, className = "" }: { language: Lan
   const title = language === "vi" ? "Tiếng Việt" : "English";
   return <button className={`language-control ${className}`.trim()} type="button" onClick={onToggle} aria-label={language === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}>
     <span className="language-glyph">A↔</span><span className="language-code">{code}</span><small>{title}</small>
+  </button>;
+}
+
+function SoundControl({ enabled, language, onToggle }: { enabled: boolean; language: Language; onToggle: () => void }) {
+  const label = language === "en" ? (enabled ? "Sound on" : "Sound off") : (enabled ? "Âm thanh bật" : "Âm thanh tắt");
+  return <button className={`sound-control ${enabled ? "is-on" : "is-off"}`} data-sound-control type="button" onClick={onToggle} aria-pressed={enabled} aria-label={label}>
+    <span className="sound-glyph">{enabled ? <Volume2 size={17} /> : <VolumeX size={17} />}</span><span className="sound-label">{label}</span><small>{language === "en" ? "music & effects" : "nhạc & hiệu ứng"}</small>
   </button>;
 }
 
@@ -91,7 +101,7 @@ function localizeVisibleText(language: Language) {
   const nodes: Text[] = [];
   while (walker.nextNode()) nodes.push(walker.currentNode as Text);
   nodes.forEach((node) => {
-    if (node.parentElement?.closest(".language-control, [data-brand-wordmark]")) return;
+    if (node.parentElement?.closest(".language-control, [data-brand-wordmark], [data-sound-control]")) return;
     const original = textOrigins.get(node) ?? node.nodeValue ?? "";
     if (!textOrigins.has(node)) textOrigins.set(node, original);
     if (language === "vi") { node.nodeValue = original; return; }
@@ -160,15 +170,20 @@ const activityMeta: Record<ActivityId, { label: string; kicker: string; descript
   test: { label: "Bài kiểm tra", kicker: "8 CÂU THỬ THÁCH", description: "Hoàn thành tám nhiệm vụ để nhận thật nhiều sao." },
 };
 
-function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle }: { onStart: () => void; onGuide: () => void; language: Language; onLanguageToggle: () => void }) {
+function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle, soundEnabled, onSoundToggle }: { onStart: () => void; onGuide: () => void; language: Language; onLanguageToggle: () => void; soundEnabled: boolean; onSoundToggle: () => void }) {
   return (
     <section className="welcome-screen" aria-label="Chào mừng đến với Phi Hành Tinh Phép Tính">
+      <div className="welcome-operation-stage" aria-hidden="true">
+        <span className="welcome-flight-orbit orbit-a" /><span className="welcome-flight-orbit orbit-b" />
+        <span className="welcome-operation-planet add">+</span><span className="welcome-operation-planet subtract">−</span><span className="welcome-operation-planet multiply">×</span><span className="welcome-operation-planet divide">÷</span>
+      </div>
       <div className="welcome-topbar">
         <div className="mini-brand"><span className="mini-brand-rocket"><Rocket size={19} fill="currentColor" /></span><span data-brand-wordmark>Phi Hành Tinh<br />Phép Tính</span></div>
-        <div className="topbar-controls"><button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button><LanguageControl language={language} onToggle={onLanguageToggle} /></div>
+        <div className="topbar-controls"><button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button><SoundControl enabled={soundEnabled} language={language} onToggle={onSoundToggle} /><LanguageControl language={language} onToggle={onLanguageToggle} /></div>
       </div>
       <div className="welcome-content">
         <div className="welcome-robot" aria-hidden="true"><div className="robot-fallback"><span /><span /><i /></div><span className="robot-orbit" /></div>
+        <p className="welcome-brand-flag" data-brand-wordmark>PHI HÀNH TINH <span>PHÉP TÍNH</span></p>
         <p className="welcome-kicker"><Sparkles size={15} /> CHÀO MỪNG PHI HÀNH GIA NHỎ</p>
         <h2><span>Cùng Hana</span><em>ôn toán học</em></h2>
         <p className="welcome-intro">Cùng Robot Hana chinh phục các hoạt động Cộng, Trừ, Nhân và Chia qua những nhiệm vụ thật vui.</p>
@@ -344,6 +359,8 @@ export default function GameCanvas() {
   const [imageSaveStatus, setImageSaveStatus] = useState("");
   const [isSavingImage, setIsSavingImage] = useState(false);
   const [language, setLanguage] = useState<Language>(() => demoParams.get("lang") === "en" || window.localStorage.getItem("hana-language") === "en" ? "en" : "vi");
+  const [soundEnabled, setSoundEnabled] = useState(getStoredSoundPreference);
+  const audioRef = useRef<HanaAudio | null>(null);
   const displayName = playerName.trim() || (language === "en" ? "Young astronaut" : "Phi hành gia nhỏ");
   const copy = (vietnamese: string, english: string) => language === "en" ? english : vietnamese;
   const operationLabel = (value: Operation) => language === "en" ? ({ add: "Addition", subtract: "Subtraction", multiply: "Multiplication", divide: "Division" }[value]) : activityMeta[value].label;
@@ -356,6 +373,30 @@ export default function GameCanvas() {
     return `${rewardFamilies[(reward.level - 1) % rewardFamilies.length]} · Level ${reward.level}`;
   };
   const rewardDetail = (reward: (typeof sessionRewards)[number]) => language === "en" ? "A new treasure for your space collection." : reward.detail;
+
+  useEffect(() => {
+    const audio = new HanaAudio(soundEnabled);
+    audioRef.current = audio;
+    return () => audio.dispose();
+  }, []);
+
+  useEffect(() => {
+    audioRef.current?.setEnabled(soundEnabled);
+  }, [soundEnabled]);
+
+  const playSound = useCallback((effect: SoundEffect) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.activate();
+    audio.play(effect);
+  }, []);
+
+  const toggleSound = () => {
+    const nextEnabled = !soundEnabled;
+    setSoundEnabled(nextEnabled);
+    audioRef.current?.setEnabled(nextEnabled);
+    if (nextEnabled) playSound("tap");
+  };
 
   const generatePracticeQuestion = useCallback(
     (nextOperation: Operation, nextDifficulty: Difficulty, nextFormat = practiceFormat) => {
@@ -527,6 +568,7 @@ export default function GameCanvas() {
   }, [freshQuestion, mode, selectedTables, tableKind]);
 
   const startActivity = (nextActivity: ActivityId) => {
+    playSound("launch");
     if (nextActivity === "add" || nextActivity === "subtract" || nextActivity === "multiply" || nextActivity === "divide") {
       setSelectedActivity(nextActivity);
       setOperation(nextActivity);
@@ -564,6 +606,7 @@ export default function GameCanvas() {
   };
 
   const beginPractice = (nextFormat: PracticeFormat) => {
+    playSound("launch");
     setAnswered(null);
     setFeedback("idle");
     setTestComplete(false);
@@ -590,11 +633,13 @@ export default function GameCanvas() {
       ? (selectedTables.length === 1 ? selectedTables : selectedTables.filter((item) => item !== table))
       : [...selectedTables, table].sort((a, b) => a - b);
     setTablePractice(tableKind, nextTables);
+    playSound("tap");
   };
 
   const changeTableKind = (nextKind: TablePracticeKind) => {
     setTableKind(nextKind);
     if (selectedTables.length > 0) setTablePractice(nextKind, selectedTables);
+    playSound("tap");
   };
 
   const clearAllTables = () => {
@@ -609,21 +654,24 @@ export default function GameCanvas() {
       if (answered !== null || testComplete || (mode === "tables" && selectedTables.length === 0)) return;
       setAnswered(choice);
       if (choice === question.answer) {
+        playSound("correct");
         setFeedback("correct");
         setCorrectCount((current) => current + 1);
         setSessionPoints((current) => current + 10);
         if (mode === "test") setTestCorrect((current) => current + 1);
       } else {
+        playSound("wrong");
         setFeedback("wrong");
         setWrongCount((current) => current + 1);
         setSessionPoints((current) => Math.max(0, current - 2));
       }
     },
-    [answered, mode, question.answer, selectedTables.length, testComplete],
+    [answered, mode, playSound, question.answer, selectedTables.length, testComplete],
   );
 
   const continueMission = () => {
     if (mode === "tables" && selectedTables.length === 0) return;
+    playSound(feedback === "wrong" ? "tap" : "next");
     if (feedback === "wrong") {
       setAnswered(null);
       setFeedback("idle");
@@ -666,6 +714,7 @@ export default function GameCanvas() {
     : Math.max(elapsedSeconds, Math.floor((Date.now() - sessionStartedAt) / 1000));
 
   const finishSession = () => {
+    playSound("reward");
     setElapsedSeconds(currentDuration());
     setScreen("summary");
   };
@@ -945,8 +994,8 @@ export default function GameCanvas() {
       {webglUnavailable && <div className="space-fallback" aria-hidden="true"><span className="fallback-planet coral" /><span className="fallback-planet lavender" /><span className="fallback-planet mint" /><span className="fallback-orbit one" /><span className="fallback-orbit two" /><span className="fallback-stars">✦ · ✧ · ★ · ✦ · ✧</span></div>}
       <div className="space-atmosphere" aria-hidden="true" />
 
-      {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("profile")} onGuide={() => setShowGuide(true)} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
-      {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => setScreen("menu")} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
+      {screen === "welcome" && <WelcomeScreen onStart={() => { playSound("launch"); setScreen("profile"); }} onGuide={() => { playSound("tap"); setShowGuide(true); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} soundEnabled={soundEnabled} onSoundToggle={toggleSound} />}
+      {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => { playSound("launch"); setScreen("menu"); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "summary" && <section ref={summaryRef} className="summary-screen" aria-label="Tổng kết lượt chơi">

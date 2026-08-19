@@ -1,4 +1,4 @@
-/** Design philosophy: the route is a single immersive game frame with no extra app chrome. */
+/** Design philosophy: the route is a single immersive game frame with no extra app chrome and child-safe optional sound. */
 
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,4 +20,3 @@ function App() {
 }
 
 export default App;
-

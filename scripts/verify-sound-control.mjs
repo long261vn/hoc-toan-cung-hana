@@ -1,0 +1,35 @@
+const debugPort = process.env.CDP_PORT ?? "9222";
+const previewUrl = "http://localhost:3000/?lang=en";
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const targets = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then((response) => response.json());
+const target = targets.find((item) => item.type === "page");
+if (!target?.webSocketDebuggerUrl) throw new Error("Không tìm thấy tab Chromium để kiểm thử âm thanh.");
+const socket = new WebSocket(target.webSocketDebuggerUrl);
+await new Promise((resolve, reject) => { socket.addEventListener("open", resolve, { once: true }); socket.addEventListener("error", reject, { once: true }); });
+let commandId = 0;
+const pending = new Map();
+socket.addEventListener("message", ({ data }) => { const message = JSON.parse(data); const request = pending.get(message.id); if (!request) return; pending.delete(message.id); message.error ? request.reject(new Error(message.error.message)) : request.resolve(message.result); });
+const command = (method, params = {}) => new Promise((resolve, reject) => { const id = ++commandId; pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
+const evaluate = async (expression) => (await command("Runtime.evaluate", { expression, returnByValue: true })).result?.value;
+
+try {
+  await command("Page.enable");
+  await command("Page.addScriptToEvaluateOnNewDocument", { source: `(() => { window.__hanaAudioPlayCalls = 0; const nativePlay = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function(...args) { window.__hanaAudioPlayCalls += 1; return nativePlay.apply(this, args); }; })()` });
+  await command("Page.navigate", { url: previewUrl });
+  await sleep(800);
+  const initial = await evaluate(`(() => { localStorage.setItem("hana-sound-enabled", "true"); return document.querySelector(".sound-control")?.getAttribute("aria-pressed"); })()`);
+  if (initial !== "true") throw new Error(`Nút âm thanh không ở trạng thái bật ban đầu: ${initial}`);
+  await evaluate(`document.querySelector(".sound-control")?.click()`);
+  await sleep(120);
+  const muted = await evaluate(`({ pressed: document.querySelector(".sound-control")?.getAttribute("aria-pressed"), stored: localStorage.getItem("hana-sound-enabled") })`);
+  if (muted.pressed !== "false" || muted.stored !== "false") throw new Error(`Không tắt/lưu được âm thanh: ${JSON.stringify(muted)}`);
+  await evaluate(`document.querySelector(".sound-control")?.click()`);
+  await sleep(120);
+  const enabled = await evaluate(`({ pressed: document.querySelector(".sound-control")?.getAttribute("aria-pressed"), stored: localStorage.getItem("hana-sound-enabled"), audioPresent: Boolean(document.querySelector("audio[data-hana-background-music]")), requested: document.querySelector("audio[data-hana-background-music]")?.dataset.hanaPlaybackRequested })`);
+  if (enabled.pressed !== "true" || enabled.stored !== "true") throw new Error(`Không bật/lưu lại được âm thanh: ${JSON.stringify(enabled)}`);
+  await evaluate(`window.__hanaAudioPlayCalls = 0; document.querySelector(".welcome-primary")?.click()`);
+  await sleep(180);
+  const playback = await evaluate(`({ playCalls: window.__hanaAudioPlayCalls, requested: document.querySelector("audio[data-hana-background-music]")?.dataset.hanaPlaybackRequested })`);
+  if (playback.requested !== "true") throw new Error(`Nhạc nền chưa được yêu cầu phát sau thao tác Bắt đầu: ${JSON.stringify({ enabled, playback })}`);
+  console.log(JSON.stringify({ initial, muted, enabled, playback, status: "sound control valid" }));
+} finally { socket.close(); }
