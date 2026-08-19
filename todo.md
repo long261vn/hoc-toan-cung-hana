@@ -62,6 +62,14 @@
 - [x] Kiểm thử PNG đầu ra so với màn tổng kết trên máy tính và điện thoại, bao gồm tên người chơi, số liệu và phần thưởng.
 - [x] Dựng bản phát hành, lưu checkpoint và bàn giao bản sửa lỗi.
 
+## Chuyển đổi Tiếng Việt và English
+
+- [x] Rà soát chuỗi giao diện, nội dung bài tập, lời dẫn Hana, phần thưởng và ảnh kỷ niệm cần hỗ trợ song ngữ.
+- [x] Tạo trạng thái ngôn ngữ, bộ từ điển và nút Việt/EN có thể sử dụng tại mọi màn hình.
+- [x] Dịch nhất quán các màn chào mừng, hồ sơ, menu, chọn dạng bài, màn chơi, bảng điểm, hướng dẫn, tổng kết và phản hồi học tập.
+- [x] Kiểm thử đổi ngôn ngữ khi đang ở từng màn và trong lúc làm bài trên máy tính/điện thoại.
+- [x] Dựng bản phát hành, lưu checkpoint và bàn giao phiên bản song ngữ.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.

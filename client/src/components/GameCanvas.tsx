@@ -39,6 +39,99 @@ const ASSETS = {
 
 type AppScreen = "welcome" | "profile" | "menu" | "format" | "game" | "summary";
 type ActivityId = "add" | "subtract" | "multiply" | "divide" | "tables" | "test";
+type Language = "vi" | "en";
+
+const textOrigins = new WeakMap<Text, string>();
+const englishText: Record<string, string> = {
+  "Hướng dẫn": "Guide", "Bắt đầu": "Start", "Xem cách chơi": "How to play", "Cùng Hana": "Learn with Hana", "ôn toán học": "math together",
+  "Cộng": "Addition", "Trừ": "Subtraction", "Nhân": "Multiplication", "Chia": "Division", "Trở về": "Back", "Chọn nhiệm vụ": "Choose a mission",
+  "Bạn muốn chinh phục điều gì?": "What would you like to explore?", "Chạm vào một thẻ để bắt đầu nhé.": "Tap a card to begin.",
+  "Chọn dạng bài": "Choose practice type", "Bạn muốn học thế nào?": "How would you like to learn?", "Bài bình thường": "Standard practice", "Tìm thành phần": "Find the missing number", "Cả hai": "Both types",
+  "Đổi nhiệm vụ": "Change mission", "Kết thúc lượt": "End session", "Điểm hiện tại": "Current points",
+  "ĐIỂM HIỆN TẠI": "CURRENT POINTS", "Bình thường": "Standard", "ROBOT HANA SẴN SÀNG": "ROBOT HANA IS READY", "ROBOT HANA CHỜ BẠN": "ROBOT HANA IS WAITING",
+  "Đúng": "Correct", "Sai": "Incorrect", "Điểm": "Points", "Thời gian": "Time", "Câu": "Question", "Xem tổng kết": "View summary",
+  "Nhiệm vụ tiếp": "Next mission", "Thử lại": "Try again", "Xem kết quả": "View results", "Chọn Tất Cả": "Select all", "Bỏ Chọn Tất Cả": "Clear all",
+  "Bảng nhân": "Multiplication tables", "Bảng chia": "Division tables", "Cả nhân và chia": "Both multiplication & division",
+  "Chọn một hoặc nhiều bảng": "Choose one or more tables", "Chọn bảng để luyện nhé": "Choose a table to practise", "Quay lại chơi tiếp": "Keep playing",
+  "Lưu ảnh kỷ niệm": "Save souvenir image", "Chơi lượt mới": "Start a new session", "PHẦN THƯỞNG CAO NHẤT": "TOP REWARD", "Chưa mở": "Locked",
+  "Hãy trả lời đúng để nhận quà đầu tiên nhé.": "Answer correctly to unlock your first reward!", "Mình đã hiểu": "Got it!", "Đang tạo ảnh...": "Creating image...",
+  "Tên phi hành gia": "Astronaut name", "Cùng Hana bắt đầu": "Start with Hana", "Hana nên gọi bạn là gì nhỉ?": "What should Hana call you?",
+  "Hana nên gọi bạn": "What should Hana call", "là gì nhỉ?": "you?", "Lượt học của": "Learning session for", "thật đáng tự hào!": "You should be proud!",
+  "HANA CHÚC MỪNG": "HANA CONGRATULATES", "ROBOT HANA CHÚC MỪNG": "ROBOT HANA CONGRATULATES",
+  "Chưa chọn bảng": "No table selected", "Đang luyện bảng": "Practising table", "bảng đã chọn": "tables selected", "8 câu thử thách": "8-question challenge",
+  "Hoàn thành kiểm tra!": "Test complete!", "Bạn đã hoàn thành 8 nhiệm vụ!": "You completed 8 missions!", "Bay thật giỏi!": "You flew brilliantly!", "Cố gắng rất đáng khen!": "Great effort!",
+  "TÌM THÀNH PHẦN CHƯA BIẾT": "FIND THE MISSING NUMBER", "NHIỆM VỤ TOÁN HỌC": "MATH MISSION", "NHIỆM VỤ BẢNG NHÂN VÀ CHIA": "TIMES-TABLE MISSION",
+  "Tìm số còn thiếu để hoàn thành phép tính.": "Find the missing number to complete the equation.", "Chọn đáp án đúng để nhận điểm thưởng.": "Choose the correct answer to earn points.",
+  "CHÀO MỪNG PHI HÀNH GIA NHỎ": "WELCOME, YOUNG ASTRONAUT", "Cùng Robot Hana chinh phục các hoạt động Cộng, Trừ, Nhân và Chia qua những nhiệm vụ thật vui.": "Join Robot Hana for fun addition, subtraction, multiplication and division missions.",
+  "PHÉP TÍNH CỘNG": "ADDITION", "PHÉP TÍNH TRỪ": "SUBTRACTION", "PHÉP TÍNH NHÂN": "MULTIPLICATION", "PHÉP TÍNH CHIA": "DIVISION", "BẢNG NHÂN VÀ CHIA": "MULTIPLICATION & DIVISION TABLES", "8 CÂU THỬ THÁCH": "8-QUESTION CHALLENGE",
+  "Gộp các nhóm số và tìm tổng thật nhanh.": "Combine number groups and find the total.", "Tìm phần còn lại với những nhiệm vụ ngắn gọn.": "Find what remains in short missions.", "Xếp các nhóm bằng nhau để nhân thật tự tin.": "Multiply equal groups with confidence.", "Chia đều các nhóm số theo nhiệm vụ.": "Share groups equally in each mission.", "Chọn bảng nhân, bảng chia hoặc cả nhân và chia.": "Choose multiplication tables, division tables, or both.", "Hoàn thành tám nhiệm vụ để nhận thật nhiều sao.": "Complete eight missions to earn lots of stars.",
+  "Robot Hana:": "Robot Hana:", "bạn làm được mà!": "you can do it!", "HÀNH TINH NHÂN": "MULTIPLICATION PLANET", "HÀNH TINH CỘNG": "ADDITION PLANET", "HÀNH TINH TRỪ": "SUBTRACTION PLANET", "HÀNH TINH CHIA": "DIVISION PLANET",
+  "Làm quen": "Getting started", "Tự tin": "Confident", "Thám hiểm": "Explorer", "Khởi động bảng nhân quen thuộc.": "Start with a familiar multiplication fact.",
+};
+
+function localizeVisibleText(language: Language) {
+  const root = document.querySelector(".game-shell");
+  if (!root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes: Text[] = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+  nodes.forEach((node) => {
+    const original = textOrigins.get(node) ?? node.nodeValue ?? "";
+    if (!textOrigins.has(node)) textOrigins.set(node, original);
+    if (language === "vi") { node.nodeValue = original; return; }
+    const leading = original.match(/^\s*/)?.[0] ?? "";
+    const trailing = original.match(/\s*$/)?.[0] ?? "";
+    const core = original.trim();
+    let translated = englishText[core] ?? core;
+    translated = translated
+      .replace(/^PHI HÀNH GIA:/, "ASTRONAUT:")
+      .replace(/^ROBOT HANA CHÚC MỪNG /, "ROBOT HANA CONGRATULATES ")
+      .replace(/^Lượt học của (.+)$/, "Learning session for $1")
+      .replace(/^thật đáng tự hào!$/, "You should be proud!")
+      .replace(/^Cấp (\d+)\/(\d+)$/, "Level $1/$2")
+      .replace(/^Cấp (\d+): /, "Level $1: ")
+      .replace(/^Còn (\d+) điểm để nhận /, "$1 points until ")
+      .replace(/^Còn (\d+) điểm để mở /, "$1 points to unlock ")
+      .replace(/^Còn (\d+) điểm nhận /, "$1 points until ")
+      .replace(/\+10 điểm/g, "+10 points")
+      .replace(/giảm 2 điểm/g, "lose 2 points")
+      .replace(/^(.+), dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana\.$/, "$1, whether right or wrong, you kept going through a session with Hana.")
+      .replace(/^Hana đã cất các huy hiệu của (.+) vào khoang phi thuyền!$/, "Hana has stored $1's badges in the spaceship cabin!")
+      .replace(/^Robot Hana: “(.+), bạn làm được mà!”$/, "Robot Hana: “$1, you can do it!”")
+      .replace(/^Chưa sao đâu, lượt này giảm 2 điểm\. /, "That is okay. This try loses 2 points. ");
+    node.nodeValue = `${leading}${translated}${trailing}`;
+  });
+}
+
+function translateLearningText(text: string, language: Language) {
+  if (language === "vi") return text;
+  const direct: Record<string, string> = {
+    "Khởi động với một phép cộng nhỏ.": "Warm up with a small addition.", "Gộp hai nhóm số lại với nhau.": "Combine two number groups.", "Hoàn thành phép cộng nhiều chữ số.": "Complete a multi-digit addition.",
+    "Gỡ bớt đá vũ trụ khỏi đường bay.": "Clear space rocks from the flight path.", "Tìm số còn lại sau phép trừ.": "Find what remains after subtraction.", "Mở lối đi qua vành đai thiên thạch.": "Open a path through the asteroid belt.",
+    "Khởi động bảng nhân quen thuộc.": "Start with a familiar multiplication fact.", "Xếp các nhóm bằng nhau để nhân.": "Multiply equal groups.", "Nhân công suất động cơ phi thuyền.": "Multiply the spaceship engine power.",
+    "Chia đều các nhóm số.": "Share number groups equally.", "Chia đều nhiên liệu cho các trạm sao.": "Share fuel equally among star stations.", "Tìm thương của phép chia.": "Find the quotient.",
+    "Bạn hãy đếm thêm từng bước từ số lớn hơn.": "Count on step by step from the larger number.", "Bạn hãy đặt tính thẳng cột rồi cộng từ hàng đơn vị.": "Line up the numbers and add from the ones place.", "Bạn hãy cộng từng hàng và nhớ nếu cần.": "Add each place value and regroup when needed.",
+    "Bạn hãy đếm lùi từ số đầu tiên.": "Count backwards from the first number.", "Bạn hãy đặt tính thẳng cột rồi trừ từ hàng đơn vị.": "Line up the numbers and subtract from the ones place.", "Nếu không đủ để trừ, bạn hãy đổi 1 chục hoặc 1 trăm nhé.": "Regroup a ten or hundred when needed.",
+    "Bạn có thể cộng lặp lại hoặc dùng bảng nhân.": "Use repeated addition or a times table.", "Bạn hãy nhân lần lượt với hàng đơn vị rồi hàng chục.": "Multiply the ones place, then the tens place.", "Bạn hãy đổi phép chia thành phép nhân để kiểm tra đáp án.": "Turn division into multiplication to check your answer.",
+    "Số còn thiếu chính là kết quả phép chia.": "The missing number is the division answer.", "Số điền vào dấu hỏi là thương của phép chia.": "The number in the question mark is the quotient.",
+    "Sau đó chọn kết quả vừa tìm được.": "Then choose the answer you found.", "Chọn số cuối cùng bạn đếm được.": "Choose the last number you counted.",
+  };
+  if (direct[text]) return direct[text];
+  return text
+    .replace(/^Bạn hãy nhớ lại bảng nhân (\d+) nhé\.$/, "Remember the $1 times table.")
+    .replace(/^Bạn hãy dùng bảng nhân (\d+) để tìm kết quả chia\.$/, "Use the $1 times table to solve the division.")
+    .replace(/^Bạn hãy nghĩ: (\d+) nhân mấy thì được (\d+)\?$/, "Think: $1 times what equals $2?")
+    .replace(/^Có (\d+) nhóm bằng nhau, mỗi nhóm có (\d+)\.$/, "There are $1 equal groups with $2 in each group.")
+    .replace(/^Bạn có thể cộng (\d+) lặp lại (\d+) lần\.$/, "You can add $1, $2 times.")
+    .replace(/^Hoặc dùng bảng nhân (\d+) để tìm kết quả\.$/, "Or use the $1 times table to find the answer.")
+    .replace(/^Bắt đầu từ (\d+)\.$/, "Start from $1.")
+    .replace(/^Đếm thêm (\d+) bước: mỗi bước tăng thêm 1\.$/, "Count on $1 steps, adding 1 each time.")
+    .replace(/^Đếm lùi (\d+) bước, mỗi bước giảm 1\.$/, "Count back $1 steps, taking away 1 each time.")
+    .replace(/^Đổi (\d+) ÷ (\d+) thành phép nhân (\d+) × \? = (\d+)\.$/, "Turn $1 ÷ $2 into $3 × ? = $4.")
+    .replace(/^Đổi (\d+) ÷ (\d+) thành (\d+) × \? = (\d+)\.$/, "Turn $1 ÷ $2 into $3 × ? = $4.")
+    .replace(/^Dùng bảng nhân (\d+) để tìm số còn thiếu\.$/, "Use the $1 times table to find the missing number.")
+    .replace(/^Khởi động bảng (nhân|chia) (\d+)\.$/, "Start the $2 $1 table.");
+}
 
 const activityMeta: Record<ActivityId, { label: string; kicker: string; description: string }> = {
   add: { label: "Cộng", kicker: "PHÉP TÍNH CỘNG", description: "Gộp các nhóm số và tìm tổng thật nhanh." },
@@ -225,7 +318,10 @@ export default function GameCanvas() {
   const [webglUnavailable, setWebglUnavailable] = useState(false);
   const [imageSaveStatus, setImageSaveStatus] = useState("");
   const [isSavingImage, setIsSavingImage] = useState(false);
-  const displayName = playerName.trim() || "Phi hành gia nhỏ";
+  const [language, setLanguage] = useState<Language>(() => demoParams.get("lang") === "en" || window.localStorage.getItem("hana-language") === "en" ? "en" : "vi");
+  const displayName = playerName.trim() || (language === "en" ? "Young astronaut" : "Phi hành gia nhỏ");
+  const rewardLabel = (reward: (typeof sessionRewards)[number]) => language === "en" ? `Level ${reward.level} reward` : reward.label;
+  const rewardDetail = (reward: (typeof sessionRewards)[number]) => language === "en" ? "A new treasure for your space collection." : reward.detail;
 
   const generatePracticeQuestion = useCallback(
     (nextOperation: Operation, nextDifficulty: Difficulty, nextFormat = practiceFormat) => {
@@ -533,6 +629,13 @@ export default function GameCanvas() {
   const nextReward = sessionRewards.find((reward) => sessionPoints < reward.threshold);
   const pointsUntilReward = nextReward ? nextReward.threshold - sessionPoints : 0;
 
+  useEffect(() => {
+    window.localStorage.setItem("hana-language", language);
+    document.documentElement.lang = language;
+    const frame = window.requestAnimationFrame(() => localizeVisibleText(language));
+    return () => window.cancelAnimationFrame(frame);
+  }, [language, screen, showGuide, showScorePanel, feedback, question, tableKind, selectedTables.length, difficulty, sessionPoints, correctCount, wrongCount, elapsedSeconds, playerName, isSavingImage, imageSaveStatus]);
+
   const saveSessionImage = async () => {
     if (isSavingImage) return;
     setIsSavingImage(true);
@@ -766,12 +869,12 @@ export default function GameCanvas() {
       context.fillText(highestReward?.symbol ?? "✦", 150, 672);
       context.fillStyle = "#2b2e69";
       context.font = "800 30px Baloo 2, sans-serif";
-      const rewardText = highestReward ? `${highestReward.symbol} Cấp ${highestReward.level}: ${highestReward.label}` : "Hãy trả lời đúng để nhận quà đầu tiên nhé!";
+      const rewardText = highestReward ? `${highestReward.symbol} ${language === "en" ? "Level" : "Cấp"} ${highestReward.level}: ${rewardLabel(highestReward)}` : language === "en" ? "Answer correctly to unlock your first reward!" : "Hãy trả lời đúng để nhận quà đầu tiên nhé!";
       context.textAlign = "left";
       drawWrappedText(context, rewardText, 220, 656, 840, 38);
       context.fillStyle = "#756d8d";
       context.font = "700 18px Be Vietnam Pro, sans-serif";
-      drawWrappedText(context, highestReward?.detail ?? "Cùng Hana làm thêm vài phép tính để mở phần thưởng đầu tiên nhé!", 220, 704, 820, 27);
+      drawWrappedText(context, highestReward ? rewardDetail(highestReward) : language === "en" ? "Solve a few more questions with Hana to unlock your first reward!" : "Cùng Hana làm thêm vài phép tính để mở phần thưởng đầu tiên nhé!", 220, 704, 820, 27);
 
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob((imageBlob) => imageBlob ? resolve(imageBlob) : reject(new Error("Không thể tạo tệp PNG")), "image/png");
@@ -795,6 +898,9 @@ export default function GameCanvas() {
       <canvas ref={canvasRef} className={webglUnavailable ? "game-canvas is-hidden" : "game-canvas"} aria-label="Không gian trò chơi toán học" />
       {webglUnavailable && <div className="space-fallback" aria-hidden="true"><span className="fallback-planet coral" /><span className="fallback-planet lavender" /><span className="fallback-planet mint" /><span className="fallback-orbit one" /><span className="fallback-orbit two" /><span className="fallback-stars">✦ · ✧ · ★ · ✦ · ✧</span></div>}
       <div className="space-atmosphere" aria-hidden="true" />
+      <button className="language-toggle" type="button" onClick={() => setLanguage((current) => current === "vi" ? "en" : "vi")} aria-label={language === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}>
+        <span>◎</span><b>{language === "vi" ? "EN" : "VI"}</b>
+      </button>
 
       {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("profile")} onGuide={() => setShowGuide(true)} />}
       {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => setScreen("menu")} />}
@@ -807,8 +913,8 @@ export default function GameCanvas() {
         <div className="summary-robot"><div className="robot-fallback"><span /><span /><i /></div></div>
         <p className="summary-kicker">ROBOT HANA CHÚC MỪNG {displayName.toUpperCase()}</p>
         <h2>Lượt học của {displayName}<br /><em>thật đáng tự hào!</em></h2>
-        <p className="summary-intro">{displayName}, dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.</p>
-        <p className="summary-hana-line">Hana đã cất các huy hiệu của {displayName} vào khoang phi thuyền!</p>
+        <p className="summary-intro">{language === "en" ? `${displayName}, whether right or wrong, you kept going through a session with Hana.` : `${displayName}, dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.`}</p>
+        <p className="summary-hana-line">{language === "en" ? `Hana has stored ${displayName}'s badges in the spaceship cabin!` : `Hana đã cất các huy hiệu của ${displayName} vào khoang phi thuyền!`}</p>
         <div className="summary-stats">
           <div><span>Điểm</span><strong>{sessionPoints}</strong></div>
           <div><span>Đúng</span><strong>{correctCount}</strong></div>
@@ -817,7 +923,7 @@ export default function GameCanvas() {
         </div>
         <section className="reward-board highest-reward-board" aria-label="Phần thưởng cao nhất trong lượt chơi">
           <div className="reward-board-heading"><span>PHẦN THƯỞNG CAO NHẤT</span><strong>{earnedRewards.length ? `Cấp ${highestReward?.level}/${sessionRewards.length}` : "Chưa mở"}</strong></div>
-          {highestReward ? <div className="highest-reward"><b>{highestReward.symbol}</b><span><small>HANA CHÚC MỪNG {displayName.toUpperCase()}</small><strong>{highestReward.label}</strong><em>{highestReward.detail}</em></span></div> : <p className="reward-empty">{displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
+          {highestReward ? <div className="highest-reward"><b>{highestReward.symbol}</b><span><small>HANA CHÚC MỪNG {displayName.toUpperCase()}</small><strong>{rewardLabel(highestReward)}</strong><em>{rewardDetail(highestReward)}</em></span></div> : <p className="reward-empty">{displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
         </section>
         <div className="summary-actions">
           <button type="button" className="save-memory" onClick={saveSessionImage} disabled={isSavingImage}>{isSavingImage ? "Đang tạo ảnh..." : "Lưu ảnh kỷ niệm"} <Sparkles size={18} /></button>
@@ -846,7 +952,7 @@ export default function GameCanvas() {
         </div>
         <button className="reward-progress" type="button" onClick={() => setShowScorePanel(true)} aria-label="Xem điểm hiện tại và tiến độ nhận quà">
           <span className="reward-progress-icon">{nextReward?.symbol ?? "♛"}</span>
-          <span><small>ĐIỂM HIỆN TẠI</small><strong>{sessionPoints}</strong><em>{nextReward ? `Còn ${pointsUntilReward} điểm nhận ${nextReward.label}` : "Đã mở đủ phần thưởng!"}</em></span>
+          <span><small>ĐIỂM HIỆN TẠI</small><strong>{sessionPoints}</strong><em>{nextReward ? `Còn ${pointsUntilReward} điểm nhận ${rewardLabel(nextReward)}` : "Đã mở đủ phần thưởng!"}</em></span>
         </button>
       </header>
 
@@ -868,7 +974,7 @@ export default function GameCanvas() {
 
       <aside className="robot-guide" aria-label="Robot Hana hướng dẫn">
         <div className="robot-fallback" aria-hidden="true"><span /><span /><i /></div>
-        <div className="robot-note"><span className="robot-note-dot" />Robot Hana: “{displayName}, bạn làm được mà!”</div>
+        <div className="robot-note"><span className="robot-note-dot" />{language === "en" ? `Robot Hana: “${displayName}, you can do it!”` : `Robot Hana: “${displayName}, bạn làm được mà!”`}</div>
       </aside>
 
       <section className="mission-control" aria-label="Bảng điều khiển bài tập">
@@ -878,7 +984,7 @@ export default function GameCanvas() {
           </div>
           <div className="console-title">
             <p>{activeActivity.label} <span>•</span> {isTableMode ? tableKindMeta[tableKind].subtitle : mode === "test" ? "8 câu thử thách" : practiceFormatMeta[practiceFormat].shortLabel}</p>
-            <h3>{testComplete ? "Hoàn thành kiểm tra!" : isTableMode && !hasSelectedTables ? "Hãy chọn ít nhất một bảng để bắt đầu." : question.mission}</h3>
+            <h3>{testComplete ? "Hoàn thành kiểm tra!" : isTableMode && !hasSelectedTables ? "Hãy chọn ít nhất một bảng để bắt đầu." : translateLearningText(question.mission, language)}</h3>
           </div>
           <div className="mission-counter">
             <span>{mode === "test" ? "Câu" : "Điểm hiện tại"}</span>
@@ -972,9 +1078,9 @@ export default function GameCanvas() {
             </div>
             {feedback !== "idle" && (
               <div className={feedback === "correct" ? "feedback-banner is-correct" : "feedback-banner is-wrong"}>
-                {feedback === "correct" ? <div><Check size={18} /><span>Đúng rồi, {displayName}! +10 điểm. {nextReward ? `Còn ${pointsUntilReward} điểm để nhận ${nextReward.label}.` : "Bạn đã mở đủ phần thưởng!"}</span></div> : <div className="hana-hint">
+                {feedback === "correct" ? <div><Check size={18} /><span>Đúng rồi, {displayName}! +10 điểm. {nextReward ? `Còn ${pointsUntilReward} điểm để nhận ${rewardLabel(nextReward)}.` : "Bạn đã mở đủ phần thưởng!"}</span></div> : <div className="hana-hint">
                   <div className="hana-hint-robot" aria-label="Robot Hana đang gợi ý"><span /><span /><i /></div>
-                  <div className="hana-hint-copy"><strong>Robot Hana gợi ý cho {displayName}:</strong><span>Chưa sao đâu, lượt này giảm 2 điểm. {question.hint}</span><ol>{question.hintSteps.map((step) => <li key={step}>{step}</li>)}</ol></div>
+                  <div className="hana-hint-copy"><strong>Robot Hana gợi ý cho {displayName}:</strong><span>Chưa sao đâu, lượt này giảm 2 điểm. {translateLearningText(question.hint, language)}</span><ol>{question.hintSteps.map((step) => <li key={step}>{translateLearningText(step, language)}</li>)}</ol></div>
                 </div>}
                 <button type="button" onClick={continueMission}>
                   {feedback === "correct" ? (mode === "test" && testStep + 1 >= 8 ? "Xem kết quả" : "Nhiệm vụ tiếp") : "Thử lại"}
@@ -1026,7 +1132,7 @@ export default function GameCanvas() {
             <button className="guide-close" type="button" onClick={() => setShowScorePanel(false)} aria-label="Đóng bảng điểm"><X size={19} /></button>
             <div className="score-card-heading">
               <span className="score-card-symbol">{nextReward?.symbol ?? "♛"}</span>
-              <div><p className="eyebrow">TIẾN ĐỘ CỦA {displayName.toUpperCase()}</p><h2>Điểm hiện tại</h2><p>{nextReward ? `Còn ${pointsUntilReward} điểm để mở ${nextReward.label}.` : "Bạn đã mở trọn bộ 30 phần thưởng rồi!"}</p></div>
+              <div><p className="eyebrow">TIẾN ĐỘ CỦA {displayName.toUpperCase()}</p><h2>Điểm hiện tại</h2><p>{nextReward ? `Còn ${pointsUntilReward} điểm để mở ${rewardLabel(nextReward)}.` : "Bạn đã mở trọn bộ 100 phần thưởng rồi!"}</p></div>
             </div>
             <div className="score-stats">
               <div><span>Điểm</span><strong>{sessionPoints}</strong></div>
@@ -1036,7 +1142,7 @@ export default function GameCanvas() {
             </div>
             <section className="score-reward-board" aria-label="Phần thưởng đã mở">
               <div><span>PHẦN THƯỞNG GẦN NHẤT</span><strong>{earnedRewards.length}/{sessionRewards.length}</strong></div>
-              {earnedRewards.length ? <div className="score-reward-list">{earnedRewards.slice(-6).map((reward) => <span key={reward.id}><b>{reward.symbol}</b><em>Cấp {reward.level}</em><small>{reward.label}</small></span>)}</div> : <p>Hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
+              {earnedRewards.length ? <div className="score-reward-list">{earnedRewards.slice(-6).map((reward) => <span key={reward.id}><b>{reward.symbol}</b><em>Cấp {reward.level}</em><small>{rewardLabel(reward)}</small></span>)}</div> : <p>Hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
             </section>
             <button type="button" className="primary-action score-continue" onClick={() => setShowScorePanel(false)}>Quay lại chơi tiếp <Rocket size={18} /></button>
           </section>
