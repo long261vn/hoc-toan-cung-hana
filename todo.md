@@ -55,6 +55,13 @@
 - [x] Sửa nội dung tiêu đề để tên người chơi luôn hiển thị đúng trong ảnh tải xuống.
 - [x] Tạo ảnh PNG thực tế, kiểm tra trực quan và xác nhận tải tệp trước khi lưu checkpoint.
 
+## Xuất ảnh giống màn tổng kết
+
+- [x] Rà soát cây giao diện tổng kết, nền WebGL/2D và các yếu tố CSS cần xuất cùng ảnh kỷ niệm.
+- [x] Tích hợp cơ chế chụp thành phần tổng kết để PNG phản ánh đúng bố cục đang hiển thị, với phương án dự phòng khi không thể chụp canvas WebGL.
+- [x] Kiểm thử PNG đầu ra so với màn tổng kết trên máy tính và điện thoại, bao gồm tên người chơi, số liệu và phần thưởng.
+- [x] Dựng bản phát hành, lưu checkpoint và bàn giao bản sửa lỗi.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.

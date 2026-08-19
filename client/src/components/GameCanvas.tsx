@@ -5,6 +5,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Engine } from "@babylonjs/core/Engines/engine";
+import html2canvas from "html2canvas";
 import {
   Check,
   ChevronRight,
@@ -168,6 +169,7 @@ function pickTestOperation() {
 
 export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const summaryRef = useRef<HTMLElement>(null);
   const startedRef = useRef(false);
   const handleRef = useRef<GameHandle | null>(null);
   const demoParams = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -535,6 +537,35 @@ export default function GameCanvas() {
     if (isSavingImage) return;
     setIsSavingImage(true);
     setImageSaveStatus("Hana đang tạo ảnh kỷ niệm...");
+    const downloadSouvenirBlob = async (blob: Blob) => {
+      const fileName = `hanh-trinh-hana-${Date.now()}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+      const canUseNativeShare = window.matchMedia("(pointer: coarse)").matches && typeof navigator.share === "function" && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] });
+
+      if (canUseNativeShare) {
+        try {
+          await navigator.share({ title: "Ảnh kỷ niệm cùng Robot Hana", text: `Lượt học của ${displayName}`, files: [file] });
+          setImageSaveStatus("Bạn có thể chọn Lưu ảnh trong bảng chia sẻ nhé!");
+        } catch (error) {
+          if ((error as DOMException).name === "AbortError") setImageSaveStatus("Bạn chưa lưu ảnh. Bấm nút để thử lại nhé.");
+          else throw error;
+        }
+        return;
+      }
+
+      const imageUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = imageUrl;
+      link.download = fileName;
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      window.setTimeout(() => {
+        link.remove();
+        URL.revokeObjectURL(imageUrl);
+      }, 1000);
+      setImageSaveStatus("Ảnh đã được gửi vào mục Tải xuống của thiết bị.");
+    };
     const drawRoundedRectangle = (context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
       const corner = Math.min(radius, width / 2, height / 2);
       context.beginPath();
@@ -573,6 +604,27 @@ export default function GameCanvas() {
     }
 
     try {
+      if (summaryRef.current) {
+        try {
+          const summaryImage = await html2canvas(summaryRef.current, {
+            allowTaint: false,
+            backgroundColor: null,
+            logging: false,
+            scale: Math.min(window.devicePixelRatio || 1, 2),
+            useCORS: true,
+            windowHeight: window.innerHeight,
+            windowWidth: window.innerWidth,
+          });
+          const summaryBlob = await new Promise<Blob>((resolve, reject) => {
+            summaryImage.toBlob((imageBlob) => imageBlob ? resolve(imageBlob) : reject(new Error("Không thể tạo ảnh màn tổng kết")), "image/png");
+          });
+          await downloadSouvenirBlob(summaryBlob);
+          return;
+        } catch (captureError) {
+          console.warn("Không thể chụp toàn bộ màn tổng kết, chuyển sang thẻ dự phòng", captureError);
+          setImageSaveStatus("Hana đang dùng thẻ kỷ niệm dự phòng...");
+        }
+      }
       await document.fonts?.ready;
       const drawOrbit = (x: number, y: number, radiusX: number, radiusY: number, rotation: number, color: string) => {
         context.save();
@@ -724,32 +776,7 @@ export default function GameCanvas() {
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob((imageBlob) => imageBlob ? resolve(imageBlob) : reject(new Error("Không thể tạo tệp PNG")), "image/png");
       });
-      const fileName = `hanh-trinh-hana-${Date.now()}.png`;
-      const file = new File([blob], fileName, { type: "image/png" });
-      const canUseNativeShare = window.matchMedia("(pointer: coarse)").matches && typeof navigator.share === "function" && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] });
-
-      if (canUseNativeShare) {
-        try {
-          await navigator.share({ title: "Ảnh kỷ niệm cùng Robot Hana", text: `Lượt học của ${displayName}`, files: [file] });
-          setImageSaveStatus("Bạn có thể chọn Lưu ảnh trong bảng chia sẻ nhé!");
-        } catch (error) {
-          if ((error as DOMException).name === "AbortError") setImageSaveStatus("Bạn chưa lưu ảnh. Bấm nút để thử lại nhé.");
-          else throw error;
-        }
-      } else {
-        const imageUrl = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = imageUrl;
-        link.download = fileName;
-        link.style.display = "none";
-        document.body.appendChild(link);
-        link.click();
-        window.setTimeout(() => {
-          link.remove();
-          URL.revokeObjectURL(imageUrl);
-        }, 1000);
-        setImageSaveStatus("Ảnh đã được gửi vào mục Tải xuống của thiết bị.");
-      }
+      await downloadSouvenirBlob(blob);
     } catch (error) {
       console.error("Không thể lưu ảnh kỷ niệm", error);
       setImageSaveStatus("Hana chưa thể lưu ảnh. Bạn hãy thử lại nhé.");
@@ -773,7 +800,7 @@ export default function GameCanvas() {
       {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => setScreen("menu")} />}
       {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} />}
       {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} />}
-      {screen === "summary" && <section className="summary-screen" aria-label="Tổng kết lượt chơi">
+      {screen === "summary" && <section ref={summaryRef} className="summary-screen" aria-label="Tổng kết lượt chơi">
         <div className="summary-brand mini-brand" aria-label="Phi Hành Tinh Phép Tính"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
         <div className="summary-orbit" aria-hidden="true" />
         <div className="summary-stars" aria-hidden="true"><span>✦</span><span>★</span><span>✦</span></div>
