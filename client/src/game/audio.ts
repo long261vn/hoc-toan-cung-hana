@@ -9,6 +9,7 @@ const BACKGROUND_TRACK = "/manus-storage/hana-gentle-orbit-background_1ffb574e.m
 const STORAGE_KEY = "hana-sound-enabled";
 const MUSIC_VOLUME_STORAGE_KEY = "hana-music-volume";
 const EFFECTS_VOLUME_STORAGE_KEY = "hana-effects-volume";
+const AUDIO_SETTINGS_VERSION_KEY = "hana-audio-settings-version";
 const DEFAULT_MUSIC_VOLUME = 50;
 const DEFAULT_EFFECTS_VOLUME = 50;
 
@@ -30,6 +31,13 @@ export function getStoredSoundPreference() {
 
 function getStoredVolume(key: string, fallback: number) {
   if (typeof window === "undefined") return fallback;
+  // Earlier versions treated an absent key as 0 and then persisted that value.
+  // Reset that legacy state once so children can hear the new audio by default.
+  if (window.localStorage.getItem(AUDIO_SETTINGS_VERSION_KEY) !== "2") {
+    window.localStorage.setItem(MUSIC_VOLUME_STORAGE_KEY, String(DEFAULT_MUSIC_VOLUME));
+    window.localStorage.setItem(EFFECTS_VOLUME_STORAGE_KEY, String(DEFAULT_EFFECTS_VOLUME));
+    window.localStorage.setItem(AUDIO_SETTINGS_VERSION_KEY, "2");
+  }
   const rawValue = window.localStorage.getItem(key);
   if (rawValue === null) return fallback;
   const value = Number(rawValue);
@@ -50,6 +58,7 @@ export class HanaAudio {
   private enabled: boolean;
   private musicVolume: number;
   private effectsVolume: number;
+  private musicPrimed = false;
 
   constructor(initiallyEnabled: boolean, musicVolume = getStoredMusicVolume(), effectsVolume = getStoredEffectsVolume()) {
     this.enabled = initiallyEnabled;
@@ -82,20 +91,46 @@ export class HanaAudio {
     return this.music;
   }
 
+  /**
+   * Browsers permit a muted media element to begin buffering/playing before the
+   * first gesture. Later, activate() only needs to unmute it in the gesture flow.
+   */
+  prime() {
+    if (!this.enabled || this.musicPrimed) return;
+    const music = this.getMusic();
+    if (!music) return;
+    this.musicPrimed = true;
+    music.muted = true;
+    void music.play().catch(() => {
+      this.musicPrimed = false;
+      music.muted = false;
+    });
+  }
+
   activate() {
     if (!this.enabled) return;
     const context = this.getContext();
     if (context?.state === "suspended") void context.resume().catch(() => undefined);
     const music = this.getMusic();
     if (music) music.dataset.hanaPlaybackRequested = "true";
-    void music?.play().catch(() => undefined);
+    if (!music) return;
+    if (this.musicPrimed && !music.paused) {
+      music.muted = false;
+      return;
+    }
+    music.muted = false;
+    void music.play().catch(() => undefined);
   }
 
   setEnabled(nextEnabled: boolean) {
     this.enabled = nextEnabled;
     if (typeof window !== "undefined") window.localStorage.setItem(STORAGE_KEY, String(nextEnabled));
     const music = this.getMusic();
-    if (!nextEnabled) music?.pause();
+    if (!nextEnabled) {
+      music?.pause();
+      if (music) music.muted = false;
+      this.musicPrimed = false;
+    }
     else void this.activate();
   }
 
@@ -116,7 +151,17 @@ export class HanaAudio {
   play(effect: SoundEffect) {
     if (!this.enabled || this.effectsVolume === 0) return;
     const context = this.getContext();
-    if (!context || context.state !== "running") return;
+    if (!context) return;
+    if (context.state !== "running") {
+      void context.resume().then(() => {
+        if (context.state === "running") this.scheduleEffect(effect, context);
+      }).catch(() => undefined);
+      return;
+    }
+    this.scheduleEffect(effect, context);
+  }
+
+  private scheduleEffect(effect: SoundEffect, context: AudioContext) {
     const now = context.currentTime;
     soundPatterns[effect].forEach((tone) => {
       const oscillator = context.createOscillator();
@@ -136,6 +181,7 @@ export class HanaAudio {
     this.music?.pause();
     this.music?.remove();
     this.music = null;
+    this.musicPrimed = false;
     void this.context?.close();
     this.context = null;
   }

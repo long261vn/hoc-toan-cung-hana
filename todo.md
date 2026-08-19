@@ -150,3 +150,10 @@
 - [x] Kiểm tra và bảo đảm có hiệu ứng cho thao tác chọn, trả lời đúng và trả lời sai.
 - [x] Làm nổi bật rõ ràng nút Nhiệm vụ tiếp và Thử lại sau phản hồi đáp án.
 - [x] Kiểm thử điều khiển, âm thanh, giao diện desktop/mobile, TypeScript và build trước khi lưu checkpoint.
+
+## Khẩn cấp: Khắc phục không phát âm thanh
+
+- [x] Tái hiện trên trình duyệt, ghi nhận trạng thái phần tử nhạc, AudioContext và lỗi play/resume sau thao tác Bắt đầu.
+- [x] Sửa cơ chế khởi động nhạc nền và hiệu ứng để tương thích chính sách phát âm thanh của trình duyệt.
+- [x] Xác minh mức âm lượng cũ 0% được tự khôi phục thành 50%, đồng thời giữ luồng phát nhạc/hiệu ứng gắn với thao tác đầu tiên của người chơi.
+- [x] Kiểm tra TypeScript, build và lưu checkpoint sau khi âm thanh đã hoạt động.

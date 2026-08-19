@@ -392,7 +392,20 @@ export default function GameCanvas() {
   useEffect(() => {
     const audio = new HanaAudio(soundEnabled, musicVolume, effectsVolume);
     audioRef.current = audio;
+    audio.prime();
     return () => audio.dispose();
+  }, []);
+
+  useEffect(() => {
+    const unlockAudio = () => audioRef.current?.activate();
+    // Capture the very first trusted gesture before any screen transition so
+    // mobile browsers authorize media playback reliably.
+    window.addEventListener("pointerdown", unlockAudio, { capture: true, once: true });
+    window.addEventListener("keydown", unlockAudio, { capture: true, once: true });
+    return () => {
+      window.removeEventListener("pointerdown", unlockAudio, { capture: true });
+      window.removeEventListener("keydown", unlockAudio, { capture: true });
+    };
   }, []);
 
   useEffect(() => {

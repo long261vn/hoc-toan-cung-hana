@@ -14,7 +14,7 @@ const evaluate = async (expression) => (await command("Runtime.evaluate", { expr
 
 try {
   await command("Page.enable");
-  await command("Page.addScriptToEvaluateOnNewDocument", { source: `(() => { localStorage.clear(); window.__hanaAudioPlayCalls = 0; const nativePlay = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function(...args) { window.__hanaAudioPlayCalls += 1; return nativePlay.apply(this, args); }; })()` });
+  await command("Page.addScriptToEvaluateOnNewDocument", { source: `(() => { localStorage.clear(); localStorage.setItem("hana-music-volume", "0"); localStorage.setItem("hana-effects-volume", "0"); window.__hanaAudioPlayCalls = 0; const nativePlay = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function(...args) { window.__hanaAudioPlayCalls += 1; return nativePlay.apply(this, args); }; })()` });
   await command("Page.navigate", { url: previewUrl });
   await sleep(800);
   const initial = await evaluate(`({ pressed: document.querySelector(".sound-control")?.getAttribute("aria-pressed"), controlCount: document.querySelectorAll("[data-sound-control]").length })`);
