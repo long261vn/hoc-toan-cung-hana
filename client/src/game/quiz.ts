@@ -18,6 +18,7 @@ export interface TablePracticeSettings {
 export interface QuizQuestion {
   id: string;
   operation: Operation;
+  kind: "standard" | "missing" | "table";
   expression: string;
   answer: number;
   options: number[];
@@ -38,22 +39,98 @@ const shuffle = <T,>(items: T[]) => {
   return copy;
 };
 
-function choices(answer: number, span: number) {
+function choices(answer: number, span: number, minValue = 0) {
   const values = new Set<number>([answer]);
   const nudges = [-2, -1, 1, 2, -3, 3, -5, 5, -10, 10];
   for (const nudge of shuffle(nudges)) {
-    const candidate = Math.max(0, answer + nudge * Math.max(1, Math.ceil(span / 5)));
+    const candidate = Math.max(minValue, answer + nudge * Math.max(1, Math.ceil(span / 5)));
     values.add(candidate);
     if (values.size === 4) break;
   }
-  while (values.size < 4) values.add(answer + rand(1, span + 5));
+  while (values.size < 4) values.add(Math.max(minValue, answer + rand(1, span + 5)));
   return shuffle(Array.from(values));
+}
+
+/** Grade 3 “find the unknown component” questions use ? instead of algebraic notation. */
+export function generateMissingComponentQuestion(operation: Operation, difficulty: Difficulty): QuizQuestion {
+  let expression = "";
+  let answer = 0;
+  let component = "";
+  let hint = "";
+  let hintSteps: string[] = [];
+  let span = 8;
+
+  if (operation === "add") {
+    const total = difficulty === "easy" ? rand(12, 30) : difficulty === "medium" ? rand(140, 900) : rand(1200, 4500);
+    const knownAddend = difficulty === "easy" ? rand(2, total - 2) : rand(Math.floor(total * 0.2), Math.floor(total * 0.7));
+    answer = total - knownAddend;
+    expression = Math.random() < 0.5 ? `? + ${knownAddend} = ${total}` : `${knownAddend} + ? = ${total}`;
+    component = "số hạng";
+    hint = "Bạn hãy tìm số hạng chưa biết.";
+    hintSteps = [`Tổng là ${total}; số hạng đã biết là ${knownAddend}.`, "Muốn tìm số hạng, lấy tổng trừ số hạng đã biết.", `${total} − ${knownAddend} = ?`];
+    span = difficulty === "easy" ? 5 : 25;
+  }
+
+  if (operation === "subtract") {
+    const subtrahend = difficulty === "easy" ? rand(2, 18) : difficulty === "medium" ? rand(20, 280) : rand(80, 700);
+    const difference = difficulty === "easy" ? rand(2, 20) : difficulty === "medium" ? rand(30, 360) : rand(120, 900);
+    const minuend = subtrahend + difference;
+    const findMinuend = Math.random() < 0.5;
+    answer = findMinuend ? minuend : subtrahend;
+    expression = findMinuend ? `? − ${subtrahend} = ${difference}` : `${minuend} − ? = ${difference}`;
+    component = findMinuend ? "số bị trừ" : "số trừ";
+    hint = findMinuend ? "Bạn hãy tìm số bị trừ chưa biết." : "Bạn hãy tìm số trừ chưa biết.";
+    hintSteps = findMinuend
+      ? [`Hiệu là ${difference}; số trừ là ${subtrahend}.`, "Muốn tìm số bị trừ, lấy hiệu cộng số trừ.", `${difference} + ${subtrahend} = ?`]
+      : [`Số bị trừ là ${minuend}; hiệu là ${difference}.`, "Muốn tìm số trừ, lấy số bị trừ trừ hiệu.", `${minuend} − ${difference} = ?`];
+    span = difficulty === "easy" ? 5 : 25;
+  }
+
+  if (operation === "multiply") {
+    const knownFactor = rand(2, 9);
+    const otherFactor = difficulty === "easy" ? rand(2, 5) : rand(2, 10);
+    const product = knownFactor * otherFactor;
+    answer = otherFactor;
+    expression = Math.random() < 0.5 ? `? × ${knownFactor} = ${product}` : `${knownFactor} × ? = ${product}`;
+    component = "thừa số";
+    hint = "Bạn hãy tìm thừa số chưa biết.";
+    hintSteps = [`Tích là ${product}; thừa số đã biết là ${knownFactor}.`, "Muốn tìm thừa số, lấy tích chia thừa số đã biết.", `${product} ÷ ${knownFactor} = ?`];
+    span = 5;
+  }
+
+  if (operation === "divide") {
+    const divisor = rand(2, 9);
+    const quotient = difficulty === "easy" ? rand(2, 5) : rand(2, 10);
+    const dividend = divisor * quotient;
+    const findDividend = Math.random() < 0.5;
+    answer = findDividend ? dividend : divisor;
+    expression = findDividend ? `? ÷ ${divisor} = ${quotient}` : `${dividend} ÷ ? = ${quotient}`;
+    component = findDividend ? "số bị chia" : "số chia";
+    hint = findDividend ? "Bạn hãy tìm số bị chia chưa biết." : "Bạn hãy tìm số chia chưa biết.";
+    hintSteps = findDividend
+      ? [`Thương là ${quotient}; số chia là ${divisor}.`, "Muốn tìm số bị chia, lấy thương nhân số chia.", `${quotient} × ${divisor} = ?`]
+      : [`Số bị chia là ${dividend}; thương là ${quotient}.`, "Muốn tìm số chia, lấy số bị chia chia thương.", `${dividend} ÷ ${quotient} = ?`];
+    span = 7;
+  }
+
+  return {
+    id: `missing-${operation}-${difficulty}-${Date.now()}-${Math.random()}`,
+    operation,
+    kind: "missing",
+    expression,
+    answer,
+    options: choices(answer, span, 1),
+    hint,
+    hintSteps,
+    mission: `Tìm ${component} còn thiếu.`,
+  };
 }
 
 export function generateQuestion(
   operation: Operation,
   difficulty: Difficulty,
 ): QuizQuestion {
+  if (Math.random() < 0.42) return generateMissingComponentQuestion(operation, difficulty);
   let a = 0;
   let b = 0;
   let answer = 0;
@@ -178,6 +255,7 @@ export function generateQuestion(
   return {
     id: `${operation}-${difficulty}-${Date.now()}-${Math.random()}`,
     operation,
+    kind: "standard",
     expression,
     answer,
     options: choices(answer, span),
@@ -203,6 +281,7 @@ export function generateTableQuestion(settings: TablePracticeSettings): QuizQues
   return {
     id: `table-${settings.kind}-${table}-${Date.now()}-${Math.random()}`,
     operation,
+    kind: "table",
     expression,
     answer,
     options: choices(answer, 6),

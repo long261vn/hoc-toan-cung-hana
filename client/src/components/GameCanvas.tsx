@@ -20,6 +20,7 @@ import {
 import { createGameScene, type GameHandle } from "@/game/scene";
 import {
   generateQuestion,
+  generateMissingComponentQuestion,
   generateTableQuestion,
   TIMES_TABLES,
   type Difficulty,
@@ -43,7 +44,7 @@ const activityMeta: Record<ActivityId, { label: string; kicker: string; descript
   subtract: { label: "Trừ", kicker: "PHÉP TÍNH TRỪ", description: "Tìm phần còn lại với những nhiệm vụ ngắn gọn." },
   multiply: { label: "Nhân", kicker: "PHÉP TÍNH NHÂN", description: "Xếp các nhóm bằng nhau để nhân thật tự tin." },
   divide: { label: "Chia", kicker: "PHÉP TÍNH CHIA", description: "Chia đều tinh thể cho các bạn robot." },
-  tables: { label: "Bảng cửu chương", kicker: "LUYỆN BẢNG 2 ĐẾN 9", description: "Chọn bảng nhân, bảng chia hoặc luyện hỗn hợp." },
+  tables: { label: "Học Bảng Nhân và Chia từ 2 đến 9", kicker: "BẢNG NHÂN VÀ CHIA 2–9", description: "Chọn bảng nhân, bảng chia hoặc cả nhân và chia." },
   test: { label: "Bài kiểm tra", kicker: "8 CÂU THỬ THÁCH", description: "Hoàn thành tám nhiệm vụ để nhận thật nhiều sao." },
 };
 
@@ -72,13 +73,13 @@ function WelcomeScreen({ onStart, onGuide }: { onStart: () => void; onGuide: () 
 }
 
 function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGuide: () => void; onChoose: (activity: ActivityId) => void }) {
-  const activities: Array<{ id: ActivityId; icon: typeof Rocket; eyebrow: string; detail: string; tone: string }> = [
-    { id: "add", icon: Rocket, eyebrow: "PHÉP TÍNH CỘNG", detail: "Gộp các nhóm và tìm tổng.", tone: "add" },
-    { id: "subtract", icon: Gem, eyebrow: "PHÉP TÍNH TRỪ", detail: "Tìm phần còn lại.", tone: "subtract" },
-    { id: "multiply", icon: Sparkles, eyebrow: "PHÉP TÍNH NHÂN", detail: "Xếp những nhóm bằng nhau.", tone: "multiply" },
-    { id: "divide", icon: Star, eyebrow: "PHÉP TÍNH CHIA", detail: "Chia đều các tinh thể.", tone: "divide" },
-    { id: "tables", icon: Gem, eyebrow: "BẢNG 2 ĐẾN 9", detail: "Chọn bảng nhân, chia, hỗn hợp.", tone: "tables" },
-    { id: "test", icon: Trophy, eyebrow: "8 CÂU THỬ THÁCH", detail: "Thử sức và nhận sao.", tone: "test" },
+  const activities: Array<{ id: ActivityId; eyebrow: string; detail: string; tone: string; symbol: string }> = [
+    { id: "add", eyebrow: "PHÉP TÍNH CỘNG", detail: "Gộp các nhóm và tìm tổng.", tone: "add", symbol: "+" },
+    { id: "subtract", eyebrow: "PHÉP TÍNH TRỪ", detail: "Tìm phần còn lại.", tone: "subtract", symbol: "−" },
+    { id: "tables", eyebrow: "BẢNG NHÂN VÀ CHIA 2–9", detail: "Chọn từng bảng hoặc luyện cả nhân và chia.", tone: "tables", symbol: "×÷" },
+    { id: "multiply", eyebrow: "PHÉP TÍNH NHÂN", detail: "Xếp những nhóm bằng nhau.", tone: "multiply", symbol: "×" },
+    { id: "divide", eyebrow: "PHÉP TÍNH CHIA", detail: "Chia đều các tinh thể.", tone: "divide", symbol: "÷" },
+    { id: "test", eyebrow: "8 CÂU THỬ THÁCH", detail: "Thử sức và nhận sao.", tone: "test", symbol: "★" },
   ];
 
   return (
@@ -90,16 +91,15 @@ function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGui
       </div>
       <div className="activity-heading">
         <p>CHỌN NHIỆM VỤ</p>
-        <h2>Con muốn chinh phục điều gì?</h2>
+        <h2>Bạn muốn chinh phục điều gì?</h2>
         <span>Chạm vào một thẻ để bắt đầu nhé.</span>
       </div>
       <div className="activity-grid">
         {activities.map((activity, index) => {
-          const Icon = activity.icon;
           return (
             <button key={activity.id} type="button" className={`activity-card ${activity.tone}`} onClick={() => onChoose(activity.id)}>
               <span className="activity-order">0{index + 1}</span>
-              <span className="activity-icon"><Icon size={28} fill="currentColor" /></span>
+              <span className="activity-icon sigil"><i /><b>{activity.symbol}</b></span>
               <span className="activity-copy"><b>{activity.eyebrow}</b><strong>{activityMeta[activity.id].label}</strong><small>{activity.detail}</small></span>
               <ChevronRight className="activity-arrow" size={22} />
             </button>
@@ -136,18 +136,24 @@ export default function GameCanvas() {
   const isDemo = demoParams.has("demo");
   const isTableDemo = demoParams.has("tables");
   const isMenuPreview = demoParams.has("menu");
+  const missingDemoOperation = demoParams.get("missing");
+  const isMissingDemo = missingDemoOperation === "add" || missingDemoOperation === "subtract" || missingDemoOperation === "multiply" || missingDemoOperation === "divide";
   const tableDemoKind: TablePracticeKind = demoParams.get("tables") === "divide" ? "divide" : demoParams.get("tables") === "mixed" ? "mixed" : "multiply";
-  const initialOperation: Operation = isDemo || isTableDemo
+  const initialOperation: Operation = isMissingDemo
+    ? missingDemoOperation
+    : isDemo || isTableDemo
     ? (tableDemoKind === "divide" ? "divide" : "multiply")
     : "add";
 
-  const [screen, setScreen] = useState<AppScreen>(isDemo || isTableDemo ? "game" : isMenuPreview ? "menu" : "welcome");
+  const [screen, setScreen] = useState<AppScreen>(isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
   const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "practice");
-  const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isDemo ? "multiply" : "add");
+  const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isMissingDemo ? initialOperation : isDemo ? "multiply" : "add");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [operation, setOperation] = useState<Operation>(initialOperation);
   const [question, setQuestion] = useState<QuizQuestion>(() => isTableDemo
     ? generateTableQuestion({ kind: tableDemoKind, tables: [2, 4, 6] })
+    : isMissingDemo
+    ? generateMissingComponentQuestion(initialOperation, "easy")
     : generateQuestion(initialOperation, "easy"));
   const [tableKind, setTableKind] = useState<TablePracticeKind>(tableDemoKind);
   const [selectedTables, setSelectedTables] = useState<number[]>(isTableDemo ? [2, 4, 6] : [2]);
@@ -163,6 +169,11 @@ export default function GameCanvas() {
   const createNextQuestion = useCallback(
     (nextMode = mode, nextOperation = operation, nextDifficulty = difficulty) => {
       if (nextMode === "tables") {
+        if (selectedTables.length === 0) {
+          setAnswered(null);
+          setFeedback("idle");
+          return;
+        }
         const tableQuestion = generateTableQuestion({ kind: tableKind, tables: selectedTables });
         setOperation(tableQuestion.operation);
         setQuestion(tableQuestion);
@@ -247,6 +258,17 @@ export default function GameCanvas() {
   };
 
   const setTablePractice = (nextKind: TablePracticeKind, nextTables = selectedTables) => {
+    if (nextTables.length === 0) {
+      setMode("tables");
+      setTableKind(nextKind);
+      setSelectedTables([]);
+      setAnswered(null);
+      setFeedback("idle");
+      setTestComplete(false);
+      setTestStep(0);
+      setTestCorrect(0);
+      return;
+    }
     const tableQuestion = generateTableQuestion({ kind: nextKind, tables: nextTables });
     setMode("tables");
     setTableKind(nextKind);
@@ -305,7 +327,7 @@ export default function GameCanvas() {
 
   const answerQuestion = useCallback(
     (choice: number) => {
-      if (answered !== null || testComplete) return;
+      if (answered !== null || testComplete || (mode === "tables" && selectedTables.length === 0)) return;
       setAnswered(choice);
       if (choice === question.answer) {
         setFeedback("correct");
@@ -321,10 +343,11 @@ export default function GameCanvas() {
         setFeedback("wrong");
       }
     },
-    [answered, mode, question.answer, testComplete],
+    [answered, mode, question.answer, selectedTables.length, testComplete],
   );
 
   const continueMission = () => {
+    if (mode === "tables" && selectedTables.length === 0) return;
     if (feedback === "wrong") {
       setAnswered(null);
       setFeedback("idle");
@@ -488,9 +511,9 @@ export default function GameCanvas() {
             )}
             {(!isTableMode || hasSelectedTables) ? <>
             <div className="question-panel">
-              <span className="question-label">{isTableMode ? "NHIỆM VỤ CỬU CHƯƠNG" : "NHIỆM VỤ TOÁN HỌC"}</span>
+              <span className="question-label">{isTableMode ? "NHIỆM VỤ BẢNG NHÂN VÀ CHIA" : question.kind === "missing" ? "TÌM THÀNH PHẦN CHƯA BIẾT" : "NHIỆM VỤ TOÁN HỌC"}</span>
               <p className="math-expression">{question.expression}</p>
-              <p className="math-helper">Chọn đáp án đúng để gửi tinh thể vào động cơ.</p>
+              <p className="math-helper">{question.kind === "missing" ? "Tìm số còn thiếu để hoàn thành phép tính." : "Chọn đáp án đúng để gửi tinh thể vào động cơ."}</p>
             </div>
             <div className="answer-grid">
               {question.options.map((choice, index) => {
@@ -551,7 +574,7 @@ export default function GameCanvas() {
               </div>
             </div>
             <ol className="curriculum-list">
-              <li><span>01</span><div><strong>Chọn hoạt động</strong><p>Con chọn Cộng, Trừ, Nhân, Chia, Bảng cửu chương hoặc Bài kiểm tra.</p></div></li>
+              <li><span>01</span><div><strong>Chọn hoạt động</strong><p>Bạn chọn Cộng, Trừ, Học Bảng Nhân và Chia từ 2 đến 9, Nhân, Chia hoặc Bài kiểm tra.</p></div></li>
               <li><span>02</span><div><strong>Đọc thật kỹ phép tính</strong><p>Nhìn vào bài toán lớn ở bảng điều khiển trước khi chọn đáp án.</p></div></li>
               <li><span>03</span><div><strong>Chọn đáp án đúng</strong><p>Mỗi câu có bốn đáp án. Bạn có thể nhấn phím 1 đến 4 trên máy tính.</p></div></li>
               <li><span>04</span><div><strong>Không sao nếu chưa đúng</strong><p>Robot Hana sẽ đưa gợi ý để bạn thử lại và tiếp tục học.</p></div></li>
