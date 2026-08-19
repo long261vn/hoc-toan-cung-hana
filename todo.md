@@ -182,3 +182,9 @@
 - [x] Chỉ giữ một hiển thị điểm hiện tại, bảo đảm cập nhật ngay sau đáp án đúng/sai.
 - [x] Bỏ ký hiệu thừa cạnh điều khiển đổi ngôn ngữ và kiểm tra bố cục thanh trên.
 - [x] Kiểm thử hành trình trả lời, TypeScript, build và giao diện desktop/mobile trước khi lưu checkpoint.
+
+## Điều khiển nhiệm vụ trên điện thoại
+
+- [x] Đặt Đổi nhiệm vụ và Kết thúc lượt ở vùng điều khiển dễ thấy, dễ chạm trên điện thoại.
+- [x] Giữ các điều khiển này khả dụng khi thanh menu trên cùng tự thu gọn.
+- [x] Kiểm tra luồng đổi nhiệm vụ/kết thúc lượt, bố cục desktop/mobile, TypeScript và build trước khi lưu checkpoint.

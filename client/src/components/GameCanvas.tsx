@@ -1138,6 +1138,10 @@ export default function GameCanvas() {
             <strong data-dynamic-text>{mode === "test" ? (testComplete ? "8/8" : `${Math.min(testStep + 1, 8)}/8`) : sessionPoints}</strong>
           </button>
         </div>
+        <div className="mobile-mission-actions" aria-label={copy("Điều khiển nhiệm vụ", "Mission controls")}>
+          <button className="mobile-change-mission" type="button" onClick={() => { playSound("tap"); setMenuCollapsed(false); setScreen("menu"); }}><span>↔</span>{copy("Đổi nhiệm vụ", "Change mission")}</button>
+          <button className="mobile-end-session" type="button" onClick={finishSession}><span>■</span>{copy("Kết thúc lượt", "End session")}</button>
+        </div>
 
         {testComplete ? (
           <div className="completion-card">
