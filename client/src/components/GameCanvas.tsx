@@ -57,8 +57,8 @@ function WelcomeScreen({ onStart, onGuide }: { onStart: () => void; onGuide: () 
       <div className="welcome-content">
         <div className="welcome-robot" aria-hidden="true"><div className="robot-fallback"><span /><span /><i /></div><span className="robot-orbit" /></div>
         <p className="welcome-kicker"><Sparkles size={15} /> CHÀO MỪNG PHI HÀNH GIA NHỎ</p>
-        <h2>Khởi động<br /><em>chuyến bay toán học!</em></h2>
-        <p className="welcome-intro">Cùng Robot Mít chinh phục các hành tinh Cộng, Trừ, Nhân và Chia qua những nhiệm vụ thật vui.</p>
+        <h2><span>Cùng Hana</span><em>ôn toán học</em></h2>
+        <p className="welcome-intro">Cùng Robot Hana chinh phục các hoạt động Cộng, Trừ, Nhân và Chia qua những nhiệm vụ thật vui.</p>
         <div className="welcome-actions">
           <button type="button" className="welcome-primary" onClick={onStart}>Bắt đầu <Rocket size={19} fill="currentColor" /></button>
           <button type="button" className="welcome-secondary" onClick={onGuide}><HelpCircle size={18} /> Xem cách chơi</button>
@@ -106,7 +106,7 @@ function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGui
           );
         })}
       </div>
-      <p className="activity-footer">Robot Mít sẽ đồng hành cùng con trong mọi chuyến bay.</p>
+      <p className="activity-footer">Robot Hana sẽ đồng hành cùng con trong mọi chuyến bay.</p>
     </section>
   );
 }
@@ -408,9 +408,9 @@ export default function GameCanvas() {
         <p>{activeActivity.description}</p>
       </section>
 
-      <aside className="robot-guide" aria-label="Robot Mít hướng dẫn">
+      <aside className="robot-guide" aria-label="Robot Hana hướng dẫn">
         <div className="robot-fallback" aria-hidden="true"><span /><span /><i /></div>
-        <div className="robot-note"><span className="robot-note-dot" />Robot Mít: “Con làm được mà!”</div>
+        <div className="robot-note"><span className="robot-note-dot" />Robot Hana: “Con làm được mà!”</div>
       </aside>
 
       <section className="mission-control" aria-label="Bảng điều khiển bài tập">
@@ -545,7 +545,7 @@ export default function GameCanvas() {
             <button className="guide-close" type="button" onClick={() => setShowGuide(false)} aria-label="Đóng lộ trình"><X size={19} /></button>
             <div className="guide-heading">
               <div>
-                <p className="eyebrow">ROBOT MÍT HƯỚNG DẪN</p>
+                <p className="eyebrow">ROBOT HANA HƯỚNG DẪN</p>
                 <h2>Cách chơi thật dễ</h2>
                 <p>Chọn một hoạt động, làm phép tính và thu thập tinh thể năng lượng nhé.</p>
               </div>
@@ -554,7 +554,7 @@ export default function GameCanvas() {
               <li><span>01</span><div><strong>Chọn hoạt động</strong><p>Con chọn Cộng, Trừ, Nhân, Chia, Bảng cửu chương hoặc Bài kiểm tra.</p></div></li>
               <li><span>02</span><div><strong>Đọc thật kỹ phép tính</strong><p>Nhìn vào bài toán lớn ở bảng điều khiển trước khi chọn đáp án.</p></div></li>
               <li><span>03</span><div><strong>Chọn đáp án đúng</strong><p>Mỗi câu có bốn đáp án. Con có thể nhấn phím 1 đến 4 trên máy tính.</p></div></li>
-              <li><span>04</span><div><strong>Không sao nếu chưa đúng</strong><p>Robot Mít sẽ đưa gợi ý để con thử lại và tiếp tục học.</p></div></li>
+              <li><span>04</span><div><strong>Không sao nếu chưa đúng</strong><p>Robot Hana sẽ đưa gợi ý để con thử lại và tiếp tục học.</p></div></li>
             </ol>
             <p className="guide-note">Con có thể bấm nút Menu bất cứ lúc nào để đổi sang một hoạt động khác.</p>
             <button type="button" className="primary-action" onClick={() => setShowGuide(false)}>Mình đã hiểu <Rocket size={18} /></button>

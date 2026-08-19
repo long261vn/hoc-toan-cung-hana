@@ -1,5 +1,12 @@
 # Việc cần làm — Bảng cửu chương
 
+## Nhận diện Robot Hana
+
+- [x] Đổi toàn bộ tên Robot Mít thành Robot Hana.
+- [x] Thay tiêu đề chào mừng bằng Cùng Hana ôn toán học.
+- [x] Tăng độ tương phản, viền và bóng nền cho tiêu đề trước nền hành tinh.
+- [x] Kiểm tra màn hình chào mừng trên máy tính và điện thoại, lưu checkpoint, bàn giao.
+
 ## Làm rõ điều khiển bảng cửu chương
 
 - [x] Đổi nhãn Hỗn hợp thành Cả nhân và chia.

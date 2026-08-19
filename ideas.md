@@ -41,7 +41,7 @@ Trang chơi được tổ chức như một **buồng lái mở ra bản đồ q
 ### Signature Elements
 
 1. **Đường quỹ đạo chấm sáng** nối bốn hành tinh Cộng, Trừ, Nhân, Chia.
-2. **Robot Mít** hình quả cầu nhỏ có ăng-ten lá, dẫn dắt và phản hồi sau mỗi câu.
+2. **Robot Hana** hình quả cầu nhỏ có ăng-ten lá, dẫn dắt và phản hồi sau mỗi câu.
 3. **Tinh thể năng lượng** có bốn hình dạng tương ứng với từng phép tính, dùng để biểu thị tiến độ thay cho huy hiệu chung chung.
 
 ### Interaction Philosophy
@@ -66,7 +66,7 @@ Tính cách thương hiệu: **tò mò, khích lệ, sáng rõ**.
 
 Giọng nói hồn nhiên, trực tiếp, động viên nỗ lực thay vì chấm điểm áp lực. Tiêu đề và nút bấm dùng động từ cụ thể, câu ngắn, tránh các lời mời chung chung.
 
-> “Robot Mít cần 1 tinh thể nữa — con tính cùng bạn nhé!”
+> “Robot Hana cần 1 tinh thể nữa — con tính cùng bạn nhé!”
 
 > “Chọn hành tinh để khởi động chuyến bay.”
 
@@ -86,7 +86,7 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 
 ## Style Decisions
 
-- Robot Mít luôn xuất hiện trực tiếp ở khu vực nhiệm vụ, là nguồn của lời gợi ý và phản hồi, thay vì chỉ được nhắc trong câu chữ.
+- Robot Hana luôn xuất hiện trực tiếp ở khu vực nhiệm vụ, là nguồn của lời gợi ý và phản hồi, thay vì chỉ được nhắc trong câu chữ.
 - Mỗi hành tinh có bộ nhận diện xuyên suốt gồm màu pastel, hình tinh thể và điểm đánh dấu bản đồ riêng: cam/kim cương cho Cộng, tím/lục giác cho Trừ, xanh ngọc/ngôi sao cho Nhân và vàng/giọt sáng cho Chia.
 - Biểu tượng tên lửa trong quỹ đạo-dấu-cộng được trình bày ở kích thước đủ lớn cùng wordmark và dùng làm favicon; khối biểu tượng có phương án hiển thị dự phòng để không thành ô vuông tối khi ảnh đang tải.
 - Trò chơi mở đầu bằng một màn hình chào mừng ít lựa chọn, ưu tiên hai nút lớn “Bắt đầu” và “Hướng dẫn”; chỉ sau khi bấm Bắt đầu, học sinh mới nhìn thấy menu hoạt động.
