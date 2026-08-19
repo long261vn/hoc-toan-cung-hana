@@ -223,3 +223,9 @@
 - [x] Lưu/khôi phục lượt học, chỉ tính thời gian học chủ động và tăng vùng chạm bảng nhân–chia trên mobile.
 - [x] Hoàn thiện tham số ngôn ngữ deep link, cập nhật kiểm thử không phụ thuộc thứ tự và tách tải Babylon để giảm tải đầu trang.
 - [x] Kiểm thử đầy đủ câu hỏi, trạng thái, song ngữ, ảnh kỷ niệm, desktop/mobile, TypeScript và build trước khi lưu checkpoint.
+
+## Hoàn thiện bản English
+
+- [x] Kiểm kê nội dung tiếng Việt còn lẫn vào khi chọn ENG: hướng dẫn, wordmark, ví dụ, bảng nhân–chia và lời Hana.
+- [x] Dịch tự nhiên toàn bộ văn bản English, bao gồm “tables”, hướng dẫn chọn bảng và các gợi ý khi trả lời sai.
+- [x] Kiểm thử English trên màn chào mừng, Hướng dẫn, bảng nhân–chia và phản hồi đáp án sai; chạy TypeScript và build.
