@@ -194,3 +194,10 @@
 - [x] Hiển thị hộp thoại xác nhận thân thiện trước khi kết thúc lượt ở mọi vị trí điều khiển.
 - [x] Hiển thị nhanh điểm, số câu đúng và số câu sai hiện tại; dịch đầy đủ Tiếng Việt/English.
 - [x] Cho phép quay lại học tiếp hoặc xác nhận kết thúc, sau đó kiểm tra desktop/mobile, TypeScript và build.
+
+## Tập trung vào bảng tính
+
+- [x] Bỏ nút Kết thúc lượt trùng lặp, chỉ giữ một cụm điều khiển nhiệm vụ ở phía dưới bảng làm bài.
+- [x] Chuyển Đổi nhiệm vụ và Kết thúc lượt xuống cuối bảng, đảm bảo vẫn dễ chạm trên điện thoại.
+- [x] Thu gọn phần đầu màn, giảm vai trò Robot Hana khi đang làm bài và đưa bảng tính lên cao hơn.
+- [x] Kiểm tra trực quan desktop/mobile, thao tác kết thúc lượt, TypeScript và build trước khi lưu checkpoint.

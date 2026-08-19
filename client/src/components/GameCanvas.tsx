@@ -1058,6 +1058,7 @@ export default function GameCanvas() {
   const hasSelectedTables = selectedTables.length > 0;
   const hasAllTables = selectedTables.length === TIMES_TABLES.length;
   const activeActivity = activityMeta[selectedActivity];
+  const operationSymbol: Record<Operation, string> = { add: "+", subtract: "−", multiply: "×", divide: "÷" };
 
   return (
     <main className="game-shell">
@@ -1099,31 +1100,20 @@ export default function GameCanvas() {
 
       {screen === "game" && <>
       <header className={`mission-header ${menuCollapsed ? "is-collapsed" : ""}`}>
-        <div className="brand-lockup">
+        <div className="brand-lockup compact-mission-brand">
           <div className="brand-emblem" aria-hidden="true">
             <span className="emblem-orbit" />
             <Rocket className="emblem-rocket" size={24} fill="currentColor" />
             <span className="emblem-plus">+</span>
             <img className="brand-mark" src={ASSETS.logo} alt="" />
           </div>
-          <div>
-            <p className="eyebrow">{copy("PHI HÀNH GIA:", "ASTRONAUT:")} {displayName.toUpperCase()}</p>
-            <h1>{language === "en" ? <>Math Planet<br />Adventure</> : <>Phi Hành Tinh<br />Phép Tính</>}</h1>
-          </div>
+          <p className="eyebrow" data-brand-wordmark>Phi Hành Tinh <span>Phép Tính</span></p>
         </div>
         <div className="mission-actions">
-          <button className="mission-menu-button" type="button" onClick={() => setScreen("menu")}><span>↔</span> Đổi nhiệm vụ</button>
-          <button className="mission-menu-button mission-end-button" type="button" onClick={requestEndSession}><span>■</span> Kết thúc lượt</button>
           <LanguageControl className="mission-language-control" language={language} onToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />
         </div>
       </header>
       {menuCollapsed && <button type="button" className="mission-menu-reveal" onClick={() => { playSound("tap"); setMenuCollapsed(false); }} aria-label={copy("Mở lại thanh menu", "Show menu bar")}><Menu size={17} /><span>{copy("Menu", "Menu")}</span></button>}
-
-      <section className="mission-copy" aria-live="polite">
-        <div className="mission-kicker"><Rocket size={15} /> {activeActivity.kicker}</div>
-        <h2>{activeActivity.label}</h2>
-        <p>{activeActivity.description}</p>
-      </section>
 
       <div className={`mission-orbit-map operation-${operation}`} aria-hidden="true">
         <span className="mission-orbit-ring ring-one" />
@@ -1135,15 +1125,11 @@ export default function GameCanvas() {
         <span className="mission-orbit-status">{language === "en" ? `${operationLabel(operation).toUpperCase()} PLANET` : `HÀNH TINH ${operationLabel(operation).toUpperCase()}`}</span>
       </div>
 
-      <aside className="robot-guide" aria-label="Robot Hana hướng dẫn">
-        <div className="robot-fallback" aria-hidden="true"><span /><span /><i /></div>
-        <div className="robot-note"><span className="robot-note-dot" />{language === "en" ? `Robot Hana: “${displayName}, you can do it!”` : `Robot Hana: “${displayName}, bạn làm được mà!”`}</div>
-      </aside>
-
-      <section className={`mission-control ${menuCollapsed ? "is-menu-collapsed" : ""}`} aria-label="Bảng điều khiển bài tập">
+      <section className={`mission-control operation-${operation} ${menuCollapsed ? "is-menu-collapsed" : ""}`} aria-label="Bảng điều khiển bài tập">
         <div className="console-topline">
           <div className="mascot-wrap">
             <span className="speech-spark"><Sparkles size={14} /></span>
+            <span className="console-operation-symbol" aria-hidden="true">{operationSymbol[operation]}</span>
           </div>
           <div className="console-title">
             <p>{isTableMode ? copy("Học Bảng Nhân và Chia", "Learn multiplication & division") : operationLabel(operation)} <span>•</span> {isTableMode ? tableSubtitle(tableKind) : mode === "test" ? copy("8 câu thử thách", "8-question challenge") : practiceFormatMeta[practiceFormat].shortLabel}</p>
@@ -1154,11 +1140,6 @@ export default function GameCanvas() {
             <strong data-dynamic-text>{mode === "test" ? (testComplete ? "8/8" : `${Math.min(testStep + 1, 8)}/8`) : sessionPoints}</strong>
           </button>
         </div>
-        <div className="mobile-mission-actions" aria-label={copy("Điều khiển nhiệm vụ", "Mission controls")}>
-          <button className="mobile-change-mission" type="button" onClick={() => { playSound("tap"); setMenuCollapsed(false); setScreen("menu"); }}><span>↔</span>{copy("Đổi nhiệm vụ", "Change mission")}</button>
-          <button className="mobile-end-session" type="button" onClick={requestEndSession}><span>■</span>{copy("Kết thúc lượt", "End session")}</button>
-        </div>
-
         {testComplete ? (
           <div className="completion-card">
             <div className="completion-icon"><Trophy size={30} /></div>
@@ -1219,7 +1200,7 @@ export default function GameCanvas() {
             )}
             {(!isTableMode || hasSelectedTables) ? <>
             <div className="question-panel" key={`prompt-${question.id}`}>
-              <span className="question-label">{isTableMode ? "NHIỆM VỤ BẢNG NHÂN VÀ CHIA" : question.kind === "missing" ? "TÌM THÀNH PHẦN CHƯA BIẾT" : "NHIỆM VỤ TOÁN HỌC"}</span>
+              <span className="question-label">{isTableMode ? "NHIỆM VỤ BẢNG NHÂN VÀ CHIA" : question.kind === "missing" ? "TÌM THÀNH PHẦN CHƯA BIẾT" : `${copy("NHIỆM VỤ", "MISSION")} ${operationSymbol[operation]} ${operationLabel(operation).toUpperCase()}`}</span>
             <p className="math-expression" data-dynamic-text>{question.expression}</p>
               <p className="math-helper">{question.kind === "missing" ? "Tìm số còn thiếu để hoàn thành phép tính." : "Chọn đáp án đúng để nhận điểm thưởng."}</p>
             </div>
@@ -1266,11 +1247,10 @@ export default function GameCanvas() {
             ))}
           </div>}
         </div>
-        {!testComplete && <button className="end-session-footer" type="button" onClick={requestEndSession}>
-          <span className="end-session-footer-icon">■</span>
-          <span><small>{copy("ĐÃ HOÀN THÀNH LƯỢT HỌC?", "FINISHED THIS LEARNING SESSION?")}</small><strong>{copy("Kết thúc lượt", "End session")}</strong></span>
-          <ChevronRight size={20} />
-        </button>}
+        {!testComplete && <div className="session-bottom-actions" aria-label={copy("Điều khiển nhiệm vụ", "Mission controls")}>
+          <button className="session-change-mission" type="button" onClick={() => { playSound("tap"); setMenuCollapsed(false); setScreen("menu"); }}><span>↔</span>{copy("Đổi nhiệm vụ", "Change mission")}</button>
+          <button className="session-end-button" type="button" onClick={requestEndSession}><span>■</span>{copy("Kết thúc lượt", "End session")}</button>
+        </div>}
       </section>
       </>}
 
