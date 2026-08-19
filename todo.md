@@ -261,3 +261,11 @@
 - [x] Kiểm kê các chuỗi còn tiếng Việt trong màn chọn nhiệm vụ, cấu hình Bài Kiểm Tra, màn làm bài và tổng kết khi chọn ENG.
 - [x] Sửa mọi chuỗi, lời Robot Hana, nhãn đồng hồ và nút hành động để hiển thị English nhất quán.
 - [x] Kiểm thử tự động và trực quan ENG trên desktop/mobile, dựng bản phát hành và lưu checkpoint.
+
+## Rà soát toàn diện và hoàn thiện trải nghiệm
+
+- [x] Kiểm tra kỹ thuật: kiểu dữ liệu, trạng thái, luồng điều hướng, lỗi console, hiệu năng và các phần mã dư thừa.
+- [x] Rà soát toàn bộ English ở luồng chào mừng, luyện tập, bảng nhân–chia, Bài Kiểm Tra, hướng dẫn, phản hồi Hana và tổng kết.
+- [x] Đánh giá đồ họa, độ tương phản, thứ bậc thị giác, kích thước chữ và vùng chạm trên desktop/mobile.
+- [x] Chơi thử toàn bộ hành trình theo góc nhìn học sinh lớp 3; ghi nhận điểm gây khó hiểu hoặc cần nhiều thao tác.
+- [x] Sửa các vấn đề ưu tiên, kiểm thử hồi quy, dựng sản phẩm và lưu checkpoint bàn giao.
