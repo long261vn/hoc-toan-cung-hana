@@ -76,6 +76,13 @@
 - [x] Kiểm tra khoảng cách với logo, nút Hướng dẫn và thanh điều khiển trên màn hình máy tính/điện thoại.
 - [x] Dựng bản phát hành, lưu checkpoint và bàn giao cập nhật vị trí nút.
 
+## Làm mới thanh đầu và nút ngôn ngữ
+
+- [x] Thiết kế lại vùng thanh đầu để logo, Hướng dẫn và điều khiển ngôn ngữ tạo thành một hệ thống thống nhất.
+- [x] Thay nút trôi VIE/ENG bằng điều khiển ngôn ngữ tinh gọn ở hàng trên cùng; nhãn phản ánh ngôn ngữ đang hiển thị.
+- [x] Kiểm tra bố cục thanh đầu ở chào mừng, màn chơi, tổng kết và điện thoại để không có thành phần chồng lấn.
+- [x] Dựng bản phát hành, lưu checkpoint và bàn giao cập nhật giao diện.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.

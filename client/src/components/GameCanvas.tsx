@@ -41,6 +41,14 @@ type AppScreen = "welcome" | "profile" | "menu" | "format" | "game" | "summary";
 type ActivityId = "add" | "subtract" | "multiply" | "divide" | "tables" | "test";
 type Language = "vi" | "en";
 
+function LanguageControl({ language, onToggle, className = "" }: { language: Language; onToggle: () => void; className?: string }) {
+  const code = language === "vi" ? "VIE" : "ENG";
+  const title = language === "vi" ? "Tiếng Việt" : "English";
+  return <button className={`language-control ${className}`.trim()} type="button" onClick={onToggle} aria-label={language === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}>
+    <span className="language-glyph">A↔</span><span className="language-code">{code}</span><small>{title}</small>
+  </button>;
+}
+
 const textOrigins = new WeakMap<Text, string>();
 const englishText: Record<string, string> = {
   "Hướng dẫn": "Guide", "Bắt đầu": "Start", "Xem cách chơi": "How to play", "Cùng Hana": "Learn with Hana", "ôn toán học": "math together",
@@ -142,12 +150,12 @@ const activityMeta: Record<ActivityId, { label: string; kicker: string; descript
   test: { label: "Bài kiểm tra", kicker: "8 CÂU THỬ THÁCH", description: "Hoàn thành tám nhiệm vụ để nhận thật nhiều sao." },
 };
 
-function WelcomeScreen({ onStart, onGuide }: { onStart: () => void; onGuide: () => void }) {
+function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle }: { onStart: () => void; onGuide: () => void; language: Language; onLanguageToggle: () => void }) {
   return (
     <section className="welcome-screen" aria-label="Chào mừng đến với Phi Hành Tinh Phép Tính">
       <div className="welcome-topbar">
         <div className="mini-brand"><span className="mini-brand-rocket"><Rocket size={19} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
-        <button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button>
+        <div className="topbar-controls"><button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button><LanguageControl language={language} onToggle={onLanguageToggle} /></div>
       </div>
       <div className="welcome-content">
         <div className="welcome-robot" aria-hidden="true"><div className="robot-fallback"><span /><span /><i /></div><span className="robot-orbit" /></div>
@@ -166,10 +174,11 @@ function WelcomeScreen({ onStart, onGuide }: { onStart: () => void; onGuide: () 
   );
 }
 
-function PlayerProfileScreen({ name, onNameChange, onBack, onContinue }: { name: string; onNameChange: (name: string) => void; onBack: () => void; onContinue: () => void }) {
+function PlayerProfileScreen({ name, onNameChange, onBack, onContinue, language, onLanguageToggle }: { name: string; onNameChange: (name: string) => void; onBack: () => void; onContinue: () => void; language: Language; onLanguageToggle: () => void }) {
   return <section className="profile-screen" aria-label="Đặt tên phi hành gia">
     <button type="button" className="format-back" onClick={onBack}>← Trở về</button>
     <div className="format-brand mini-brand" aria-label="Phi Hành Tinh Phép Tính"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
+    <LanguageControl className="screen-language-control" language={language} onToggle={onLanguageToggle} />
     <div className="profile-orbit" aria-hidden="true" />
     <div className="profile-hana"><div className="robot-fallback"><span /><span /><i /></div></div>
     <p className="format-kicker">ROBOT HANA CHỜ BẠN</p>
@@ -180,7 +189,7 @@ function PlayerProfileScreen({ name, onNameChange, onBack, onContinue }: { name:
   </section>;
 }
 
-function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGuide: () => void; onChoose: (activity: ActivityId) => void }) {
+function ActivityMenu({ onBack, onGuide, onChoose, language, onLanguageToggle }: { onBack: () => void; onGuide: () => void; onChoose: (activity: ActivityId) => void; language: Language; onLanguageToggle: () => void }) {
   const activities: Array<{ id: ActivityId; eyebrow: string; detail: string; tone: string; symbol: string }> = [
     { id: "add", eyebrow: "PHÉP TÍNH CỘNG", detail: "Gộp các nhóm và tìm tổng.", tone: "add", symbol: "+" },
     { id: "subtract", eyebrow: "PHÉP TÍNH TRỪ", detail: "Tìm phần còn lại.", tone: "subtract", symbol: "−" },
@@ -195,7 +204,7 @@ function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGui
       <div className="activity-topbar">
         <button type="button" className="menu-back" onClick={onBack}>← Trở về</button>
         <div className="mini-brand"><span className="mini-brand-rocket"><Rocket size={19} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
-        <button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button>
+        <div className="topbar-controls"><button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button><LanguageControl language={language} onToggle={onLanguageToggle} /></div>
       </div>
       <div className="activity-heading">
         <p>CHỌN NHIỆM VỤ</p>
@@ -219,7 +228,7 @@ function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGui
   );
 }
 
-function PracticeFormatScreen({ operation, playerName, onBack, onStart }: { operation: Operation; playerName: string; onBack: () => void; onStart: (format: PracticeFormat) => void }) {
+function PracticeFormatScreen({ operation, playerName, onBack, onStart, language, onLanguageToggle }: { operation: Operation; playerName: string; onBack: () => void; onStart: (format: PracticeFormat) => void; language: Language; onLanguageToggle: () => void }) {
   const activity = activityMeta[operation];
   const options: Array<{ format: PracticeFormat; symbol: string; description: string }> = [
     { format: "standard", symbol: "✓", description: "Tính kết quả của phép tính." },
@@ -229,6 +238,7 @@ function PracticeFormatScreen({ operation, playerName, onBack, onStart }: { oper
   return <section className="format-screen" aria-label="Chọn dạng bài">
     <button type="button" className="format-back" onClick={onBack}>← Trở về chọn hoạt động</button>
     <div className="format-brand mini-brand" aria-label="Phi Hành Tinh Phép Tính"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
+    <LanguageControl className="screen-language-control" language={language} onToggle={onLanguageToggle} />
     <div className="format-orbit" aria-hidden="true" />
     <div className="format-hana"><div className="robot-fallback"><span /><span /><i /></div></div>
     <p className="format-kicker">ROBOT HANA SẴN SÀNG</p>
@@ -898,16 +908,14 @@ export default function GameCanvas() {
       <canvas ref={canvasRef} className={webglUnavailable ? "game-canvas is-hidden" : "game-canvas"} aria-label="Không gian trò chơi toán học" />
       {webglUnavailable && <div className="space-fallback" aria-hidden="true"><span className="fallback-planet coral" /><span className="fallback-planet lavender" /><span className="fallback-planet mint" /><span className="fallback-orbit one" /><span className="fallback-orbit two" /><span className="fallback-stars">✦ · ✧ · ★ · ✦ · ✧</span></div>}
       <div className="space-atmosphere" aria-hidden="true" />
-      <button className="language-toggle" type="button" onClick={() => setLanguage((current) => current === "vi" ? "en" : "vi")} aria-label={language === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"}>
-        <span>◎</span><b>{language === "vi" ? "EN" : "VI"}</b>
-      </button>
 
-      {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("profile")} onGuide={() => setShowGuide(true)} />}
-      {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => setScreen("menu")} />}
-      {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} />}
-      {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} />}
+      {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("profile")} onGuide={() => setShowGuide(true)} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
+      {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => setScreen("menu")} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
+      {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
+      {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "summary" && <section ref={summaryRef} className="summary-screen" aria-label="Tổng kết lượt chơi">
         <div className="summary-brand mini-brand" aria-label="Phi Hành Tinh Phép Tính"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
+        <LanguageControl className="summary-language-control" language={language} onToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />
         <div className="summary-orbit" aria-hidden="true" />
         <div className="summary-stars" aria-hidden="true"><span>✦</span><span>★</span><span>✦</span></div>
         <div className="summary-robot"><div className="robot-fallback"><span /><span /><i /></div></div>
@@ -949,6 +957,7 @@ export default function GameCanvas() {
         <div className="mission-actions">
           <button className="mission-menu-button" type="button" onClick={() => setScreen("menu")}><span>↔</span> Đổi nhiệm vụ</button>
           <button className="mission-menu-button mission-end-button" type="button" onClick={finishSession}><span>■</span> Kết thúc lượt</button>
+          <LanguageControl className="mission-language-control" language={language} onToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />
         </div>
         <button className="reward-progress" type="button" onClick={() => setShowScorePanel(true)} aria-label="Xem điểm hiện tại và tiến độ nhận quà">
           <span className="reward-progress-icon">{nextReward?.symbol ?? "♛"}</span>
