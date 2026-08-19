@@ -9,8 +9,8 @@ const BACKGROUND_TRACK = "/manus-storage/hana-gentle-orbit-background_1ffb574e.m
 const STORAGE_KEY = "hana-sound-enabled";
 const MUSIC_VOLUME_STORAGE_KEY = "hana-music-volume";
 const EFFECTS_VOLUME_STORAGE_KEY = "hana-effects-volume";
-const DEFAULT_MUSIC_VOLUME = 16;
-const DEFAULT_EFFECTS_VOLUME = 62;
+const DEFAULT_MUSIC_VOLUME = 50;
+const DEFAULT_EFFECTS_VOLUME = 50;
 
 type Tone = { frequency: number; delay: number; duration: number; volume: number; type?: OscillatorType };
 
@@ -30,7 +30,9 @@ export function getStoredSoundPreference() {
 
 function getStoredVolume(key: string, fallback: number) {
   if (typeof window === "undefined") return fallback;
-  const value = Number(window.localStorage.getItem(key));
+  const rawValue = window.localStorage.getItem(key);
+  if (rawValue === null) return fallback;
+  const value = Number(rawValue);
   return Number.isFinite(value) ? Math.min(100, Math.max(0, Math.round(value))) : fallback;
 }
 

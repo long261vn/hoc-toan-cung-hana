@@ -142,3 +142,11 @@
 - [x] Rà soát cách cập nhật trạng thái React để câu hỏi, đáp án, đáp án đúng và gợi ý luôn thuộc cùng một đối tượng câu hỏi.
 - [x] Sửa bộ sinh và luồng chuyển câu hỏi; xác minh dạng bài thường, tìm thành phần chưa biết, bảng nhân, bảng chia, hỗn hợp và bài kiểm tra.
 - [x] Chạy kiểm thử tự động quy mô lớn, chơi thử từng hoạt động và dựng bản sản phẩm trước khi lưu checkpoint.
+
+## Điều khiển âm thanh và phản hồi hành động
+
+- [x] Hợp nhất nút bật/tắt âm thanh và mở cài đặt thành một điều khiển duy nhất, dễ chạm trên màn hình chính.
+- [x] Đặt mức mặc định mới là 50% cho nhạc nền và hiệu ứng; duy trì lưu lựa chọn riêng sau khi người chơi điều chỉnh.
+- [x] Kiểm tra và bảo đảm có hiệu ứng cho thao tác chọn, trả lời đúng và trả lời sai.
+- [x] Làm nổi bật rõ ràng nút Nhiệm vụ tiếp và Thử lại sau phản hồi đáp án.
+- [x] Kiểm thử điều khiển, âm thanh, giao diện desktop/mobile, TypeScript và build trước khi lưu checkpoint.

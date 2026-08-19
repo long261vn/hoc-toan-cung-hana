@@ -56,21 +56,19 @@ function LanguageControl({ language, onToggle, className = "" }: { language: Lan
   </button>;
 }
 
-function SoundControl({ enabled, language, onToggle, musicVolume, effectsVolume, onMusicVolumeChange, onEffectsVolumeChange, defaultSettingsOpen = false }: { enabled: boolean; language: Language; onToggle: () => void; musicVolume: number; effectsVolume: number; onMusicVolumeChange: (volume: number) => void; onEffectsVolumeChange: (volume: number) => void; defaultSettingsOpen?: boolean }) {
+function SoundControl({ enabled, language, onToggle, onSettingsOpen, musicVolume, effectsVolume, onMusicVolumeChange, onEffectsVolumeChange, defaultSettingsOpen = false }: { enabled: boolean; language: Language; onToggle: () => void; onSettingsOpen: () => void; musicVolume: number; effectsVolume: number; onMusicVolumeChange: (volume: number) => void; onEffectsVolumeChange: (volume: number) => void; defaultSettingsOpen?: boolean }) {
   const label = language === "en" ? (enabled ? "Sound on" : "Sound off") : (enabled ? "Âm thanh bật" : "Âm thanh tắt");
-  return <div className="sound-control-group" data-sound-control>
-    <button className={`sound-control ${enabled ? "is-on" : "is-off"}`} type="button" onClick={onToggle} aria-pressed={enabled} aria-label={label}>
-      <span className="sound-glyph">{enabled ? <Volume2 size={17} /> : <VolumeX size={17} />}</span><span className="sound-label">{label}</span><small>{language === "en" ? "music & effects" : "nhạc & hiệu ứng"}</small>
-    </button>
-    <Popover defaultOpen={defaultSettingsOpen}>
-      <PopoverTrigger asChild><button className="sound-settings-trigger" type="button" aria-label={language === "en" ? "Sound settings" : "Cài đặt âm thanh"}><SlidersHorizontal size={15} /></button></PopoverTrigger>
+  return <Popover defaultOpen={defaultSettingsOpen}>
+      <PopoverTrigger asChild><button className={`sound-control ${enabled ? "is-on" : "is-off"}`} data-sound-control type="button" onClick={onSettingsOpen} aria-pressed={enabled} aria-label={language === "en" ? "Open sound settings" : "Mở cài đặt âm thanh"}>
+        <span className="sound-glyph">{enabled ? <Volume2 size={17} /> : <VolumeX size={17} />}</span><span className="sound-label">{language === "en" ? "Sound" : "Âm thanh"}</span><span className="sound-settings-glyph"><SlidersHorizontal size={13} /></span><small>{language === "en" ? "music & effects" : "nhạc & hiệu ứng"}</small>
+      </button></PopoverTrigger>
       <PopoverContent align="end" sideOffset={9} className="sound-settings-panel">
         <div className="sound-settings-heading"><span><SlidersHorizontal size={16} /> {language === "en" ? "Sound settings" : "Cài đặt âm thanh"}</span><small>{language === "en" ? "Choose a comfortable level" : "Chọn mức âm lượng dễ chịu"}</small></div>
+        <button className={`sound-master-toggle ${enabled ? "is-on" : "is-off"}`} data-sound-master-toggle type="button" onClick={onToggle} aria-pressed={enabled}><span>{enabled ? <Volume2 size={17} /> : <VolumeX size={17} />}</span><b>{label}</b><small>{language === "en" ? "Tap to turn all sound on or off" : "Chạm để bật hoặc tắt toàn bộ âm thanh"}</small></button>
         <label className="sound-slider-row"><span><Volume2 size={15} /><b>{language === "en" ? "Background music" : "Nhạc nền"}</b><em>{musicVolume}%</em></span><Slider className="sound-slider" value={[musicVolume]} min={0} max={100} step={1} aria-label={language === "en" ? "Background music volume" : "Âm lượng nhạc nền"} onValueChange={([value]) => onMusicVolumeChange(value ?? 0)} /></label>
         <label className="sound-slider-row"><span><Sparkles size={15} /><b>{language === "en" ? "Sound effects" : "Hiệu ứng âm thanh"}</b><em>{effectsVolume}%</em></span><Slider className="sound-slider" value={[effectsVolume]} min={0} max={100} step={1} aria-label={language === "en" ? "Sound effects volume" : "Âm lượng hiệu ứng"} onValueChange={([value]) => onEffectsVolumeChange(value ?? 0)} /></label>
       </PopoverContent>
-    </Popover>
-  </div>;
+    </Popover>;
 }
 
 const textOrigins = new WeakMap<Text, string>();
@@ -184,7 +182,7 @@ const activityMeta: Record<ActivityId, { label: string; kicker: string; descript
   test: { label: "Bài kiểm tra", kicker: "8 CÂU THỬ THÁCH", description: "Hoàn thành tám nhiệm vụ để nhận thật nhiều sao." },
 };
 
-function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle, soundEnabled, onSoundToggle, musicVolume, effectsVolume, onMusicVolumeChange, onEffectsVolumeChange, defaultSoundSettingsOpen }: { onStart: () => void; onGuide: () => void; language: Language; onLanguageToggle: () => void; soundEnabled: boolean; onSoundToggle: () => void; musicVolume: number; effectsVolume: number; onMusicVolumeChange: (volume: number) => void; onEffectsVolumeChange: (volume: number) => void; defaultSoundSettingsOpen: boolean }) {
+function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle, soundEnabled, onSoundToggle, onSoundSettingsOpen, musicVolume, effectsVolume, onMusicVolumeChange, onEffectsVolumeChange, defaultSoundSettingsOpen }: { onStart: () => void; onGuide: () => void; language: Language; onLanguageToggle: () => void; soundEnabled: boolean; onSoundToggle: () => void; onSoundSettingsOpen: () => void; musicVolume: number; effectsVolume: number; onMusicVolumeChange: (volume: number) => void; onEffectsVolumeChange: (volume: number) => void; defaultSoundSettingsOpen: boolean }) {
   return (
     <section className="welcome-screen" aria-label="Chào mừng đến với Phi Hành Tinh Phép Tính">
       <div className="welcome-operation-stage" aria-hidden="true">
@@ -193,7 +191,7 @@ function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle, soundEnab
       </div>
       <div className="welcome-topbar">
         <div className="mini-brand"><span className="mini-brand-rocket"><Rocket size={19} fill="currentColor" /></span><span data-brand-wordmark>Phi Hành Tinh<br />Phép Tính</span></div>
-        <div className="topbar-controls"><button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button><SoundControl enabled={soundEnabled} language={language} onToggle={onSoundToggle} musicVolume={musicVolume} effectsVolume={effectsVolume} onMusicVolumeChange={onMusicVolumeChange} onEffectsVolumeChange={onEffectsVolumeChange} defaultSettingsOpen={defaultSoundSettingsOpen} /><LanguageControl language={language} onToggle={onLanguageToggle} /></div>
+        <div className="topbar-controls"><button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button><SoundControl enabled={soundEnabled} language={language} onToggle={onSoundToggle} onSettingsOpen={onSoundSettingsOpen} musicVolume={musicVolume} effectsVolume={effectsVolume} onMusicVolumeChange={onMusicVolumeChange} onEffectsVolumeChange={onEffectsVolumeChange} defaultSettingsOpen={defaultSoundSettingsOpen} /><LanguageControl language={language} onToggle={onLanguageToggle} /></div>
       </div>
       <div className="welcome-content">
         <div className="welcome-robot" aria-hidden="true"><div className="robot-fallback"><span /><span /><i /></div><span className="robot-orbit" /></div>
@@ -1032,7 +1030,7 @@ export default function GameCanvas() {
       {webglUnavailable && <div className="space-fallback" aria-hidden="true"><span className="fallback-planet coral" /><span className="fallback-planet lavender" /><span className="fallback-planet mint" /><span className="fallback-orbit one" /><span className="fallback-orbit two" /><span className="fallback-stars">✦ · ✧ · ★ · ✦ · ✧</span></div>}
       <div className="space-atmosphere" aria-hidden="true" />
 
-      {screen === "welcome" && <WelcomeScreen onStart={() => { playSound("launch"); setScreen("profile"); }} onGuide={() => { playSound("tap"); setShowGuide(true); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} soundEnabled={soundEnabled} onSoundToggle={toggleSound} musicVolume={musicVolume} effectsVolume={effectsVolume} onMusicVolumeChange={changeMusicVolume} onEffectsVolumeChange={changeEffectsVolume} defaultSoundSettingsOpen={isSoundSettingsDemo} />}
+      {screen === "welcome" && <WelcomeScreen onStart={() => { playSound("launch"); setScreen("profile"); }} onGuide={() => { playSound("tap"); setShowGuide(true); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} soundEnabled={soundEnabled} onSoundToggle={toggleSound} onSoundSettingsOpen={() => playSound("tap")} musicVolume={musicVolume} effectsVolume={effectsVolume} onMusicVolumeChange={changeMusicVolume} onEffectsVolumeChange={changeEffectsVolume} defaultSoundSettingsOpen={isSoundSettingsDemo} />}
       {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => { playSound("launch"); setScreen("menu"); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
@@ -1215,7 +1213,7 @@ export default function GameCanvas() {
                   <div className="hana-hint-robot" aria-label="Robot Hana đang gợi ý"><span /><span /><i /></div>
                   <div className="hana-hint-copy"><strong>{language === "en" ? `Robot Hana's hint for ${displayName}:` : `Robot Hana gợi ý cho ${displayName}:`}</strong><span>{language === "en" ? `That is okay. This try loses 2 points. ${translateLearningText(question.hint, language)}` : `Chưa sao đâu, lượt này giảm 2 điểm. ${translateLearningText(question.hint, language)}`}</span><ol>{question.hintSteps.map((step) => <li key={step}>{translateLearningText(step, language)}</li>)}</ol></div>
                 </div>}
-                <button type="button" onClick={continueMission}>
+                <button type="button" className={`feedback-action ${feedback === "correct" ? "is-next" : "is-retry"}`} onClick={continueMission}>
                   {feedback === "correct" ? (mode === "test" && testStep + 1 >= 8 ? copy("Xem kết quả", "View results") : copy("Nhiệm vụ tiếp", "Next mission")) : copy("Thử lại", "Try again")}
                   <ChevronRight size={17} />
                 </button>

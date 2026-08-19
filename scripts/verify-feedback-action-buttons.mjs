@@ -1,0 +1,43 @@
+const debugPort = process.env.CDP_PORT ?? "9222";
+const previewUrl = "http://localhost:3000/?lang=en&nowebgl";
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const targets = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then((response) => response.json());
+const target = targets.find((item) => item.type === "page");
+if (!target?.webSocketDebuggerUrl) throw new Error("Không tìm thấy tab Chromium để kiểm thử nút phản hồi.");
+const socket = new WebSocket(target.webSocketDebuggerUrl);
+await new Promise((resolve, reject) => { socket.addEventListener("open", resolve, { once: true }); socket.addEventListener("error", reject, { once: true }); });
+let commandId = 0;
+const pending = new Map();
+socket.addEventListener("message", ({ data }) => { const message = JSON.parse(data); const item = pending.get(message.id); if (!item) return; pending.delete(message.id); message.error ? item.reject(new Error(message.error.message)) : item.resolve(message.result); });
+const command = (method, params = {}) => new Promise((resolve, reject) => { const id = ++commandId; pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
+const evaluate = async (expression) => (await command("Runtime.evaluate", { expression, returnByValue: true })).result?.value;
+const waitFor = async (selector) => { for (let index = 0; index < 30; index += 1) { if (await evaluate(`Boolean(document.querySelector(${JSON.stringify(selector)}))`)) return; await sleep(100); } throw new Error(`Không tìm thấy ${selector}`); };
+const getAnswer = async () => evaluate(`(() => { const expression = document.querySelector(".math-expression")?.textContent ?? ""; const [left] = expression.split("="); return Function('"use strict"; return (' + left.replace("×", "*").replace("÷", "/").replace("−", "-") + ');')(); })()`);
+const actionInfo = () => evaluate(`(() => { const button = document.querySelector(".feedback-action"); const style = button ? getComputedStyle(button) : null; const rect = button?.getBoundingClientRect(); return { className: button?.className ?? "", height: rect?.height ?? 0, minHeight: style ? Number.parseFloat(style.minHeight) : 0, background: style?.backgroundImage ?? "" }; })()`);
+
+try {
+  await command("Page.navigate", { url: previewUrl });
+  await waitFor(".welcome-primary");
+  await evaluate(`document.querySelector(".welcome-primary")?.click()`);
+  await waitFor(".profile-name-field input");
+  await evaluate(`(() => { const input = document.querySelector(".profile-name-field input"); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; setter.call(input, "Linh"); input.dispatchEvent(new Event("input", { bubbles: true })); })()`);
+  await evaluate(`document.querySelector(".profile-continue")?.click()`);
+  await waitFor(".activity-card");
+  await evaluate(`Array.from(document.querySelectorAll(".activity-card")).find((card) => card.textContent.includes("Addition"))?.click()`);
+  await waitFor(".format-option");
+  await evaluate(`document.querySelector(".format-option")?.click()`);
+  await waitFor(".math-expression");
+  const correctAnswer = await getAnswer();
+  await evaluate(`Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) === ${correctAnswer})?.click()`);
+  await waitFor(".feedback-action.is-next");
+  const next = await actionInfo();
+  if (next.height < 40 || next.minHeight < 40 || !next.background.includes("gradient")) throw new Error(`Nút Nhiệm vụ tiếp chưa đủ nổi bật: ${JSON.stringify(next)}`);
+  await evaluate(`document.querySelector(".feedback-action")?.click()`);
+  await waitFor(".math-expression");
+  const nextAnswer = await getAnswer();
+  await evaluate(`Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) !== ${nextAnswer})?.click()`);
+  await waitFor(".feedback-action.is-retry");
+  const retry = await actionInfo();
+  if (retry.height < 40 || retry.minHeight < 40 || !retry.background.includes("gradient")) throw new Error(`Nút Thử lại chưa đủ nổi bật: ${JSON.stringify(retry)}`);
+  console.log(JSON.stringify({ next, retry, status: "feedback action buttons valid" }));
+} finally { socket.close(); }
