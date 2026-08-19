@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Gem,
   HelpCircle,
+  Menu,
   Rocket,
   Sparkles,
   Star,
@@ -324,6 +325,7 @@ export default function GameCanvas() {
   const isScoreDemo = demoParams.has("score");
   const isGuideDemo = demoParams.has("guide");
   const isSoundSettingsDemo = demoParams.has("soundsettings");
+  const isMenuCollapsedDemo = demoParams.has("menucollapsed");
   const isMaxRewardDemo = demoParams.has("maxrewards");
   const forceCanvasFallback = demoParams.has("nowebgl");
   const missingDemoOperation = demoParams.get("missing");
@@ -375,6 +377,7 @@ export default function GameCanvas() {
   const [soundEnabled, setSoundEnabled] = useState(getStoredSoundPreference);
   const [musicVolume, setMusicVolume] = useState(getStoredMusicVolume);
   const [effectsVolume, setEffectsVolume] = useState(getStoredEffectsVolume);
+  const [menuCollapsed, setMenuCollapsed] = useState(isMenuCollapsedDemo);
   const audioRef = useRef<HanaAudio | null>(null);
   const displayName = playerName.trim() || (language === "en" ? "Young astronaut" : "Phi hành gia nhỏ");
   const copy = (vietnamese: string, english: string) => language === "en" ? english : vietnamese;
@@ -618,6 +621,7 @@ export default function GameCanvas() {
 
   const startActivity = (nextActivity: ActivityId) => {
     playSound("launch");
+    setMenuCollapsed(false);
     if (nextActivity === "add" || nextActivity === "subtract" || nextActivity === "multiply" || nextActivity === "divide") {
       setSelectedActivity(nextActivity);
       setOperation(nextActivity);
@@ -656,6 +660,7 @@ export default function GameCanvas() {
 
   const beginPractice = (nextFormat: PracticeFormat) => {
     playSound("launch");
+    setMenuCollapsed(false);
     setAnswered(null);
     setFeedback("idle");
     setTestComplete(false);
@@ -701,6 +706,7 @@ export default function GameCanvas() {
   const answerQuestion = useCallback(
     (choice: number) => {
       if (answered !== null || testComplete || (mode === "tables" && selectedTables.length === 0)) return;
+      setMenuCollapsed(true);
       setAnswered(choice);
       if (choice === question.answer) {
         playSound("correct");
@@ -1076,7 +1082,7 @@ export default function GameCanvas() {
       </section>}
 
       {screen === "game" && <>
-      <header className="mission-header">
+      <header className={`mission-header ${menuCollapsed ? "is-collapsed" : ""}`}>
         <div className="brand-lockup">
           <div className="brand-emblem" aria-hidden="true">
             <span className="emblem-orbit" />
@@ -1099,6 +1105,7 @@ export default function GameCanvas() {
           <span><small>{copy("ĐIỂM HIỆN TẠI", "CURRENT POINTS")}</small><strong>{sessionPoints}</strong><em>{nextReward ? language === "en" ? `${pointsUntilReward} points until ${rewardLabel(nextReward)}` : `Còn ${pointsUntilReward} điểm nhận ${rewardLabel(nextReward)}` : copy("Đã mở đủ phần thưởng!", "All rewards unlocked!")}</em></span>
         </button>
       </header>
+      {menuCollapsed && <button type="button" className="mission-menu-reveal" onClick={() => { playSound("tap"); setMenuCollapsed(false); }} aria-label={copy("Mở lại thanh menu", "Show menu bar")}><Menu size={17} /><span>{copy("Menu", "Menu")}</span></button>}
 
       <section className="mission-copy" aria-live="polite">
         <div className="mission-kicker"><Rocket size={15} /> {activeActivity.kicker}</div>
@@ -1121,7 +1128,7 @@ export default function GameCanvas() {
         <div className="robot-note"><span className="robot-note-dot" />{language === "en" ? `Robot Hana: “${displayName}, you can do it!”` : `Robot Hana: “${displayName}, bạn làm được mà!”`}</div>
       </aside>
 
-      <section className="mission-control" aria-label="Bảng điều khiển bài tập">
+      <section className={`mission-control ${menuCollapsed ? "is-menu-collapsed" : ""}`} aria-label="Bảng điều khiển bài tập">
         <div className="console-topline">
           <div className="mascot-wrap">
             <span className="speech-spark"><Sparkles size={14} /></span>

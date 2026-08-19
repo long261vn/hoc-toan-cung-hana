@@ -169,3 +169,9 @@
 - [x] Khôi phục biểu tượng cũ của Cộng, Trừ, Nhân, Chia và bỏ phần nền hình học bên dưới.
 - [x] Căn bảng làm bài vào giữa màn hình và nâng lên cao hơn trên desktop/mobile.
 - [x] Kiểm tra trực quan, TypeScript và build trước khi lưu checkpoint.
+
+## Tự thu gọn thanh menu khi làm bài
+
+- [x] Tự thu gọn thanh menu trên cùng khi học sinh bắt đầu tương tác với câu hỏi.
+- [x] Thêm nút nhỏ dễ thấy để mở lại thanh menu và giữ truy cập đến điểm, đổi nhiệm vụ, kết thúc lượt.
+- [x] Kiểm tra luồng trả lời, desktop/mobile, TypeScript và build trước khi lưu checkpoint.
