@@ -135,3 +135,10 @@
 - [x] Thiết kế bảng cài đặt âm thanh dễ hiểu với hai thanh trượt: nhạc nền và hiệu ứng.
 - [x] Áp dụng mức âm lượng riêng vào trình phát nhạc và bộ tạo hiệu ứng Web Audio, đồng thời lưu cài đặt.
 - [x] Kiểm thử thao tác thanh trượt, trạng thái bật/tắt, TypeScript, build và bố cục desktop/mobile trước khi lưu checkpoint.
+
+## Khẩn cấp: Chuẩn hóa câu hỏi và đáp án Toán lớp 3
+
+- [x] Tái hiện và ghi nhận lỗi ghép sai biểu thức với lựa chọn ở Cộng, Trừ, Nhân, Chia, Bảng Nhân–Chia và Bài kiểm tra.
+- [x] Rà soát cách cập nhật trạng thái React để câu hỏi, đáp án, đáp án đúng và gợi ý luôn thuộc cùng một đối tượng câu hỏi.
+- [x] Sửa bộ sinh và luồng chuyển câu hỏi; xác minh dạng bài thường, tìm thành phần chưa biết, bảng nhân, bảng chia, hỗn hợp và bài kiểm tra.
+- [x] Chạy kiểm thử tự động quy mô lớn, chơi thử từng hoạt động và dựng bản sản phẩm trước khi lưu checkpoint.

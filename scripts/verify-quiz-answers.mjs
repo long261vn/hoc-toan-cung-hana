@@ -9,6 +9,7 @@ const calculate = (expression) => {
 };
 
 const validate = (question) => {
+  if (!quiz.isQuestionConsistent(question)) throw new Error(`Lớp bảo vệ nhất quán từ chối câu hỏi: ${question.expression}`);
   if (question.options.length !== 4 || new Set(question.options).size !== 4) throw new Error(`Số lựa chọn không hợp lệ: ${question.expression}`);
   if (!question.options.includes(question.answer)) throw new Error(`Thiếu đáp án đúng: ${question.expression} → ${question.answer}`);
   if (!Number.isInteger(question.answer) || question.answer < 0) throw new Error(`Đáp án không hợp lệ: ${question.expression}`);

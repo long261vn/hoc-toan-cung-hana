@@ -40,6 +40,24 @@ const shuffle = <T,>(items: T[]) => {
   return copy;
 };
 
+/** A final runtime safeguard: only internally generated, numeric Grade 3 expressions are evaluated. */
+export function isQuestionConsistent(question: QuizQuestion) {
+  if (question.options.length !== 4 || new Set(question.options).size !== 4 || !question.options.includes(question.answer)) return false;
+  if (!Number.isInteger(question.answer) || question.answer < 0 || question.options.some((option) => !Number.isInteger(option) || option < 0)) return false;
+  const match = question.expression.match(/^\s*(\?|\d+)\s*([+−×÷])\s*(\?|\d+)\s*=\s*(\?|\d+)\s*$/);
+  if (!match) return false;
+  const [, firstToken, operator, secondToken, resultToken] = match;
+  const resolve = (token: string) => token === "?" ? question.answer : Number(token);
+  const first = resolve(firstToken);
+  const second = resolve(secondToken);
+  const result = resolve(resultToken);
+  if (![first, second, result].every(Number.isFinite)) return false;
+  if (operator === "+") return first + second === result;
+  if (operator === "−") return first - second === result;
+  if (operator === "×") return first * second === result;
+  return second !== 0 && first / second === result;
+}
+
 function choices(answer: number, span: number, minValue = 0) {
   const values = new Set<number>([answer]);
   const nudges = [-2, -1, 1, 2, -3, 3, -5, 5, -10, 10];

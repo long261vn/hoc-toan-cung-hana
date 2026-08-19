@@ -28,6 +28,7 @@ import {
   generateQuestion,
   generateMissingComponentQuestion,
   generateTableQuestion,
+  isQuestionConsistent,
   TIMES_TABLES,
   type Difficulty,
   type ExerciseMode,
@@ -447,10 +448,11 @@ export default function GameCanvas() {
   const freshQuestion = useCallback((buildQuestion: () => QuizQuestion) => {
     let candidate = buildQuestion();
     let attempts = 0;
-    while ((recentQuestionExpressionsRef.current.includes(candidate.expression) || candidate.expression === lastShownQuestionExpressionRef.current) && attempts < 20) {
+    while ((!isQuestionConsistent(candidate) || recentQuestionExpressionsRef.current.includes(candidate.expression) || candidate.expression === lastShownQuestionExpressionRef.current) && attempts < 50) {
       candidate = buildQuestion();
       attempts += 1;
     }
+    if (!isQuestionConsistent(candidate)) throw new Error("Không thể tạo câu hỏi Toán hợp lệ.");
     recentQuestionExpressionsRef.current = [...recentQuestionExpressionsRef.current, candidate.expression].slice(-5);
     lastShownQuestionExpressionRef.current = candidate.expression;
     return candidate;
@@ -1182,12 +1184,12 @@ export default function GameCanvas() {
               </section>
             )}
             {(!isTableMode || hasSelectedTables) ? <>
-            <div className="question-panel">
+            <div className="question-panel" key={`prompt-${question.id}`}>
               <span className="question-label">{isTableMode ? "NHIỆM VỤ BẢNG NHÂN VÀ CHIA" : question.kind === "missing" ? "TÌM THÀNH PHẦN CHƯA BIẾT" : "NHIỆM VỤ TOÁN HỌC"}</span>
               <p className="math-expression">{question.expression}</p>
               <p className="math-helper">{question.kind === "missing" ? "Tìm số còn thiếu để hoàn thành phép tính." : "Chọn đáp án đúng để nhận điểm thưởng."}</p>
             </div>
-            <div className="answer-grid">
+            <div className="answer-grid" key={`answers-${question.id}`} aria-label={`Đáp án cho ${question.expression}`}>
               {question.options.map((choice, index) => {
                 const isChosen = choice === answered;
                 const isCorrect = choice === question.answer;
