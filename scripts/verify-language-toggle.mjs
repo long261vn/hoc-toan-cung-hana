@@ -36,14 +36,17 @@ try {
   await command("Page.reload", { ignoreCache: true });
   await sleep(1000);
   const vietnamese = await command("Runtime.evaluate", { returnByValue: true, expression: `document.querySelector(".welcome-primary")?.textContent?.trim()` });
-  await command("Runtime.evaluate", { expression: `document.querySelector(".language-toggle")?.click()` });
+  const vietnameseCode = await command("Runtime.evaluate", { returnByValue: true, expression: `document.querySelector(".language-code")?.textContent?.trim()` });
+  await command("Runtime.evaluate", { expression: `document.querySelector(".language-control")?.click()` });
   await sleep(450);
   const english = await command("Runtime.evaluate", { returnByValue: true, expression: `document.querySelector(".welcome-primary")?.textContent?.trim()` });
-  await command("Runtime.evaluate", { expression: `document.querySelector(".language-toggle")?.click()` });
+  const englishCode = await command("Runtime.evaluate", { returnByValue: true, expression: `document.querySelector(".language-code")?.textContent?.trim()` });
+  await command("Runtime.evaluate", { expression: `document.querySelector(".language-control")?.click()` });
   await sleep(450);
   const restored = await command("Runtime.evaluate", { returnByValue: true, expression: `document.querySelector(".welcome-primary")?.textContent?.trim()` });
-  const report = { vietnamese: vietnamese.result?.value, english: english.result?.value, restored: restored.result?.value };
-  if (report.vietnamese !== "Bắt đầu" || report.english !== "Start" || report.restored !== "Bắt đầu") throw new Error(`Đổi ngôn ngữ chưa đúng: ${JSON.stringify(report)}`);
+  const restoredCode = await command("Runtime.evaluate", { returnByValue: true, expression: `document.querySelector(".language-code")?.textContent?.trim()` });
+  const report = { vietnamese: vietnamese.result?.value, vietnameseCode: vietnameseCode.result?.value, english: english.result?.value, englishCode: englishCode.result?.value, restored: restored.result?.value, restoredCode: restoredCode.result?.value };
+  if (report.vietnamese !== "Bắt đầu" || report.vietnameseCode !== "VIE" || report.english !== "Start" || report.englishCode !== "ENG" || report.restored !== "Bắt đầu" || report.restoredCode !== "VIE") throw new Error(`Đổi ngôn ngữ chưa đúng: ${JSON.stringify(report)}`);
   console.log(JSON.stringify(report));
 } finally {
   socket.close();

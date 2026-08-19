@@ -83,6 +83,13 @@
 - [x] Kiểm tra bố cục thanh đầu ở chào mừng, màn chơi, tổng kết và điện thoại để không có thành phần chồng lấn.
 - [x] Dựng bản phát hành, lưu checkpoint và bàn giao cập nhật giao diện.
 
+## Hoàn thiện nhãn VIE/ENG và bản English
+
+- [x] Sửa điều khiển để Tiếng Việt hiển thị VIE và English hiển thị ENG đúng theo ngôn ngữ đang dùng.
+- [x] Rà soát mọi màn, bảng điểm, phần thưởng, hướng dẫn, phản hồi và ảnh kỷ niệm trong English để phát hiện tiếng Việt còn sót.
+- [x] Hoàn thiện bản dịch English cho toàn bộ chuỗi còn lại, bao gồm nội dung có tên người chơi và gợi ý Robot Hana.
+- [x] Kiểm thử chuyển Việt/English ở toàn bộ hành trình trên desktop/mobile; dựng bản phát hành và lưu checkpoint.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.

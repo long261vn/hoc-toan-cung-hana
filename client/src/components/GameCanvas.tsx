@@ -75,6 +75,13 @@ const englishText: Record<string, string> = {
   "Gộp các nhóm số và tìm tổng thật nhanh.": "Combine number groups and find the total.", "Tìm phần còn lại với những nhiệm vụ ngắn gọn.": "Find what remains in short missions.", "Xếp các nhóm bằng nhau để nhân thật tự tin.": "Multiply equal groups with confidence.", "Chia đều các nhóm số theo nhiệm vụ.": "Share groups equally in each mission.", "Chọn bảng nhân, bảng chia hoặc cả nhân và chia.": "Choose multiplication tables, division tables, or both.", "Hoàn thành tám nhiệm vụ để nhận thật nhiều sao.": "Complete eight missions to earn lots of stars.",
   "Robot Hana:": "Robot Hana:", "bạn làm được mà!": "you can do it!", "HÀNH TINH NHÂN": "MULTIPLICATION PLANET", "HÀNH TINH CỘNG": "ADDITION PLANET", "HÀNH TINH TRỪ": "SUBTRACTION PLANET", "HÀNH TINH CHIA": "DIVISION PLANET",
   "Làm quen": "Getting started", "Tự tin": "Confident", "Thám hiểm": "Explorer", "Khởi động bảng nhân quen thuộc.": "Start with a familiar multiplication fact.",
+  "← Trở về": "← Back", "← Trở về chọn hoạt động": "← Back to activities", "Nhập tên của bạn để Hana đồng hành trong mỗi nhiệm vụ và ghi tên bạn lên thẻ kỷ niệm.": "Enter your name so Hana can join every mission and add it to your souvenir card.",
+  "TÊN PHI HÀNH GIA": "ASTRONAUT NAME", "Ví dụ: Minh Anh": "Example: Minh Anh", "Gộp các nhóm và tìm tổng.": "Combine groups and find the total.", "Tìm phần còn lại.": "Find what remains.", "Chọn từng bảng hoặc luyện cả nhân và chia.": "Choose tables or practise both operations.",
+  "Xếp những nhóm bằng nhau.": "Arrange equal groups.", "Chia đều các nhóm số.": "Share number groups equally.", "Thử sức và nhận sao.": "Try the challenge and earn stars.", "Robot Hana sẽ đồng hành cùng bạn trong mọi chuyến bay.": "Robot Hana will join you on every flight.",
+  "Học Bảng Nhân và Chia": "Learn multiplication & division", "Bài kiểm tra": "Test", "CHỌN NHIỆM VỤ": "CHOOSE A MISSION", "Hãy chọn dạng bài phù hợp để Hana bắt đầu lượt học nhé.": "Choose a practice type so Hana can begin your session.",
+  "Tính kết quả của phép tính.": "Calculate the answer.", "Tìm số còn thiếu trong phép tính.": "Find the missing number in the equation.", "Luyện xen kẽ cả hai dạng bài.": "Alternate between both practice types.",
+  "Nhân và chia xen kẽ": "Mix multiplication and division", "Phi Hành Tinh": "Math Planet", "Phép Tính": "Adventure",
+  "BẢNG CỬU CHƯƠNG": "TIMES TABLES", "PHẦN THƯỞNG GẦN NHẤT": "LATEST REWARDS", "TIẾN ĐỘ CỦA": "PROGRESS FOR",
 };
 
 function localizeVisibleText(language: Language) {
@@ -84,6 +91,7 @@ function localizeVisibleText(language: Language) {
   const nodes: Text[] = [];
   while (walker.nextNode()) nodes.push(walker.currentNode as Text);
   nodes.forEach((node) => {
+    if (node.parentElement?.closest(".language-control")) return;
     const original = textOrigins.get(node) ?? node.nodeValue ?? "";
     if (!textOrigins.has(node)) textOrigins.set(node, original);
     if (language === "vi") { node.nodeValue = original; return; }
@@ -138,7 +146,8 @@ function translateLearningText(text: string, language: Language) {
     .replace(/^Đổi (\d+) ÷ (\d+) thành phép nhân (\d+) × \? = (\d+)\.$/, "Turn $1 ÷ $2 into $3 × ? = $4.")
     .replace(/^Đổi (\d+) ÷ (\d+) thành (\d+) × \? = (\d+)\.$/, "Turn $1 ÷ $2 into $3 × ? = $4.")
     .replace(/^Dùng bảng nhân (\d+) để tìm số còn thiếu\.$/, "Use the $1 times table to find the missing number.")
-    .replace(/^Khởi động bảng (nhân|chia) (\d+)\.$/, "Start the $2 $1 table.");
+    .replace(/^Khởi động bảng nhân (\d+)\.$/, "Start the $1 multiplication table.")
+    .replace(/^Khởi động bảng chia (\d+)\.$/, "Start the $1 division table.");
 }
 
 const activityMeta: Record<ActivityId, { label: string; kicker: string; description: string }> = {
@@ -243,7 +252,7 @@ function PracticeFormatScreen({ operation, playerName, onBack, onStart, language
     <div className="format-hana"><div className="robot-fallback"><span /><span /><i /></div></div>
     <p className="format-kicker">ROBOT HANA SẴN SÀNG</p>
     <h2>{activity.label}<br /><em>Bạn muốn học thế nào?</em></h2>
-    <p className="format-intro">{playerName}, hãy chọn một dạng bài trước khi Hana khởi động lượt học của bạn.</p>
+    <p className="format-intro">{language === "en" ? `${playerName}, choose a practice type before Hana starts your learning session.` : `${playerName}, hãy chọn một dạng bài trước khi Hana khởi động lượt học của bạn.`}</p>
     <div className="format-option-grid">
       {options.map((option, index) => <button key={option.format} type="button" className={index === 0 ? "format-option is-recommended" : "format-option"} onClick={() => onStart(option.format)}>
         <b>{option.symbol}</b><strong>{practiceFormatMeta[option.format].label}</strong><small>{option.description}</small><span className="format-go">Bắt đầu <ChevronRight size={16} /></span>
@@ -330,6 +339,10 @@ export default function GameCanvas() {
   const [isSavingImage, setIsSavingImage] = useState(false);
   const [language, setLanguage] = useState<Language>(() => demoParams.get("lang") === "en" || window.localStorage.getItem("hana-language") === "en" ? "en" : "vi");
   const displayName = playerName.trim() || (language === "en" ? "Young astronaut" : "Phi hành gia nhỏ");
+  const copy = (vietnamese: string, english: string) => language === "en" ? english : vietnamese;
+  const operationLabel = (value: Operation) => language === "en" ? ({ add: "Addition", subtract: "Subtraction", multiply: "Multiplication", divide: "Division" }[value]) : activityMeta[value].label;
+  const tableLabel = (value: TablePracticeKind) => language === "en" ? ({ multiply: "Multiplication tables", divide: "Division tables", mixed: "Both multiplication & division" }[value]) : tableKindMeta[value].label;
+  const tableSubtitle = (value: TablePracticeKind) => language === "en" ? ({ multiply: "Practise one multiplication table", divide: "Practise one division table", mixed: "Mix multiplication and division" }[value]) : tableKindMeta[value].subtitle;
   const rewardLabel = (reward: (typeof sessionRewards)[number]) => language === "en" ? `Level ${reward.level} reward` : reward.label;
   const rewardDetail = (reward: (typeof sessionRewards)[number]) => language === "en" ? "A new treasure for your space collection." : reward.detail;
 
@@ -950,8 +963,8 @@ export default function GameCanvas() {
             <img className="brand-mark" src={ASSETS.logo} alt="" />
           </div>
           <div>
-            <p className="eyebrow">PHI HÀNH GIA: {displayName.toUpperCase()}</p>
-            <h1>Phi Hành Tinh<br />Phép Tính</h1>
+            <p className="eyebrow">{copy("PHI HÀNH GIA:", "ASTRONAUT:")} {displayName.toUpperCase()}</p>
+            <h1>{language === "en" ? <>Math Planet<br />Adventure</> : <>Phi Hành Tinh<br />Phép Tính</>}</h1>
           </div>
         </div>
         <div className="mission-actions">
@@ -961,7 +974,7 @@ export default function GameCanvas() {
         </div>
         <button className="reward-progress" type="button" onClick={() => setShowScorePanel(true)} aria-label="Xem điểm hiện tại và tiến độ nhận quà">
           <span className="reward-progress-icon">{nextReward?.symbol ?? "♛"}</span>
-          <span><small>ĐIỂM HIỆN TẠI</small><strong>{sessionPoints}</strong><em>{nextReward ? `Còn ${pointsUntilReward} điểm nhận ${rewardLabel(nextReward)}` : "Đã mở đủ phần thưởng!"}</em></span>
+          <span><small>{copy("ĐIỂM HIỆN TẠI", "CURRENT POINTS")}</small><strong>{sessionPoints}</strong><em>{nextReward ? language === "en" ? `${pointsUntilReward} points until ${rewardLabel(nextReward)}` : `Còn ${pointsUntilReward} điểm nhận ${rewardLabel(nextReward)}` : copy("Đã mở đủ phần thưởng!", "All rewards unlocked!")}</em></span>
         </button>
       </header>
 
@@ -978,7 +991,7 @@ export default function GameCanvas() {
         <span className="mission-orbit-node subtract">−</span>
         <span className="mission-orbit-node multiply">×</span>
         <span className="mission-orbit-node divide">÷</span>
-        <span className="mission-orbit-status">HÀNH TINH {activityMeta[operation].label.toUpperCase()}</span>
+        <span className="mission-orbit-status">{language === "en" ? `${operationLabel(operation).toUpperCase()} PLANET` : `HÀNH TINH ${operationLabel(operation).toUpperCase()}`}</span>
       </div>
 
       <aside className="robot-guide" aria-label="Robot Hana hướng dẫn">
@@ -992,11 +1005,11 @@ export default function GameCanvas() {
             <span className="speech-spark"><Sparkles size={14} /></span>
           </div>
           <div className="console-title">
-            <p>{activeActivity.label} <span>•</span> {isTableMode ? tableKindMeta[tableKind].subtitle : mode === "test" ? "8 câu thử thách" : practiceFormatMeta[practiceFormat].shortLabel}</p>
-            <h3>{testComplete ? "Hoàn thành kiểm tra!" : isTableMode && !hasSelectedTables ? "Hãy chọn ít nhất một bảng để bắt đầu." : translateLearningText(question.mission, language)}</h3>
+            <p>{isTableMode ? copy("Học Bảng Nhân và Chia", "Learn multiplication & division") : operationLabel(operation)} <span>•</span> {isTableMode ? tableSubtitle(tableKind) : mode === "test" ? copy("8 câu thử thách", "8-question challenge") : practiceFormatMeta[practiceFormat].shortLabel}</p>
+            <h3>{testComplete ? copy("Hoàn thành kiểm tra!", "Test complete!") : isTableMode && !hasSelectedTables ? copy("Hãy chọn ít nhất một bảng để bắt đầu.", "Choose at least one table to begin.") : translateLearningText(question.mission, language)}</h3>
           </div>
           <div className="mission-counter">
-            <span>{mode === "test" ? "Câu" : "Điểm hiện tại"}</span>
+            <span>{mode === "test" ? copy("Câu", "Question") : copy("Điểm hiện tại", "Current points")}</span>
             <strong>{mode === "test" ? (testComplete ? "8/8" : `${Math.min(testStep + 1, 8)}/8`) : sessionPoints}</strong>
           </div>
         </div>
@@ -1018,10 +1031,10 @@ export default function GameCanvas() {
               <section className="table-practice-panel" aria-label="Chọn bảng cửu chương để luyện">
                 <div className="table-panel-heading">
                   <div>
-                    <span>BẢNG CỬU CHƯƠNG</span>
-                    <strong>{tableKindMeta[tableKind].label}</strong>
+                    <span>{copy("BẢNG CỬU CHƯƠNG", "TIMES TABLES")}</span>
+                    <strong>{tableLabel(tableKind)}</strong>
                   </div>
-                  <p>{!hasSelectedTables ? "Chưa chọn bảng" : selectedTables.length === 1 ? `Đang luyện bảng ${selectedTables[0]}` : `${selectedTables.length} bảng đã chọn`}</p>
+                  <p>{!hasSelectedTables ? copy("Chưa chọn bảng", "No table selected") : selectedTables.length === 1 ? language === "en" ? `Practising the ${selectedTables[0]} table` : `Đang luyện bảng ${selectedTables[0]}` : language === "en" ? `${selectedTables.length} tables selected` : `${selectedTables.length} bảng đã chọn`}</p>
                 </div>
                 <div className="table-kind-switch" aria-label="Chọn kiểu bảng cửu chương">
                   {(Object.keys(tableKindMeta) as TablePracticeKind[]).map((kind) => (
@@ -1032,7 +1045,7 @@ export default function GameCanvas() {
                       style={{ "--table-accent": tableKindMeta[kind].accent } as React.CSSProperties}
                       onClick={() => changeTableKind(kind)}
                     >
-                      {tableKindMeta[kind].label}
+                      {tableLabel(kind)}
                     </button>
                   ))}
                 </div>
@@ -1141,7 +1154,7 @@ export default function GameCanvas() {
             <button className="guide-close" type="button" onClick={() => setShowScorePanel(false)} aria-label="Đóng bảng điểm"><X size={19} /></button>
             <div className="score-card-heading">
               <span className="score-card-symbol">{nextReward?.symbol ?? "♛"}</span>
-              <div><p className="eyebrow">TIẾN ĐỘ CỦA {displayName.toUpperCase()}</p><h2>Điểm hiện tại</h2><p>{nextReward ? `Còn ${pointsUntilReward} điểm để mở ${rewardLabel(nextReward)}.` : "Bạn đã mở trọn bộ 100 phần thưởng rồi!"}</p></div>
+              <div><p className="eyebrow">{copy("TIẾN ĐỘ CỦA", "PROGRESS FOR")} {displayName.toUpperCase()}</p><h2>{copy("Điểm hiện tại", "Current points")}</h2><p>{nextReward ? language === "en" ? `${pointsUntilReward} points to unlock ${rewardLabel(nextReward)}.` : `Còn ${pointsUntilReward} điểm để mở ${rewardLabel(nextReward)}.` : copy("Bạn đã mở trọn bộ 100 phần thưởng rồi!", "You have unlocked all 100 rewards!")}</p></div>
             </div>
             <div className="score-stats">
               <div><span>Điểm</span><strong>{sessionPoints}</strong></div>
@@ -1151,7 +1164,7 @@ export default function GameCanvas() {
             </div>
             <section className="score-reward-board" aria-label="Phần thưởng đã mở">
               <div><span>PHẦN THƯỞNG GẦN NHẤT</span><strong>{earnedRewards.length}/{sessionRewards.length}</strong></div>
-              {earnedRewards.length ? <div className="score-reward-list">{earnedRewards.slice(-6).map((reward) => <span key={reward.id}><b>{reward.symbol}</b><em>Cấp {reward.level}</em><small>{rewardLabel(reward)}</small></span>)}</div> : <p>Hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
+              {earnedRewards.length ? <div className="score-reward-list">{earnedRewards.slice(-6).map((reward) => <span key={reward.id}><b>{reward.symbol}</b><em>{copy("Cấp", "Level")} {reward.level}</em><small>{rewardLabel(reward)}</small></span>)}</div> : <p>{copy("Hãy trả lời đúng để mở phần thưởng đầu tiên nhé.", "Answer correctly to unlock your first reward!")}</p>}
             </section>
             <button type="button" className="primary-action score-continue" onClick={() => setShowScorePanel(false)}>Quay lại chơi tiếp <Rocket size={18} /></button>
           </section>
