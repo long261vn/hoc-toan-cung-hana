@@ -66,7 +66,7 @@ Tính cách thương hiệu: **tò mò, khích lệ, sáng rõ**.
 
 Giọng nói hồn nhiên, trực tiếp, động viên nỗ lực thay vì chấm điểm áp lực. Tiêu đề và nút bấm dùng động từ cụ thể, câu ngắn, tránh các lời mời chung chung.
 
-> “Robot Hana cần 1 tinh thể nữa — con tính cùng bạn nhé!”
+> “Robot Hana cần 1 tinh thể nữa — bạn tính cùng Hana nhé!”
 
 > “Chọn hành tinh để khởi động chuyến bay.”
 

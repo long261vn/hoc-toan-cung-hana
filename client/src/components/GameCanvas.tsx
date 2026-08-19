@@ -106,7 +106,7 @@ function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGui
           );
         })}
       </div>
-      <p className="activity-footer">Robot Hana sẽ đồng hành cùng con trong mọi chuyến bay.</p>
+      <p className="activity-footer">Robot Hana sẽ đồng hành cùng bạn trong mọi chuyến bay.</p>
     </section>
   );
 }
@@ -410,7 +410,7 @@ export default function GameCanvas() {
 
       <aside className="robot-guide" aria-label="Robot Hana hướng dẫn">
         <div className="robot-fallback" aria-hidden="true"><span /><span /><i /></div>
-        <div className="robot-note"><span className="robot-note-dot" />Robot Hana: “Con làm được mà!”</div>
+        <div className="robot-note"><span className="robot-note-dot" />Robot Hana: “Bạn làm được mà!”</div>
       </aside>
 
       <section className="mission-control" aria-label="Bảng điều khiển bài tập">
@@ -514,17 +514,17 @@ export default function GameCanvas() {
             </div>
             {feedback !== "idle" && (
               <div className={feedback === "correct" ? "feedback-banner is-correct" : "feedback-banner is-wrong"}>
-                <div>
-                  {feedback === "correct" ? <Check size={18} /> : <HelpCircle size={18} />}
-                  <span>{feedback === "correct" ? "Đúng rồi! Một tinh thể đã bay vào động cơ." : question.hint}</span>
-                </div>
+                {feedback === "correct" ? <div><Check size={18} /><span>Đúng rồi! Một tinh thể đã bay vào động cơ.</span></div> : <div className="hana-hint">
+                  <div className="hana-hint-robot" aria-label="Robot Hana đang gợi ý"><span /><span /><i /></div>
+                  <div className="hana-hint-copy"><strong>Robot Hana gợi ý:</strong><span>{question.hint}</span><ol>{question.hintSteps.map((step) => <li key={step}>{step}</li>)}</ol></div>
+                </div>}
                 <button type="button" onClick={continueMission}>
                   {feedback === "correct" ? (mode === "test" && testStep + 1 >= 8 ? "Xem kết quả" : "Nhiệm vụ tiếp") : "Thử lại"}
                   <ChevronRight size={17} />
                 </button>
               </div>
             )}
-            </> : <div className="table-empty-state"><Gem size={25} /><strong>Chọn bảng để luyện nhé</strong><span>Con có thể chọn một bảng, nhiều bảng hoặc bấm “Chọn Tất Cả”.</span></div>}
+            </> : <div className="table-empty-state"><Gem size={25} /><strong>Chọn bảng để luyện nhé</strong><span>Bạn có thể chọn một bảng, nhiều bảng hoặc bấm “Chọn Tất Cả”.</span></div>}
           </>
         )}
 
@@ -553,10 +553,10 @@ export default function GameCanvas() {
             <ol className="curriculum-list">
               <li><span>01</span><div><strong>Chọn hoạt động</strong><p>Con chọn Cộng, Trừ, Nhân, Chia, Bảng cửu chương hoặc Bài kiểm tra.</p></div></li>
               <li><span>02</span><div><strong>Đọc thật kỹ phép tính</strong><p>Nhìn vào bài toán lớn ở bảng điều khiển trước khi chọn đáp án.</p></div></li>
-              <li><span>03</span><div><strong>Chọn đáp án đúng</strong><p>Mỗi câu có bốn đáp án. Con có thể nhấn phím 1 đến 4 trên máy tính.</p></div></li>
-              <li><span>04</span><div><strong>Không sao nếu chưa đúng</strong><p>Robot Hana sẽ đưa gợi ý để con thử lại và tiếp tục học.</p></div></li>
+              <li><span>03</span><div><strong>Chọn đáp án đúng</strong><p>Mỗi câu có bốn đáp án. Bạn có thể nhấn phím 1 đến 4 trên máy tính.</p></div></li>
+              <li><span>04</span><div><strong>Không sao nếu chưa đúng</strong><p>Robot Hana sẽ đưa gợi ý để bạn thử lại và tiếp tục học.</p></div></li>
             </ol>
-            <p className="guide-note">Con có thể bấm nút Menu bất cứ lúc nào để đổi sang một hoạt động khác.</p>
+            <p className="guide-note">Bạn có thể bấm nút Menu bất cứ lúc nào để đổi sang một hoạt động khác.</p>
             <button type="button" className="primary-action" onClick={() => setShowGuide(false)}>Mình đã hiểu <Rocket size={18} /></button>
           </section>
         </div>
