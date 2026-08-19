@@ -13,6 +13,7 @@ export const TIMES_TABLES = [2, 3, 4, 5, 6, 7, 8, 9] as const;
 export interface TablePracticeSettings {
   kind: TablePracticeKind;
   tables: number[];
+  excludedExpressions?: readonly string[];
 }
 
 export interface QuizQuestion {
@@ -268,9 +269,21 @@ export function generateQuestion(
 export function generateTableQuestion(settings: TablePracticeSettings): QuizQuestion {
   const usableTables = settings.tables.filter((table) => TIMES_TABLES.includes(table as (typeof TIMES_TABLES)[number]));
   const selectedTables = usableTables.length > 0 ? usableTables : [2];
-  const table = selectedTables[rand(0, selectedTables.length - 1)];
-  const factor = rand(1, 10);
-  const isDivision = settings.kind === "mixed" ? Math.random() >= 0.5 : settings.kind === "divide";
+  const excludedExpressions = new Set(settings.excludedExpressions ?? []);
+  let table = selectedTables[rand(0, selectedTables.length - 1)];
+  let factor = rand(1, 10);
+  let isDivision = settings.kind === "mixed" ? Math.random() >= 0.5 : settings.kind === "divide";
+  let previewProduct = table * factor;
+  let previewExpression = isDivision ? `${previewProduct} ÷ ${table} = ?` : `${table} × ${factor} = ?`;
+  let attempts = 0;
+  while (excludedExpressions.has(previewExpression) && attempts < 40) {
+    table = selectedTables[rand(0, selectedTables.length - 1)];
+    factor = rand(1, 10);
+    isDivision = settings.kind === "mixed" ? Math.random() >= 0.5 : settings.kind === "divide";
+    previewProduct = table * factor;
+    previewExpression = isDivision ? `${previewProduct} ÷ ${table} = ?` : `${table} × ${factor} = ?`;
+    attempts += 1;
+  }
   const operation: Operation = isDivision ? "divide" : "multiply";
   const product = table * factor;
   const answer = isDivision ? factor : product;

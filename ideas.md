@@ -96,3 +96,6 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Các màn chính dùng quỹ đạo chấm sáng, hành tinh màu theo phép tính và lời dẫn của Hana như tín hiệu hành trình trang trí; không đưa lại Bản đồ hành trình hoặc lộ trình bắt buộc vì không phù hợp yêu cầu sản phẩm.
 - Màn chơi luôn có quỹ đạo và các điểm mốc hành tinh theo phép tính hiện tại, để vùng vũ trụ là sân khấu của nhiệm vụ thay vì chỉ là nền trống.
 - Hệ phần thưởng chỉ dùng điểm lượt, Nhãn dán Sao Nhỏ, Huy hiệu Nhà Thám Hiểm và Cúp Phi Công Nhí; không sử dụng lại thuật ngữ, biểu tượng hoặc cơ chế Tinh thể–năng lượng cũ.
+- Màn chào mừng và tổng kết luôn dùng quỹ đạo chấm với đủ bốn điểm mốc Cộng, Trừ, Nhân, Chia như một phần của bố cục chính; đó là dấu hiệu cho biết đây là hành trình của Hana, không chỉ là một giao diện có nền không gian.
+- “Phi Hành Tinh Phép Tính” là wordmark riêng và giữ nguyên khi đổi giao diện English; nội dung hỗ trợ vẫn chuyển ngữ đầy đủ, nhưng tên thương hiệu không bị thay bằng một nhãn chung chung.
+- 100 cấp thưởng vẫn được giữ theo yêu cầu học tập; khi xem English, nhãn thưởng hiển thị theo ba họ vật phẩm nhất quán — Little Star Sticker, Explorer Badge và Junior Pilot Trophy — với Hana Captain's Trophy là đích cấp 100.

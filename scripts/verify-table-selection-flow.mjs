@@ -1,0 +1,41 @@
+const debugPort = process.env.CDP_PORT ?? "9222";
+const previewUrl = "http://localhost:3000/";
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const targets = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then((response) => response.json());
+const target = targets.find((item) => item.type === "page");
+if (!target?.webSocketDebuggerUrl) throw new Error("Không tìm thấy tab Chromium để kiểm thử bảng nhân–chia.");
+const socket = new WebSocket(target.webSocketDebuggerUrl);
+await new Promise((resolve, reject) => { socket.addEventListener("open", resolve, { once: true }); socket.addEventListener("error", reject, { once: true }); });
+let commandId = 0;
+const pending = new Map();
+socket.addEventListener("message", ({ data }) => { const message = JSON.parse(data); const request = pending.get(message.id); if (!request) return; pending.delete(message.id); message.error ? request.reject(new Error(message.error.message)) : request.resolve(message.result); });
+const command = (method, params = {}) => new Promise((resolve, reject) => { const id = ++commandId; pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
+const evaluate = async (expression) => (await command("Runtime.evaluate", { expression, returnByValue: true })).result?.value;
+
+try {
+  await command("Page.enable");
+  await command("Page.navigate", { url: previewUrl });
+  await sleep(850);
+  await evaluate(`document.querySelector(".welcome-primary")?.click()`);
+  await sleep(250);
+  await evaluate(`(() => { const input = document.querySelector(".profile-name-field input"); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; setter.call(input, "Minh Anh"); input.dispatchEvent(new Event("input", { bubbles: true })); })()`);
+  await sleep(120);
+  await evaluate(`document.querySelector(".profile-continue")?.click()`);
+  await sleep(350);
+  const tablesActivityClicked = await evaluate(`(() => { const button = document.querySelectorAll(".activity-card")[2]; button?.click(); return Boolean(button); })()`);
+  if (!tablesActivityClicked) throw new Error("Không tìm thấy thẻ Học Bảng Nhân và Chia để kiểm thử.");
+  await sleep(450);
+  const before = await evaluate(`({ empty: Boolean(document.querySelector(".table-empty-state")), question: Boolean(document.querySelector(".question-panel")) })`);
+  if (!before.empty || before.question) throw new Error(`Chưa bắt buộc chọn bảng trước câu hỏi: ${JSON.stringify(before)}`);
+  const firstTableClicked = await evaluate(`(() => { const button = Array.from(document.querySelectorAll(".table-number-grid button")).find((item) => item.textContent.trim() === "2"); button?.click(); return Boolean(button); })()`);
+  if (!firstTableClicked) throw new Error("Không tìm thấy nút bảng 2 để kiểm thử.");
+  await sleep(250);
+  const first = await evaluate(`({ expression: document.querySelector(".math-expression")?.textContent?.trim(), options: Array.from(document.querySelectorAll(".answer-button strong")).map((node) => node.textContent.trim()) })`);
+  if (!first.expression || first.options.length !== 4) throw new Error(`Không sinh câu hỏi sau khi chọn bảng: ${JSON.stringify(first)}`);
+  const secondTable = await evaluate(`(() => { const button = Array.from(document.querySelectorAll(".table-number-grid button")).find((item) => item.textContent.trim() === "3"); const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps")); const handler = propsKey ? String(button[propsKey].onClick) : ""; button?.click(); return { clicked: Boolean(button), handler }; })()`);
+  if (!secondTable.clicked) throw new Error("Không tìm thấy nút bảng 3 để kiểm thử.");
+  await sleep(250);
+  const second = await evaluate(`({ expression: document.querySelector(".math-expression")?.textContent?.trim(), options: Array.from(document.querySelectorAll(".answer-button strong")).map((node) => node.textContent.trim()), selected: Array.from(document.querySelectorAll(".table-number-grid button.is-selected")).map((node) => node.textContent.trim()) })`);
+  if (!second.expression || second.expression === first.expression || second.options.length !== 4) throw new Error(`Không đổi câu hỏi/đáp án sau khi đổi bảng: ${JSON.stringify({ first, second, secondTable })}`);
+  console.log(JSON.stringify({ before, first, second, result: "table selection flow valid" }));
+} finally { socket.close(); }

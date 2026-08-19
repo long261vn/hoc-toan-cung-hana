@@ -90,6 +90,14 @@
 - [x] Hoàn thiện bản dịch English cho toàn bộ chuỗi còn lại, bao gồm nội dung có tên người chơi và gợi ý Robot Hana.
 - [x] Kiểm thử chuyển Việt/English ở toàn bộ hành trình trên desktop/mobile; dựng bản phát hành và lưu checkpoint.
 
+## Hoàn thiện phản hồi Hana và Bảng Nhân–Chia
+
+- [ ] Dịch toàn bộ phản hồi đúng/sai, gợi ý và nút hành động của Robot Hana sang English theo ngôn ngữ đang dùng.
+- [ ] Điều chỉnh Bảng Nhân và Chia để chỉ sinh câu hỏi sau khi người chơi đã chọn ít nhất một bảng.
+- [ ] Bảo đảm mỗi thay đổi bảng hoặc kiểu luyện sinh một câu hỏi mới với bộ đáp án mới.
+- [ ] Kiểm tra tự động số lượng lớn câu hỏi cộng, trừ, nhân, chia và bảng nhân–chia để xác minh đáp án đúng luôn nằm trong lựa chọn.
+- [ ] Kiểm thử trực quan luồng chọn bảng, đổi bảng, trả lời đúng/sai trên desktop/mobile; dựng bản phát hành và lưu checkpoint.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.

@@ -91,7 +91,7 @@ function localizeVisibleText(language: Language) {
   const nodes: Text[] = [];
   while (walker.nextNode()) nodes.push(walker.currentNode as Text);
   nodes.forEach((node) => {
-    if (node.parentElement?.closest(".language-control")) return;
+    if (node.parentElement?.closest(".language-control, [data-brand-wordmark]")) return;
     const original = textOrigins.get(node) ?? node.nodeValue ?? "";
     if (!textOrigins.has(node)) textOrigins.set(node, original);
     if (language === "vi") { node.nodeValue = original; return; }
@@ -101,6 +101,7 @@ function localizeVisibleText(language: Language) {
     let translated = englishText[core] ?? core;
     translated = translated
       .replace(/^PHI HÀNH GIA:/, "ASTRONAUT:")
+      .replace(/^HÀNH TRÌNH 4 HÀNH TINH$/, "FOUR-PLANET JOURNEY")
       .replace(/^ROBOT HANA CHÚC MỪNG /, "ROBOT HANA CONGRATULATES ")
       .replace(/^Lượt học của (.+)$/, "Learning session for $1")
       .replace(/^thật đáng tự hào!$/, "You should be proud!")
@@ -163,7 +164,7 @@ function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle }: { onSta
   return (
     <section className="welcome-screen" aria-label="Chào mừng đến với Phi Hành Tinh Phép Tính">
       <div className="welcome-topbar">
-        <div className="mini-brand"><span className="mini-brand-rocket"><Rocket size={19} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
+        <div className="mini-brand"><span className="mini-brand-rocket"><Rocket size={19} fill="currentColor" /></span><span data-brand-wordmark>Phi Hành Tinh<br />Phép Tính</span></div>
         <div className="topbar-controls"><button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button><LanguageControl language={language} onToggle={onLanguageToggle} /></div>
       </div>
       <div className="welcome-content">
@@ -176,7 +177,10 @@ function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle }: { onSta
           <button type="button" className="welcome-secondary" onClick={onGuide}><HelpCircle size={18} /> Xem cách chơi</button>
         </div>
         <div className="welcome-path" aria-label="Bốn hành tinh sẽ khám phá">
-          <span><b className="orange">+</b> Cộng</span><i /><span><b className="purple">−</b> Trừ</span><i /><span><b className="teal">×</b> Nhân</span><i /><span><b className="yellow">÷</b> Chia</span>
+          <span className="welcome-path-title">HÀNH TRÌNH 4 HÀNH TINH</span>
+          <div className="welcome-path-route">
+            <span><b className="orange">+</b> Cộng</span><i /><span><b className="purple">−</b> Trừ</span><i /><span><b className="teal">×</b> Nhân</span><i /><span><b className="yellow">÷</b> Chia</span>
+          </div>
         </div>
       </div>
     </section>
@@ -319,8 +323,10 @@ export default function GameCanvas() {
     ? generateMissingComponentQuestion(initialOperation, "easy")
     : generateQuestion(initialOperation, "easy"));
   const recentQuestionExpressionsRef = useRef<string[]>([question.expression]);
+  const lastShownQuestionExpressionRef = useRef(question.expression);
+  const lastTableSelectionRef = useRef<string | null>(null);
   const [tableKind, setTableKind] = useState<TablePracticeKind>(tableDemoKind);
-  const [selectedTables, setSelectedTables] = useState<number[]>(isTableDemo ? [2, 4, 6] : [2]);
+  const [selectedTables, setSelectedTables] = useState<number[]>(isTableDemo ? [2, 4, 6] : []);
   const [answered, setAnswered] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">("idle");
   const [testStep, setTestStep] = useState(0);
@@ -343,7 +349,12 @@ export default function GameCanvas() {
   const operationLabel = (value: Operation) => language === "en" ? ({ add: "Addition", subtract: "Subtraction", multiply: "Multiplication", divide: "Division" }[value]) : activityMeta[value].label;
   const tableLabel = (value: TablePracticeKind) => language === "en" ? ({ multiply: "Multiplication tables", divide: "Division tables", mixed: "Both multiplication & division" }[value]) : tableKindMeta[value].label;
   const tableSubtitle = (value: TablePracticeKind) => language === "en" ? ({ multiply: "Practise one multiplication table", divide: "Practise one division table", mixed: "Mix multiplication and division" }[value]) : tableKindMeta[value].subtitle;
-  const rewardLabel = (reward: (typeof sessionRewards)[number]) => language === "en" ? `Level ${reward.level} reward` : reward.label;
+  const rewardLabel = (reward: (typeof sessionRewards)[number]) => {
+    if (language !== "en") return reward.label;
+    if (reward.level === 100) return "Hana Captain's Trophy";
+    const rewardFamilies = ["Little Star Sticker", "Explorer Badge", "Junior Pilot Trophy"];
+    return `${rewardFamilies[(reward.level - 1) % rewardFamilies.length]} · Level ${reward.level}`;
+  };
   const rewardDetail = (reward: (typeof sessionRewards)[number]) => language === "en" ? "A new treasure for your space collection." : reward.detail;
 
   const generatePracticeQuestion = useCallback(
@@ -359,11 +370,12 @@ export default function GameCanvas() {
   const freshQuestion = useCallback((buildQuestion: () => QuizQuestion) => {
     let candidate = buildQuestion();
     let attempts = 0;
-    while (recentQuestionExpressionsRef.current.includes(candidate.expression) && attempts < 20) {
+    while ((recentQuestionExpressionsRef.current.includes(candidate.expression) || candidate.expression === lastShownQuestionExpressionRef.current) && attempts < 20) {
       candidate = buildQuestion();
       attempts += 1;
     }
     recentQuestionExpressionsRef.current = [...recentQuestionExpressionsRef.current, candidate.expression].slice(-5);
+    lastShownQuestionExpressionRef.current = candidate.expression;
     return candidate;
   }, []);
 
@@ -490,19 +502,29 @@ export default function GameCanvas() {
       setTestCorrect(0);
       return;
     }
-    const tableQuestion = freshQuestion(() => generateTableQuestion({ kind: nextKind, tables: nextTables }));
     setMode("tables");
     setTableKind(nextKind);
     setSelectedTables(nextTables);
-    setOperation(tableQuestion.operation);
-    setQuestion(tableQuestion);
     setAnswered(null);
     setFeedback("idle");
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
-    handleRef.current?.setActivePlanet(tableQuestion.operation);
   };
+
+  useEffect(() => {
+    if (mode !== "tables" || selectedTables.length === 0) return;
+    const selectionKey = `${tableKind}:${selectedTables.join(",")}`;
+    if (lastTableSelectionRef.current === selectionKey) return;
+    lastTableSelectionRef.current = selectionKey;
+    const excludedExpressions = [...recentQuestionExpressionsRef.current, lastShownQuestionExpressionRef.current];
+    const tableQuestion = freshQuestion(() => generateTableQuestion({ kind: tableKind, tables: selectedTables, excludedExpressions }));
+    setOperation(tableQuestion.operation);
+    setQuestion(tableQuestion);
+    setAnswered(null);
+    setFeedback("idle");
+    handleRef.current?.setActivePlanet(tableQuestion.operation);
+  }, [freshQuestion, mode, selectedTables, tableKind]);
 
   const startActivity = (nextActivity: ActivityId) => {
     if (nextActivity === "add" || nextActivity === "subtract" || nextActivity === "multiply" || nextActivity === "divide") {
@@ -530,7 +552,7 @@ export default function GameCanvas() {
     setScreen("game");
     setSelectedActivity(nextActivity);
     if (nextActivity === "tables") {
-      setTablePractice(tableKind, selectedTables);
+      setTablePractice(tableKind, []);
       return;
     }
     if (nextActivity === "test") {
@@ -563,6 +585,7 @@ export default function GameCanvas() {
   };
 
   const toggleTable = (table: number) => {
+    const isAddingTable = !selectedTables.includes(table);
     const nextTables = selectedTables.includes(table)
       ? (selectedTables.length === 1 ? selectedTables : selectedTables.filter((item) => item !== table))
       : [...selectedTables, table].sort((a, b) => a - b);
@@ -927,9 +950,10 @@ export default function GameCanvas() {
       {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "summary" && <section ref={summaryRef} className="summary-screen" aria-label="Tổng kết lượt chơi">
-        <div className="summary-brand mini-brand" aria-label="Phi Hành Tinh Phép Tính"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
+        <div className="summary-brand mini-brand" aria-label="Phi Hành Tinh Phép Tính"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><span data-brand-wordmark>Phi Hành Tinh<br />Phép Tính</span></div>
         <LanguageControl className="summary-language-control" language={language} onToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />
         <div className="summary-orbit" aria-hidden="true" />
+        <div className="summary-journey" aria-hidden="true"><i className="add">+</i><i className="subtract">−</i><i className="multiply">×</i><i className="divide">÷</i></div>
         <div className="summary-stars" aria-hidden="true"><span>✦</span><span>★</span><span>✦</span></div>
         <div className="summary-robot"><div className="robot-fallback"><span /><span /><i /></div></div>
         <p className="summary-kicker">ROBOT HANA CHÚC MỪNG {displayName.toUpperCase()}</p>
@@ -1100,12 +1124,12 @@ export default function GameCanvas() {
             </div>
             {feedback !== "idle" && (
               <div className={feedback === "correct" ? "feedback-banner is-correct" : "feedback-banner is-wrong"}>
-                {feedback === "correct" ? <div><Check size={18} /><span>Đúng rồi, {displayName}! +10 điểm. {nextReward ? `Còn ${pointsUntilReward} điểm để nhận ${rewardLabel(nextReward)}.` : "Bạn đã mở đủ phần thưởng!"}</span></div> : <div className="hana-hint">
+                {feedback === "correct" ? <div><Check size={18} /><span>{language === "en" ? `Correct, ${displayName}! +10 points. ${nextReward ? `${pointsUntilReward} points until ${rewardLabel(nextReward)}.` : "You have unlocked every reward!"}` : `Đúng rồi, ${displayName}! +10 điểm. ${nextReward ? `Còn ${pointsUntilReward} điểm để nhận ${rewardLabel(nextReward)}.` : "Bạn đã mở đủ phần thưởng!"}`}</span></div> : <div className="hana-hint">
                   <div className="hana-hint-robot" aria-label="Robot Hana đang gợi ý"><span /><span /><i /></div>
-                  <div className="hana-hint-copy"><strong>Robot Hana gợi ý cho {displayName}:</strong><span>Chưa sao đâu, lượt này giảm 2 điểm. {translateLearningText(question.hint, language)}</span><ol>{question.hintSteps.map((step) => <li key={step}>{translateLearningText(step, language)}</li>)}</ol></div>
+                  <div className="hana-hint-copy"><strong>{language === "en" ? `Robot Hana's hint for ${displayName}:` : `Robot Hana gợi ý cho ${displayName}:`}</strong><span>{language === "en" ? `That is okay. This try loses 2 points. ${translateLearningText(question.hint, language)}` : `Chưa sao đâu, lượt này giảm 2 điểm. ${translateLearningText(question.hint, language)}`}</span><ol>{question.hintSteps.map((step) => <li key={step}>{translateLearningText(step, language)}</li>)}</ol></div>
                 </div>}
                 <button type="button" onClick={continueMission}>
-                  {feedback === "correct" ? (mode === "test" && testStep + 1 >= 8 ? "Xem kết quả" : "Nhiệm vụ tiếp") : "Thử lại"}
+                  {feedback === "correct" ? (mode === "test" && testStep + 1 >= 8 ? copy("Xem kết quả", "View results") : copy("Nhiệm vụ tiếp", "Next mission")) : copy("Thử lại", "Try again")}
                   <ChevronRight size={17} />
                 </button>
               </div>
