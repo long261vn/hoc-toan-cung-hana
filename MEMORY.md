@@ -5,4 +5,5 @@
 - Người dùng cần trải nghiệm tiếng Việt cho học sinh lớp 3 tại Việt Nam, ưu tiên cộng, trừ, nhân, chia; bộ câu hỏi tránh số âm và phép chia không nguyên.
 - Nội dung gọi là bám yêu cầu cốt lõi của Chương trình GDPT 2018 lớp 3, không khẳng định thuộc một bộ sách giáo khoa duy nhất.
 - Cờ `?demo` dành cho ảnh kiểm chứng: tự chọn hành tinh Nhân và nạp năng lượng mẫu.
-
+- Khu Bảng cửu chương dùng các bảng 2–9. Học sinh chọn Bảng nhân, Bảng chia hoặc Hỗn hợp, sau đó chọn ít nhất một bảng; bộ sinh câu hỏi chỉ lấy nhân tử/chia số từ các bảng đó.
+- Cờ `?tables` mở khu Bảng cửu chương với bảng 2, 4 và 6 được chọn để xác minh giao diện đa bảng.

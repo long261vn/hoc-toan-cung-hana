@@ -5,7 +5,15 @@
 
 export type Operation = "add" | "subtract" | "multiply" | "divide";
 export type Difficulty = "easy" | "medium" | "challenge";
-export type ExerciseMode = "journey" | "practice" | "test";
+export type ExerciseMode = "journey" | "practice" | "test" | "tables";
+export type TablePracticeKind = "multiply" | "divide" | "mixed";
+
+export const TIMES_TABLES = [2, 3, 4, 5, 6, 7, 8, 9] as const;
+
+export interface TablePracticeSettings {
+  kind: TablePracticeKind;
+  tables: number[];
+}
 
 export interface QuizQuestion {
   id: string;
@@ -159,5 +167,31 @@ export function generateQuestion(
     options: choices(answer, span),
     hint,
     mission,
+  };
+}
+
+/** Create a table-only mission. Tables are always 2–9 and factors are 1–10. */
+export function generateTableQuestion(settings: TablePracticeSettings): QuizQuestion {
+  const usableTables = settings.tables.filter((table) => TIMES_TABLES.includes(table as (typeof TIMES_TABLES)[number]));
+  const selectedTables = usableTables.length > 0 ? usableTables : [2];
+  const table = selectedTables[rand(0, selectedTables.length - 1)];
+  const factor = rand(1, 10);
+  const isDivision = settings.kind === "mixed" ? Math.random() >= 0.5 : settings.kind === "divide";
+  const answer = factor;
+  const operation: Operation = isDivision ? "divide" : "multiply";
+  const product = table * factor;
+  const expression = isDivision ? `${product} ÷ ${table} = ?` : `${table} × ${factor} = ?`;
+  const kindLabel = isDivision ? "chia" : "nhân";
+
+  return {
+    id: `table-${settings.kind}-${table}-${Date.now()}-${Math.random()}`,
+    operation,
+    expression,
+    answer,
+    options: choices(answer, 6),
+    hint: isDivision
+      ? `Con đổi phép chia thành phép nhân: ${table} × ? = ${product}.`
+      : `Con đang luyện bảng nhân ${table}. Hãy đếm ${table} thêm ${factor} lần nhé.`,
+    mission: `Khởi động bảng ${kindLabel} ${table}.`,
   };
 }

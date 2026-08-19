@@ -21,10 +21,13 @@ import {
 import { createGameScene, type GameHandle } from "@/game/scene";
 import {
   generateQuestion,
+  generateTableQuestion,
+  TIMES_TABLES,
   type Difficulty,
   type ExerciseMode,
   type Operation,
   type QuizQuestion,
+  type TablePracticeKind,
 } from "@/game/quiz";
 
 const ASSETS = {
@@ -56,7 +59,14 @@ const difficultyMeta: Record<Difficulty, { label: string; detail: string }> = {
 const modeMeta: Record<ExerciseMode, string> = {
   journey: "Ôn theo hành trình",
   practice: "Luyện từng phép",
+  tables: "Bảng cửu chương",
   test: "Bài kiểm tra 8 câu",
+};
+
+const tableKindMeta: Record<TablePracticeKind, { label: string; subtitle: string; accent: string }> = {
+  multiply: { label: "Bảng nhân", subtitle: "Nhân theo từng bảng", accent: "#54cbb4" },
+  divide: { label: "Bảng chia", subtitle: "Chia theo từng bảng", accent: "#f3c85e" },
+  mixed: { label: "Hỗn hợp", subtitle: "Nhân và chia xen kẽ", accent: "#ff7b5a" },
 };
 
 function pickTestOperation() {
@@ -68,12 +78,19 @@ export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const startedRef = useRef(false);
   const handleRef = useRef<GameHandle | null>(null);
-  const isDemo = useMemo(() => new URLSearchParams(window.location.search).has("demo"), []);
+  const demoParams = useMemo(() => new URLSearchParams(window.location.search), []);
+  const isDemo = demoParams.has("demo");
+  const isTableDemo = demoParams.has("tables");
+  const initialOperation: Operation = isDemo || isTableDemo ? "multiply" : "add";
 
-  const [mode, setMode] = useState<ExerciseMode>("journey");
+  const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "journey");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
-  const [operation, setOperation] = useState<Operation>(isDemo ? "multiply" : "add");
-  const [question, setQuestion] = useState<QuizQuestion>(() => generateQuestion(isDemo ? "multiply" : "add", "easy"));
+  const [operation, setOperation] = useState<Operation>(initialOperation);
+  const [question, setQuestion] = useState<QuizQuestion>(() => isTableDemo
+    ? generateTableQuestion({ kind: "multiply", tables: [2, 4, 6] })
+    : generateQuestion(initialOperation, "easy"));
+  const [tableKind, setTableKind] = useState<TablePracticeKind>("multiply");
+  const [selectedTables, setSelectedTables] = useState<number[]>(isTableDemo ? [2, 4, 6] : [2]);
   const [answered, setAnswered] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">("idle");
   const [energy, setEnergy] = useState(isDemo ? 3 : 0);
@@ -85,6 +102,15 @@ export default function GameCanvas() {
 
   const createNextQuestion = useCallback(
     (nextMode = mode, nextOperation = operation, nextDifficulty = difficulty) => {
+      if (nextMode === "tables") {
+        const tableQuestion = generateTableQuestion({ kind: tableKind, tables: selectedTables });
+        setOperation(tableQuestion.operation);
+        setQuestion(tableQuestion);
+        setAnswered(null);
+        setFeedback("idle");
+        handleRef.current?.setActivePlanet(tableQuestion.operation);
+        return;
+      }
       const operationForQuestion = nextMode === "test" ? pickTestOperation() : nextOperation;
       setOperation(operationForQuestion);
       setQuestion(generateQuestion(operationForQuestion, nextDifficulty));
@@ -92,7 +118,7 @@ export default function GameCanvas() {
       setFeedback("idle");
       handleRef.current?.setActivePlanet(operationForQuestion);
     },
-    [difficulty, mode, operation],
+    [difficulty, mode, operation, selectedTables, tableKind],
   );
 
   useEffect(() => {
@@ -113,7 +139,7 @@ export default function GameCanvas() {
           return;
         }
         handleRef.current = handle;
-        handle.setActivePlanet(isDemo ? "multiply" : "add");
+        handle.setActivePlanet(initialOperation);
         handle.setEnergy(isDemo ? 3 : 0);
         engine.runRenderLoop(() => handle.scene.render());
       })
@@ -129,7 +155,7 @@ export default function GameCanvas() {
       engine.dispose();
       startedRef.current = false;
     };
-  }, [isDemo]);
+  }, [initialOperation, isDemo, isTableDemo]);
 
   const selectOperation = (nextOperation: Operation) => {
     setOperation(nextOperation);
@@ -158,6 +184,28 @@ export default function GameCanvas() {
     setTestCorrect(0);
     setTestComplete(false);
     createNextQuestion(nextMode);
+  };
+
+  const setTablePractice = (nextKind: TablePracticeKind, nextTables = selectedTables) => {
+    const tableQuestion = generateTableQuestion({ kind: nextKind, tables: nextTables });
+    setMode("tables");
+    setTableKind(nextKind);
+    setSelectedTables(nextTables);
+    setOperation(tableQuestion.operation);
+    setQuestion(tableQuestion);
+    setAnswered(null);
+    setFeedback("idle");
+    setTestComplete(false);
+    setTestStep(0);
+    setTestCorrect(0);
+    handleRef.current?.setActivePlanet(tableQuestion.operation);
+  };
+
+  const toggleTable = (table: number) => {
+    const nextTables = selectedTables.includes(table)
+      ? (selectedTables.length === 1 ? selectedTables : selectedTables.filter((item) => item !== table))
+      : [...selectedTables, table].sort((a, b) => a - b);
+    setTablePractice(tableKind, nextTables);
   };
 
   const answerQuestion = useCallback(
@@ -214,6 +262,7 @@ export default function GameCanvas() {
 
   const activePlanet = planetMeta[operation];
   const missionCount = mode === "test" ? `${Math.min(testStep + 1, 8)}/8` : `${energy}/5`;
+  const isTableMode = mode === "tables";
 
   return (
     <main className="game-shell">
@@ -311,7 +360,7 @@ export default function GameCanvas() {
             <span className="speech-spark"><Sparkles size={14} /></span>
           </div>
           <div className="console-title">
-            <p>{modeMeta[mode]} <span>•</span> {difficultyMeta[difficulty].label}</p>
+            <p>{modeMeta[mode]} <span>•</span> {isTableMode ? tableKindMeta[tableKind].subtitle : difficultyMeta[difficulty].label}</p>
             <h3>{testComplete ? "Hoàn thành kiểm tra!" : question.mission}</h3>
           </div>
           <div className="mission-counter">
@@ -333,8 +382,50 @@ export default function GameCanvas() {
           </div>
         ) : (
           <>
+            {isTableMode && (
+              <section className="table-practice-panel" aria-label="Chọn bảng cửu chương để luyện">
+                <div className="table-panel-heading">
+                  <div>
+                    <span>BẢNG CỬU CHƯƠNG</span>
+                    <strong>{tableKindMeta[tableKind].label}</strong>
+                  </div>
+                  <p>{selectedTables.length === 1 ? `Đang luyện bảng ${selectedTables[0]}` : `${selectedTables.length} bảng đã chọn`}</p>
+                </div>
+                <div className="table-kind-switch" aria-label="Chọn kiểu bảng cửu chương">
+                  {(Object.keys(tableKindMeta) as TablePracticeKind[]).map((kind) => (
+                    <button
+                      key={kind}
+                      type="button"
+                      className={tableKind === kind ? "is-active" : ""}
+                      style={{ "--table-accent": tableKindMeta[kind].accent } as React.CSSProperties}
+                      onClick={() => setTablePractice(kind)}
+                    >
+                      {tableKindMeta[kind].label}
+                    </button>
+                  ))}
+                </div>
+                <div className="table-picker-head">
+                  <span>Chọn một hoặc nhiều bảng</span>
+                  <button type="button" onClick={() => setTablePractice(tableKind, [...TIMES_TABLES])}>Chọn cả 2–9</button>
+                </div>
+                <div className="table-number-grid" aria-label="Các bảng từ 2 đến 9">
+                  {TIMES_TABLES.map((table) => (
+                    <button
+                      key={table}
+                      type="button"
+                      className={selectedTables.includes(table) ? "is-selected" : ""}
+                      style={{ "--table-accent": tableKindMeta[tableKind].accent } as React.CSSProperties}
+                      aria-pressed={selectedTables.includes(table)}
+                      onClick={() => toggleTable(table)}
+                    >
+                      <span>×</span>{table}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
             <div className="question-panel">
-              <span className="question-label">NHIỆM VỤ TOÁN HỌC</span>
+              <span className="question-label">{isTableMode ? "NHIỆM VỤ CỬU CHƯƠNG" : "NHIỆM VỤ TOÁN HỌC"}</span>
               <p className="math-expression">{question.expression}</p>
               <p className="math-helper">Chọn đáp án đúng để gửi tinh thể vào động cơ.</p>
             </div>
@@ -379,11 +470,11 @@ export default function GameCanvas() {
               <button key={key} type="button" className={mode === key ? "is-active" : ""} onClick={() => selectMode(key)}>{modeMeta[key]}</button>
             ))}
           </div>
-          <div className="level-switch" aria-label="Chọn cấp độ">
+          {!isTableMode && <div className="level-switch" aria-label="Chọn cấp độ">
             {(Object.keys(difficultyMeta) as Difficulty[]).map((key) => (
               <button key={key} type="button" className={difficulty === key ? "is-active" : ""} onClick={() => selectDifficulty(key)}>{difficultyMeta[key].label}</button>
             ))}
-          </div>
+          </div>}
         </div>
       </section>
 
