@@ -8,7 +8,7 @@
 **Xác suất:** 0.06
 
 ### 2. Phi Hành Tinh Phép Tính
-**Giới thiệu rất ngắn:** Học sinh trở thành phi hành gia nhỏ, du hành qua bốn hành tinh để thu thập năng lượng bằng các phép tính. Bố cục khám phá theo bản đồ tạo động lực chơi tiếp mà không gây áp lực.
+**Giới thiệu rất ngắn:** Học sinh trở thành phi hành gia nhỏ, du hành qua bốn hành tinh để luyện các phép tính. Bố cục khám phá theo quỹ đạo tạo động lực chơi tiếp mà không gây áp lực.
 
 **Xác suất:** 0.08
 
@@ -21,13 +21,13 @@
 
 ### Design Movement
 
-**Illustrated edutainment kết hợp bản đồ phiêu lưu 3D nhẹ.** Thiết kế lấy cảm hứng từ các trò chơi khám phá dành cho thiếu nhi, nhưng thể hiện như một quyển vở bài tập sống động: mỗi hành tinh tương ứng với một mạch phép tính và mỗi lần trả lời đúng sẽ tạo năng lượng để tiếp tục chuyến bay.
+**Illustrated edutainment kết hợp buồng lái phiêu lưu 3D nhẹ.** Thiết kế lấy cảm hứng từ các trò chơi khám phá dành cho thiếu nhi, nhưng thể hiện như một quyển vở bài tập sống động: mỗi hành tinh tương ứng với một mạch phép tính và mỗi lần trả lời đúng sẽ tích điểm để mở phần thưởng trong lượt học.
 
 ### Core Principles
 
 1. **Học là hành trình:** Học sinh luôn nhìn thấy mình đang ở đâu trên bản đồ bốn hành tinh và biết bước tiếp theo.
 2. **Rõ ràng trước, vui vẻ sau:** Phép tính, lựa chọn đáp án và phản hồi luôn có độ tương phản cao, chữ lớn, câu lệnh ngắn.
-3. **Khen đúng lúc:** Điểm sao, năng lượng và lời động viên xuất hiện sau hành động có ý nghĩa thay vì liên tục gây nhiễu.
+3. **Khen đúng lúc:** Điểm lượt, phần thưởng và lời động viên xuất hiện sau hành động có ý nghĩa thay vì liên tục gây nhiễu.
 4. **Không phạt lỗi sai:** Trả lời chưa đúng kích hoạt một gợi ý nhỏ và cho phép thử lại hoặc chuyển sang câu mới.
 
 ### Color Philosophy
@@ -42,15 +42,15 @@ Trang chơi được tổ chức như một **buồng lái mở ra bản đồ q
 
 1. **Đường quỹ đạo chấm sáng** nối bốn hành tinh Cộng, Trừ, Nhân, Chia.
 2. **Robot Hana** hình quả cầu nhỏ có ăng-ten lá, dẫn dắt và phản hồi sau mỗi câu.
-3. **Tinh thể năng lượng** có bốn hình dạng tương ứng với từng phép tính, dùng để biểu thị tiến độ thay cho huy hiệu chung chung.
+3. **Điểm mốc hành tinh** có bốn màu tương ứng với từng phép tính, đặt trên quỹ đạo để cho thấy nhiệm vụ hiện tại.
 
 ### Interaction Philosophy
 
-Mỗi thao tác phải giống việc điều khiển một chuyến bay nhỏ: chọn hành tinh để mở bài, chọn đáp án để cấp năng lượng, và nhận phản hồi ngay trên buồng lái. Các nút được thiết kế lớn, có biểu tượng cùng nhãn tiếng Việt; thao tác bàn phím số 1–4 cũng có thể chọn đáp án.
+Mỗi thao tác phải giống việc điều khiển một chuyến bay nhỏ: chọn hoạt động để mở bài, chọn đáp án để ghi điểm, và nhận phản hồi ngay trên buồng lái. Các nút được thiết kế lớn, có biểu tượng cùng nhãn tiếng Việt; thao tác bàn phím số 1–4 cũng có thể chọn đáp án.
 
 ### Animation
 
-Sao nền trôi rất chậm, hành tinh xoay nhẹ và đường quỹ đạo phát sáng khi hành tinh được chọn. Nút đáp án nảy xuống rất nhẹ khi bấm; đáp án đúng tạo chùm tinh thể bay về thanh năng lượng trong khoảng 300–450 ms. Chuyển động không thiết yếu sẽ tắt theo `prefers-reduced-motion`; không dùng hiệu ứng rung hoặc đếm giờ căng thẳng.
+Sao nền trôi rất chậm, hành tinh xoay nhẹ và đường quỹ đạo phát sáng khi hành tinh được chọn. Nút đáp án nảy xuống rất nhẹ khi bấm; đáp án đúng tạo một điểm sáng về thẻ tiến độ phần thưởng trong khoảng 300–450 ms. Chuyển động không thiết yếu sẽ tắt theo `prefers-reduced-motion`; không dùng hiệu ứng rung hoặc đếm giờ căng thẳng.
 
 ### Typography System
 
@@ -66,7 +66,7 @@ Tính cách thương hiệu: **tò mò, khích lệ, sáng rõ**.
 
 Giọng nói hồn nhiên, trực tiếp, động viên nỗ lực thay vì chấm điểm áp lực. Tiêu đề và nút bấm dùng động từ cụ thể, câu ngắn, tránh các lời mời chung chung.
 
-> “Robot Hana cần 1 tinh thể nữa — bạn tính cùng Hana nhé!”
+> “Robot Hana còn một bước nữa để mở huy hiệu — bạn tính cùng Hana nhé!”
 
 > “Chọn hành tinh để khởi động chuyến bay.”
 
@@ -76,7 +76,7 @@ Biểu tượng là **một tên lửa hạt tròn nằm trong quỹ đạo hìn
 
 ### Signature Brand Color
 
-**Cam Sao Băng — #FF6B4A.** Màu này chỉ dùng cho năng lượng quan trọng, nút bắt đầu và các điểm cần hướng mắt của học sinh.
+**Cam Sao Băng — #FF6B4A.** Màu này chỉ dùng cho hành động quan trọng, nút bắt đầu và các điểm cần hướng mắt của học sinh.
 
 ## Phạm vi học tập cho phiên bản đầu
 
@@ -87,10 +87,12 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 ## Style Decisions
 
 - Robot Hana luôn xuất hiện trực tiếp ở khu vực nhiệm vụ, là nguồn của lời gợi ý và phản hồi, thay vì chỉ được nhắc trong câu chữ.
-- Mỗi hành tinh có bộ nhận diện xuyên suốt gồm màu pastel, hình tinh thể và điểm đánh dấu bản đồ riêng: cam/kim cương cho Cộng, tím/lục giác cho Trừ, xanh ngọc/ngôi sao cho Nhân và vàng/giọt sáng cho Chia.
+- Mỗi hành tinh có bộ nhận diện xuyên suốt gồm màu pastel, ký hiệu phép tính và điểm đánh dấu quỹ đạo riêng: cam/dấu cộng cho Cộng, tím/dấu trừ cho Trừ, xanh ngọc/dấu nhân cho Nhân và vàng/dấu chia cho Chia.
 - Biểu tượng tên lửa trong quỹ đạo-dấu-cộng được trình bày ở kích thước đủ lớn cùng wordmark và dùng làm favicon; khối biểu tượng có phương án hiển thị dự phòng để không thành ô vuông tối khi ảnh đang tải.
 - Trò chơi mở đầu bằng một màn hình chào mừng ít lựa chọn, ưu tiên hai nút lớn “Bắt đầu” và “Hướng dẫn”; chỉ sau khi bấm Bắt đầu, học sinh mới nhìn thấy menu hoạt động.
 - Menu hoạt động dùng bốn thẻ trực quan có màu và biểu tượng riêng cho Ôn theo hành trình, Luyện từng phép, Bảng cửu chương và Bài kiểm tra. Mỗi thẻ nêu một câu ngắn giải thích để trẻ chọn đúng nhu cầu.
 - Trong màn chơi luôn có nút Menu rõ ràng ở đầu trang để trẻ đổi hoạt động mà không cần dựa vào trình duyệt.
-- Menu sáu hoạt động không dùng lại Bản đồ hành trình; thay vào đó, mỗi thẻ có một tinh thể và ký hiệu riêng để giữ cảm giác phiêu lưu mà vẫn rõ ràng cho học sinh lớp 3.
-- Các màn chính dùng quỹ đạo chấm sáng, tinh thể và lời dẫn của Hana như tín hiệu hành trình trang trí; không đưa lại Bản đồ hành trình hoặc lộ trình bắt buộc vì không phù hợp yêu cầu sản phẩm.
+- Menu sáu hoạt động không dùng lại Bản đồ hành trình; thay vào đó, mỗi thẻ có màu và ký hiệu phép tính riêng để giữ cảm giác phiêu lưu mà vẫn rõ ràng cho học sinh lớp 3.
+- Các màn chính dùng quỹ đạo chấm sáng, hành tinh màu theo phép tính và lời dẫn của Hana như tín hiệu hành trình trang trí; không đưa lại Bản đồ hành trình hoặc lộ trình bắt buộc vì không phù hợp yêu cầu sản phẩm.
+- Màn chơi luôn có quỹ đạo và các điểm mốc hành tinh theo phép tính hiện tại, để vùng vũ trụ là sân khấu của nhiệm vụ thay vì chỉ là nền trống.
+- Hệ phần thưởng chỉ dùng điểm lượt, Nhãn dán Sao Nhỏ, Huy hiệu Nhà Thám Hiểm và Cúp Phi Công Nhí; không sử dụng lại thuật ngữ, biểu tượng hoặc cơ chế Tinh thể–năng lượng cũ.

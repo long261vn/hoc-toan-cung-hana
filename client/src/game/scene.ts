@@ -18,8 +18,6 @@ import type { Operation } from "./quiz";
 export interface GameHandle {
   scene: Scene;
   setActivePlanet: (operation: Operation) => void;
-  setEnergy: (energy: number) => void;
-  celebrate: () => void;
   dispose: () => void;
 }
 
@@ -62,15 +60,12 @@ const planetData: Array<{
 
 class SpaceMapWorld {
   private readonly planets = new Map<Operation, TransformNode>();
-  private readonly crystals: TransformNode[] = [];
   private activeOperation: Operation = "add";
-  private celebrationTime = 0;
 
   constructor(private readonly scene: Scene) {
     this.createSpace();
     this.createPlanets();
     this.createShip();
-    this.createCrystals();
     this.setActivePlanet("add");
   }
 
@@ -187,19 +182,6 @@ class SpaceMapWorld {
     flame.material = this.material("ship-flame-material", "#FF6B4A", 0.7);
   }
 
-  private createCrystals() {
-    for (let i = 0; i < 5; i += 1) {
-      const crystal = new TransformNode(`energy-${i}`, this.scene);
-      crystal.position = new Vector3(-1.55 + i * 0.78, -2.4, 0.18);
-      const gem = MeshBuilder.CreatePolyhedron(`gem-${i}`, { type: 1, size: 0.3 }, this.scene);
-      gem.parent = crystal;
-      gem.rotation.x = Math.PI / 4;
-      gem.material = this.material(`gem-material-${i}`, "#FFDB69", 0.6);
-      crystal.setEnabled(false);
-      this.crystals.push(crystal);
-    }
-  }
-
   setActivePlanet(operation: Operation) {
     this.activeOperation = operation;
     this.planets.forEach((pivot, name) => {
@@ -210,14 +192,6 @@ class SpaceMapWorld {
     });
   }
 
-  setEnergy(energy: number) {
-    this.crystals.forEach((crystal, index) => crystal.setEnabled(index < energy));
-  }
-
-  celebrate() {
-    this.celebrationTime = 1.5;
-  }
-
   update(delta: number, elapsed: number) {
     this.planets.forEach((pivot, operation) => {
       const base = planetData.find((planet) => planet.operation === operation)?.position.y ?? 0;
@@ -225,22 +199,10 @@ class SpaceMapWorld {
       pivot.rotation.y += delta * 0.22;
       pivot.position.y = base + (operation === this.activeOperation ? 0.18 : 0) + Math.sin(elapsed * 0.9 + phase) * 0.05;
     });
-    this.crystals.forEach((crystal, index) => {
-      if (!crystal.isEnabled()) return;
-      crystal.rotation.y += delta * 1.8;
-      crystal.position.y = -2.4 + Math.sin(elapsed * 1.4 + index) * 0.12;
-    });
-    if (this.celebrationTime > 0) {
-      this.celebrationTime -= delta;
-      const pulse = 1 + Math.sin(this.celebrationTime * 18) * 0.12;
-      const active = this.planets.get(this.activeOperation);
-      active?.scaling.setAll(pulse * 1.19);
-    }
   }
 
   dispose() {
     this.planets.clear();
-    this.crystals.length = 0;
   }
 }
 
@@ -284,8 +246,6 @@ export async function createGameScene(engine: Engine, _canvas: HTMLCanvasElement
   return {
     scene,
     setActivePlanet: (operation) => world.setActivePlanet(operation),
-    setEnergy: (energy) => world.setEnergy(energy),
-    celebrate: () => world.celebrate(),
     dispose: () => {
       world.dispose();
       scene.dispose();

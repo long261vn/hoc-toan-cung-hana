@@ -1,5 +1,13 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Chọn dạng bài và quà thưởng mới
+
+- [ ] Rà soát luồng vào bốn phép tính và xác định tất cả nhãn, biến, hiệu ứng Tinh thể cũ.
+- [ ] Tạo màn chọn Dạng Bài trước câu hỏi, mặc định Bình thường, cho Cộng, Trừ, Nhân, Chia.
+- [ ] Loại bỏ hoàn toàn Tinh thể cũ và thay bằng điểm, huy hiệu cùng quà thưởng trực quan.
+- [ ] Kiểm tra tính điểm, mốc mở quà, kết thúc lượt và tải ảnh kỷ niệm; sửa lỗi nếu có.
+- [ ] Kiểm thử giao diện mới trên máy tính, điện thoại, lưu checkpoint và bàn giao.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.

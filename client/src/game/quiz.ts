@@ -147,21 +147,21 @@ export function generateQuestion(
       const largerAddend = Math.max(a, b);
       const smallerAddend = Math.min(a, b);
       hintSteps = [`Bắt đầu từ ${largerAddend}.`, `Đếm thêm ${smallerAddend} bước: mỗi bước tăng thêm 1.`, "Chọn số cuối cùng bạn đếm được."];
-      mission = "Nạp năng lượng bằng phép cộng nhỏ.";
+      mission = "Khởi động với một phép cộng nhỏ.";
       span = 5;
     } else if (difficulty === "medium") {
       a = rand(120, 620);
       b = rand(35, 270);
       hint = "Bạn hãy đặt tính thẳng cột rồi cộng từ hàng đơn vị.";
       hintSteps = [`Viết ${a} và ${b} thẳng cột theo từng hàng.`, "Cộng từ hàng đơn vị, rồi đến hàng chục và hàng trăm.", "Nếu tổng một hàng từ 10 trở lên, nhớ 1 sang hàng kế tiếp."];
-      mission = "Gộp hai kho năng lượng lại với nhau.";
+      mission = "Gộp hai nhóm số lại với nhau.";
       span = 35;
     } else {
       a = rand(420, 780);
       b = rand(110, 210);
       hint = "Bạn hãy cộng từng hàng và nhớ nếu cần.";
       hintSteps = ["Đặt các chữ số cùng hàng thẳng cột.", "Cộng lần lượt từ phải sang trái.", "Nếu một hàng được từ 10 trở lên, viết hàng đơn vị và nhớ 1 sang hàng bên trái."];
-      mission = "Nạp năng lượng cho chuyến bay xa.";
+      mission = "Hoàn thành phép cộng nhiều chữ số.";
       span = 50;
     }
     answer = a + b;
@@ -181,7 +181,7 @@ export function generateQuestion(
       b = rand(35, Math.min(350, a - 20));
       hint = "Bạn hãy đặt tính thẳng cột rồi trừ từ hàng đơn vị.";
       hintSteps = [`Viết ${a} và ${b} thẳng cột theo từng hàng.`, "Trừ từ hàng đơn vị, rồi đến hàng chục và hàng trăm.", "Nếu không đủ để trừ ở một hàng, bạn đổi 1 chục của hàng liền trước."];
-      mission = "Tìm phần năng lượng còn lại.";
+      mission = "Tìm số còn lại sau phép trừ.";
       span = 35;
     } else {
       a = rand(650, 990);
@@ -201,14 +201,14 @@ export function generateQuestion(
       b = rand(2, 10);
       hint = `Bạn hãy nhớ lại bảng nhân ${a} nhé.`;
       hintSteps = [`Có ${b} nhóm bằng nhau, mỗi nhóm có ${a}.`, `Bạn có thể cộng ${a} lặp lại ${b} lần.`, `Hoặc dùng bảng nhân ${a} để tìm kết quả.`];
-      mission = "Kích hoạt bảng nhân năng lượng.";
+      mission = "Khởi động bảng nhân quen thuộc.";
       span = 4;
     } else if (difficulty === "medium") {
       a = rand(2, 9);
       b = rand(3, 9);
       hint = "Bạn có thể cộng lặp lại hoặc dùng bảng nhân.";
       hintSteps = [`Xem ${a} × ${b} là ${b} nhóm, mỗi nhóm có ${a}.`, `Cộng ${a} lặp lại ${b} lần nếu bạn chưa nhớ bảng nhân.`, "Sau đó chọn kết quả vừa tìm được."];
-      mission = "Xếp các tinh thể thành những nhóm bằng nhau.";
+      mission = "Xếp các nhóm bằng nhau để nhân.";
       span = 7;
     } else {
       a = rand(12, 89);
@@ -229,7 +229,7 @@ export function generateQuestion(
       a = b * answer;
       hint = `Bạn hãy nghĩ: ${b} nhân mấy thì được ${a}?`;
       hintSteps = [`Đổi ${a} ÷ ${b} thành phép nhân ${b} × ? = ${a}.`, `Dùng bảng nhân ${b} để tìm số còn thiếu.`, "Số còn thiếu chính là kết quả phép chia."];
-      mission = "Chia tinh thể đều cho các bạn robot.";
+      mission = "Chia đều các nhóm số.";
       span = 4;
     } else if (difficulty === "medium") {
       b = rand(2, 9);
@@ -245,7 +245,7 @@ export function generateQuestion(
       a = b * answer;
       hint = "Bạn hãy đổi phép chia thành phép nhân để kiểm tra đáp án.";
       hintSteps = [`Tìm thương bằng cách nghĩ ${b} × ? = ${a}.`, `Dùng bảng nhân ${b} để tìm số còn thiếu.`, "Lấy thương nhân với số chia để kiểm tra lại số bị chia."];
-      mission = "Phân phối năng lượng cho cả hạm đội.";
+      mission = "Tìm thương của phép chia.";
       span = 10;
     }
     expression = `${a} ÷ ${b} = ?`;

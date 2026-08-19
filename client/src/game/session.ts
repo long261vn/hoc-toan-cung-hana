@@ -12,7 +12,7 @@ export const practiceFormatMeta: Record<PracticeFormat, { label: string; shortLa
 };
 
 export interface SessionReward {
-  id: "star" | "crystal" | "pilot";
+  id: "star" | "explorer" | "pilot";
   label: string;
   detail: string;
   threshold: number;
@@ -20,9 +20,9 @@ export interface SessionReward {
 }
 
 export const sessionRewards: SessionReward[] = [
-  { id: "star", label: "Sao Nhỏ", detail: "Bạn đã khởi động chuyến bay rất tốt.", threshold: 20, symbol: "★" },
-  { id: "crystal", label: "Tinh thể Cầu Vồng", detail: "Bạn đã nạp đầy năng lượng học tập.", threshold: 50, symbol: "◆" },
-  { id: "pilot", label: "Huy hiệu Phi Công Nhí", detail: "Bạn đã hoàn thành một chuyến luyện thật kiên trì.", threshold: 90, symbol: "✦" },
+  { id: "star", label: "Nhãn dán Sao Nhỏ", detail: "Bạn đã có 2 câu đúng thật nhanh.", threshold: 20, symbol: "★" },
+  { id: "explorer", label: "Huy hiệu Nhà Thám Hiểm", detail: "Bạn đã chinh phục 4 câu đúng.", threshold: 40, symbol: "✦" },
+  { id: "pilot", label: "Cúp Phi Công Nhí", detail: "Bạn đã hoàn thành 7 câu đúng trong lượt này.", threshold: 70, symbol: "♛" },
 ];
 
 export function rewardsForPoints(points: number) {
