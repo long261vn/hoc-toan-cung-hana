@@ -176,6 +176,8 @@ export default function GameCanvas() {
   const isMenuPreview = demoParams.has("menu");
   const isSummaryDemo = demoParams.has("summary");
   const isProfileDemo = demoParams.has("profile");
+  const isScoreDemo = demoParams.has("score");
+  const isGuideDemo = demoParams.has("guide");
   const missingDemoOperation = demoParams.get("missing");
   const formatDemoOperation = demoParams.get("format");
   const isMissingDemo = missingDemoOperation === "add" || missingDemoOperation === "subtract" || missingDemoOperation === "multiply" || missingDemoOperation === "divide";
@@ -189,7 +191,7 @@ export default function GameCanvas() {
     ? (tableDemoKind === "divide" ? "divide" : "multiply")
     : "add";
 
-  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo ? "summary" : isProfileDemo ? "profile" : isFormatDemo ? "format" : isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
+  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo ? "summary" : isProfileDemo ? "profile" : isFormatDemo ? "format" : isScoreDemo || isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
   const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "practice");
   const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isMissingDemo || isFormatDemo ? initialOperation : isDemo ? "multiply" : "add");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
@@ -208,12 +210,13 @@ export default function GameCanvas() {
   const [testStep, setTestStep] = useState(0);
   const [testCorrect, setTestCorrect] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
-  const [showGuide, setShowGuide] = useState(false);
-  const [playerName, setPlayerName] = useState(isSummaryDemo || isProfileDemo ? "Minh Anh" : "");
-  const [sessionPoints, setSessionPoints] = useState(isSummaryDemo ? 100 : 0);
-  const [correctCount, setCorrectCount] = useState(isSummaryDemo ? 10 : 0);
-  const [wrongCount, setWrongCount] = useState(isSummaryDemo ? 2 : 0);
-  const [elapsedSeconds, setElapsedSeconds] = useState(isSummaryDemo ? 93 : 0);
+  const [showGuide, setShowGuide] = useState(isGuideDemo);
+  const [showScorePanel, setShowScorePanel] = useState(isScoreDemo);
+  const [playerName, setPlayerName] = useState(isSummaryDemo || isProfileDemo || isScoreDemo ? "Minh Anh" : "");
+  const [sessionPoints, setSessionPoints] = useState(isSummaryDemo || isScoreDemo ? 100 : 0);
+  const [correctCount, setCorrectCount] = useState(isSummaryDemo || isScoreDemo ? 10 : 0);
+  const [wrongCount, setWrongCount] = useState(isSummaryDemo || isScoreDemo ? 2 : 0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(isSummaryDemo || isScoreDemo ? 93 : 0);
   const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
   const displayName = playerName.trim() || "Phi hành gia nhỏ";
 
@@ -470,7 +473,7 @@ export default function GameCanvas() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (screen !== "game") return;
+      if (screen !== "game" || showScorePanel) return;
       const numeric = Number(event.key);
       if (numeric >= 1 && numeric <= 4) {
         const option = question.options[numeric - 1];
@@ -480,7 +483,7 @@ export default function GameCanvas() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [answerQuestion, feedback, question.options, screen]);
+  }, [answerQuestion, feedback, question.options, screen, showScorePanel]);
 
   useEffect(() => {
     if (screen !== "game" || sessionStartedAt === null) return;
@@ -608,10 +611,13 @@ export default function GameCanvas() {
             <h1>Phi Hành Tinh<br />Phép Tính</h1>
           </div>
         </div>
-        <button className="mission-menu-button" type="button" onClick={() => setScreen("menu")}><span>↔</span> Đổi nhiệm vụ</button>
-        <button className="reward-progress" type="button" onClick={finishSession} aria-label="Xem điểm và tiến độ nhận quà">
+        <div className="mission-actions">
+          <button className="mission-menu-button" type="button" onClick={() => setScreen("menu")}><span>↔</span> Đổi nhiệm vụ</button>
+          <button className="mission-menu-button mission-end-button" type="button" onClick={finishSession}><span>■</span> Kết thúc lượt</button>
+        </div>
+        <button className="reward-progress" type="button" onClick={() => setShowScorePanel(true)} aria-label="Xem điểm hiện tại và tiến độ nhận quà">
           <span className="reward-progress-icon">{nextReward?.symbol ?? "♛"}</span>
-          <span><small>ĐIỂM LƯỢT</small><strong>{sessionPoints}</strong><em>{nextReward ? `Còn ${pointsUntilReward} điểm nhận ${nextReward.label}` : "Đã mở đủ phần thưởng!"}</em></span>
+          <span><small>ĐIỂM HIỆN TẠI</small><strong>{sessionPoints}</strong><em>{nextReward ? `Còn ${pointsUntilReward} điểm nhận ${nextReward.label}` : "Đã mở đủ phần thưởng!"}</em></span>
         </button>
       </header>
 
@@ -646,7 +652,7 @@ export default function GameCanvas() {
             <h3>{testComplete ? "Hoàn thành kiểm tra!" : isTableMode && !hasSelectedTables ? "Hãy chọn ít nhất một bảng để bắt đầu." : question.mission}</h3>
           </div>
           <div className="mission-counter">
-            <span>{mode === "test" ? "Câu" : "Điểm lượt"}</span>
+            <span>{mode === "test" ? "Câu" : "Điểm hiện tại"}</span>
             <strong>{mode === "test" ? (testComplete ? "8/8" : `${Math.min(testStep + 1, 8)}/8`) : sessionPoints}</strong>
           </div>
         </div>
@@ -752,7 +758,6 @@ export default function GameCanvas() {
         )}
 
         <div className="control-row">
-          <button type="button" className="change-activity" onClick={finishSession}><Trophy size={15} /> Kết thúc lượt</button>
           {!isTableMode && <div className="level-switch" aria-label="Chọn cấp độ">
             {(Object.keys(difficultyMeta) as Difficulty[]).map((key) => (
               <button key={key} type="button" className={difficulty === key ? "is-active" : ""} onClick={() => selectDifficulty(key)}>{difficultyMeta[key].label}</button>
@@ -770,17 +775,41 @@ export default function GameCanvas() {
               <div>
                 <p className="eyebrow">ROBOT HANA HƯỚNG DẪN</p>
                 <h2>Cách chơi thật dễ</h2>
-                <p>Chọn một hoạt động, làm phép tính và mở khóa huy hiệu nhé.</p>
+                <p>Nhập tên, chọn nhiệm vụ và cùng Hana tích điểm để mở khóa thật nhiều phần thưởng nhé.</p>
               </div>
             </div>
             <ol className="curriculum-list">
-              <li><span>01</span><div><strong>Chọn hoạt động</strong><p>Bạn chọn Cộng, Trừ, Học Bảng Nhân và Chia, Nhân, Chia hoặc Bài kiểm tra.</p></div></li>
-              <li><span>02</span><div><strong>Đọc thật kỹ phép tính</strong><p>Nhìn vào bài toán lớn ở bảng điều khiển trước khi chọn đáp án.</p></div></li>
-              <li><span>03</span><div><strong>Chọn đáp án đúng</strong><p>Mỗi câu có bốn đáp án. Bạn có thể nhấn phím 1 đến 4 trên máy tính.</p></div></li>
-              <li><span>04</span><div><strong>Không sao nếu chưa đúng</strong><p>Robot Hana sẽ đưa gợi ý để bạn thử lại và tiếp tục học.</p></div></li>
+              <li><span>01</span><div><strong>Đặt tên phi hành gia</strong><p>Hana sẽ gọi tên bạn trong nhiệm vụ, lúc gợi ý và trên thẻ kỷ niệm cuối lượt.</p></div></li>
+              <li><span>02</span><div><strong>Chọn nhiệm vụ và dạng bài</strong><p>Bạn chọn Cộng, Trừ, Học Bảng Nhân và Chia, Nhân, Chia hoặc Bài kiểm tra; với bốn phép tính, hãy chọn dạng bài trước khi chơi.</p></div></li>
+              <li><span>03</span><div><strong>Tích điểm, mở 30 phần thưởng</strong><p>Mỗi câu đúng được +10 điểm. Nếu chưa đúng, bạn trừ 2 điểm nhưng điểm không âm. Cứ đủ 10 điểm, bạn mở một phần thưởng mới, từ Thẻ Khởi Động đến Cúp Thuyền Trưởng Hana ở mốc 300 điểm.</p></div></li>
+              <li><span>04</span><div><strong>Hana luôn gợi ý</strong><p>Mỗi câu có bốn đáp án. Nếu bạn cần thêm thời gian, Hana sẽ gợi ý từng bước để bạn thử lại.</p></div></li>
+              <li><span>05</span><div><strong>Xem điểm hoặc đổi nhiệm vụ</strong><p>Bấm Điểm hiện tại để xem tiến độ rồi quay lại chơi tiếp. Bạn cũng có thể Đổi nhiệm vụ mà vẫn giữ điểm, hoặc Kết thúc lượt khi đã sẵn sàng.</p></div></li>
             </ol>
-            <p className="guide-note">Bạn có thể bấm nút Menu bất cứ lúc nào để đổi sang một hoạt động khác.</p>
+            <p className="guide-note">Mỗi lượt học là hành trình của riêng bạn; hãy bình tĩnh suy nghĩ, thử lại và sưu tập từng phần thưởng nhé.</p>
             <button type="button" className="primary-action" onClick={() => setShowGuide(false)}>Mình đã hiểu <Rocket size={18} /></button>
+          </section>
+        </div>
+      )}
+
+      {showScorePanel && (
+        <div className="guide-backdrop score-backdrop" role="dialog" aria-modal="true" aria-label="Điểm hiện tại và tiến độ phần thưởng">
+          <section className="score-card">
+            <button className="guide-close" type="button" onClick={() => setShowScorePanel(false)} aria-label="Đóng bảng điểm"><X size={19} /></button>
+            <div className="score-card-heading">
+              <span className="score-card-symbol">{nextReward?.symbol ?? "♛"}</span>
+              <div><p className="eyebrow">TIẾN ĐỘ CỦA {displayName.toUpperCase()}</p><h2>Điểm hiện tại</h2><p>{nextReward ? `Còn ${pointsUntilReward} điểm để mở ${nextReward.label}.` : "Bạn đã mở trọn bộ 30 phần thưởng rồi!"}</p></div>
+            </div>
+            <div className="score-stats">
+              <div><span>Điểm</span><strong>{sessionPoints}</strong></div>
+              <div><span>Đúng</span><strong>{correctCount}</strong></div>
+              <div><span>Sai</span><strong>{wrongCount}</strong></div>
+              <div><span>Thời gian</span><strong>{formatDuration(currentDuration())}</strong></div>
+            </div>
+            <section className="score-reward-board" aria-label="Phần thưởng đã mở">
+              <div><span>PHẦN THƯỞNG ĐÃ MỞ</span><strong>{earnedRewards.length}/{sessionRewards.length}</strong></div>
+              {earnedRewards.length ? <div className="score-reward-list">{earnedRewards.map((reward) => <span key={reward.id}><b>{reward.symbol}</b><em>Cấp {reward.level}</em><small>{reward.label}</small></span>)}</div> : <p>Hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
+            </section>
+            <button type="button" className="primary-action score-continue" onClick={() => setShowScorePanel(false)}>Quay lại chơi tiếp <Rocket size={18} /></button>
           </section>
         </div>
       )}

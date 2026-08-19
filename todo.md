@@ -18,6 +18,13 @@
 - [x] Cho phép đổi nhiệm vụ trong cùng lượt chơi mà vẫn giữ điểm, số đúng/sai và thời gian.
 - [x] Kiểm thử luồng mới trên máy tính, điện thoại, dựng bản phát hành, lưu checkpoint và bàn giao.
 
+## Cập nhật Hướng dẫn và điều khiển lượt chơi
+
+- [x] Làm mới nội dung Hướng dẫn ở màn hình chờ theo luồng nhập tên, chọn dạng bài, đổi nhiệm vụ và hệ thống điểm–phần thưởng hiện tại.
+- [x] Đổi nhãn Điểm Lượt thành Điểm hiện tại và tạo bảng xem tiến độ không làm kết thúc lượt.
+- [x] Thêm nút Chơi tiếp trong bảng điểm, đồng thời đặt nút Kết thúc lượt cạnh Đổi nhiệm vụ ở màn chơi.
+- [x] Kiểm thử trên máy tính và điện thoại, dựng bản phát hành, lưu checkpoint và bàn giao.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.
