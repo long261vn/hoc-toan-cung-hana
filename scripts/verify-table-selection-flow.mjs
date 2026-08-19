@@ -25,17 +25,17 @@ try {
   const tablesActivityClicked = await evaluate(`(() => { const button = document.querySelectorAll(".activity-card")[2]; button?.click(); return Boolean(button); })()`);
   if (!tablesActivityClicked) throw new Error("Không tìm thấy thẻ Học Bảng Nhân và Chia để kiểm thử.");
   await sleep(450);
-  const before = await evaluate(`({ empty: Boolean(document.querySelector(".table-empty-state")), question: Boolean(document.querySelector(".question-panel")) })`);
-  if (!before.empty || before.question) throw new Error(`Chưa bắt buộc chọn bảng trước câu hỏi: ${JSON.stringify(before)}`);
+  const before = await evaluate(`({ empty: Boolean(document.querySelector(".table-empty-state")), question: Boolean(document.querySelector(".question-panel")), status: document.querySelector(".table-panel-heading p")?.textContent?.trim() })`);
+  if (!before.empty || before.question || before.status !== "Chưa chọn bảng") throw new Error(`Chưa hiển thị đúng trạng thái trước khi chọn bảng: ${JSON.stringify(before)}`);
   const firstTableClicked = await evaluate(`(() => { const button = Array.from(document.querySelectorAll(".table-number-grid button")).find((item) => item.textContent.trim() === "2"); button?.click(); return Boolean(button); })()`);
   if (!firstTableClicked) throw new Error("Không tìm thấy nút bảng 2 để kiểm thử.");
   await sleep(250);
-  const first = await evaluate(`({ expression: document.querySelector(".math-expression")?.textContent?.trim(), options: Array.from(document.querySelectorAll(".answer-button strong")).map((node) => node.textContent.trim()) })`);
-  if (!first.expression || first.options.length !== 4) throw new Error(`Không sinh câu hỏi sau khi chọn bảng: ${JSON.stringify(first)}`);
+  const first = await evaluate(`({ expression: document.querySelector(".math-expression")?.textContent?.trim(), options: Array.from(document.querySelectorAll(".answer-button strong")).map((node) => node.textContent.trim()), status: document.querySelector(".table-panel-heading p")?.textContent?.trim() })`);
+  if (!first.expression || first.options.length !== 4 || first.status !== "Đang luyện bảng 2") throw new Error(`Không đồng bộ nhãn/câu hỏi sau khi chọn bảng: ${JSON.stringify(first)}`);
   const secondTable = await evaluate(`(() => { const button = Array.from(document.querySelectorAll(".table-number-grid button")).find((item) => item.textContent.trim() === "3"); const propsKey = button && Object.keys(button).find((key) => key.startsWith("__reactProps")); const handler = propsKey ? String(button[propsKey].onClick) : ""; button?.click(); return { clicked: Boolean(button), handler }; })()`);
   if (!secondTable.clicked) throw new Error("Không tìm thấy nút bảng 3 để kiểm thử.");
   await sleep(250);
-  const second = await evaluate(`({ expression: document.querySelector(".math-expression")?.textContent?.trim(), options: Array.from(document.querySelectorAll(".answer-button strong")).map((node) => node.textContent.trim()), selected: Array.from(document.querySelectorAll(".table-number-grid button.is-selected")).map((node) => node.textContent.trim()) })`);
-  if (!second.expression || second.expression === first.expression || second.options.length !== 4) throw new Error(`Không đổi câu hỏi/đáp án sau khi đổi bảng: ${JSON.stringify({ first, second, secondTable })}`);
+  const second = await evaluate(`({ expression: document.querySelector(".math-expression")?.textContent?.trim(), options: Array.from(document.querySelectorAll(".answer-button strong")).map((node) => node.textContent.trim()), selected: Array.from(document.querySelectorAll(".table-number-grid button.is-selected")).map((node) => node.textContent.trim()), status: document.querySelector(".table-panel-heading p")?.textContent?.trim() })`);
+  if (!second.expression || second.expression === first.expression || second.options.length !== 4 || second.status !== "2 bảng đã chọn") throw new Error(`Không đồng bộ nhãn/câu hỏi sau khi đổi bảng: ${JSON.stringify({ first, second, secondTable })}`);
   console.log(JSON.stringify({ before, first, second, result: "table selection flow valid" }));
 } finally { socket.close(); }

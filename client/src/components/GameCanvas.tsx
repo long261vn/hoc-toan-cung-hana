@@ -1160,7 +1160,7 @@ export default function GameCanvas() {
                     <span>{copy("BẢNG CỬU CHƯƠNG", "TIMES TABLES")}</span>
                     <strong>{tableLabel(tableKind)}</strong>
                   </div>
-                  <p>{!hasSelectedTables ? copy("Chưa chọn bảng", "No table selected") : selectedTables.length === 1 ? language === "en" ? `Practising the ${selectedTables[0]} table` : `Đang luyện bảng ${selectedTables[0]}` : language === "en" ? `${selectedTables.length} tables selected` : `${selectedTables.length} bảng đã chọn`}</p>
+                  <p data-dynamic-text>{!hasSelectedTables ? copy("Chưa chọn bảng", "No table selected") : selectedTables.length === 1 ? language === "en" ? `Practising the ${selectedTables[0]} table` : `Đang luyện bảng ${selectedTables[0]}` : language === "en" ? `${selectedTables.length} tables selected` : `${selectedTables.length} bảng đã chọn`}</p>
                 </div>
                 <div className="table-kind-switch" aria-label="Chọn kiểu bảng cửu chương">
                   {(Object.keys(tableKindMeta) as TablePracticeKind[]).map((kind) => (

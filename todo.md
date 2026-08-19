@@ -201,3 +201,9 @@
 - [x] Chuyển Đổi nhiệm vụ và Kết thúc lượt xuống cuối bảng, đảm bảo vẫn dễ chạm trên điện thoại.
 - [x] Thu gọn phần đầu màn, giảm vai trò Robot Hana khi đang làm bài và đưa bảng tính lên cao hơn.
 - [x] Kiểm tra trực quan desktop/mobile, thao tác kết thúc lượt, TypeScript và build trước khi lưu checkpoint.
+
+## Sửa trạng thái chọn bảng nhân và chia
+
+- [x] Tái hiện nhãn “Chưa chọn bảng” không đổi sau khi học sinh chọn bảng.
+- [x] Đồng bộ nhãn trạng thái và câu hỏi với danh sách bảng nhân/chia đã chọn.
+- [x] Kiểm thử chọn một, nhiều, tất cả và bỏ chọn bảng trên desktop/mobile; chạy TypeScript và build.
