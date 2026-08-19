@@ -234,7 +234,7 @@ function ActivityMenu({ onBack, onGuide, onChoose, language, onLanguageToggle }:
     { id: "add", eyebrow: "PHÉP TÍNH CỘNG", detail: "Gộp các nhóm và tìm tổng.", tone: "add", symbol: "+" },
     { id: "subtract", eyebrow: "PHÉP TÍNH TRỪ", detail: "Tìm phần còn lại.", tone: "subtract", symbol: "−" },
     { id: "tables", eyebrow: "BẢNG NHÂN VÀ CHIA", detail: "Chọn từng bảng hoặc luyện cả nhân và chia.", tone: "tables", symbol: "×÷" },
-    { id: "multiply", eyebrow: "PHÉP TÍNH NHÂN", detail: "Xếp những nhóm bằng nhau.", tone: "multiply", symbol: "▦" },
+    { id: "multiply", eyebrow: "PHÉP TÍNH NHÂN", detail: "Xếp những nhóm bằng nhau.", tone: "multiply", symbol: "×" },
     { id: "divide", eyebrow: "PHÉP TÍNH CHIA", detail: "Chia đều các nhóm số.", tone: "divide", symbol: "÷" },
     { id: "test", eyebrow: "8 CÂU THỬ THÁCH", detail: "Thử sức và nhận sao.", tone: "test", symbol: "★" },
   ];
@@ -256,7 +256,7 @@ function ActivityMenu({ onBack, onGuide, onChoose, language, onLanguageToggle }:
           return (
             <button key={activity.id} type="button" className={`activity-card ${activity.tone}`} onClick={() => onChoose(activity.id)}>
               <span className="activity-order">0{index + 1}</span>
-              <span className="activity-icon sigil"><i /><b>{activity.symbol}</b></span>
+              <span className="activity-icon sigil"><b>{activity.symbol}</b></span>
               <span className="activity-copy"><b>{activity.eyebrow}</b><strong>{activityMeta[activity.id].label}</strong><small>{activity.detail}</small></span>
               <ChevronRight className="activity-arrow" size={22} />
             </button>

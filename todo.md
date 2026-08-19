@@ -163,3 +163,9 @@
 - [x] Thay biểu tượng phép Nhân trong menu bằng hình dễ phân biệt với dấu nhân.
 - [x] Thêm nút Kết thúc lượt nổi bật ở cuối khu vực câu hỏi/đáp án và giữ luồng tổng kết hiện có.
 - [x] Kiểm tra bố cục desktop/mobile, TypeScript và build trước khi lưu checkpoint.
+
+## Sửa biểu tượng và vị trí bảng làm bài
+
+- [x] Khôi phục biểu tượng cũ của Cộng, Trừ, Nhân, Chia và bỏ phần nền hình học bên dưới.
+- [x] Căn bảng làm bài vào giữa màn hình và nâng lên cao hơn trên desktop/mobile.
+- [x] Kiểm tra trực quan, TypeScript và build trước khi lưu checkpoint.
