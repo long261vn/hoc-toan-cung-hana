@@ -67,13 +67,13 @@ const inspectConfirm = async () => {
 try {
   await command("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
   await openPractice();
-  await evaluate(`document.querySelector(".mobile-end-session")?.click()`);
+  await evaluate(`document.querySelector(".session-end-button")?.click()`);
   await waitFor(".end-session-confirm-card");
   const mobileConfirm = await inspectConfirm();
   await evaluate(`document.querySelector(".end-session-confirm-cancel")?.click()`);
   await waitUntilGone(".end-session-confirm-card");
 
-  await evaluate(`document.querySelector(".end-session-footer")?.click()`);
+  await evaluate(`document.querySelector(".session-end-button")?.click()`);
   await waitFor(".end-session-confirm-card");
   await inspectConfirm();
   await evaluate(`document.querySelector(".end-session-confirm-action")?.click()`);
@@ -81,7 +81,7 @@ try {
 
   await command("Emulation.setDeviceMetricsOverride", { width: 1280, height: 720, deviceScaleFactor: 1, mobile: false });
   await openPractice();
-  await evaluate(`document.querySelector(".mission-end-button")?.click()`);
+  await evaluate(`document.querySelector(".session-end-button")?.click()`);
   await waitFor(".end-session-confirm-card");
   const desktopConfirm = await inspectConfirm();
   await evaluate(`document.querySelector(".end-session-confirm-cancel")?.click()`);

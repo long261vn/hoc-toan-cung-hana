@@ -4,8 +4,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Engine } from "@babylonjs/core/Engines/engine";
-import html2canvas from "html2canvas";
+import type { Engine } from "@babylonjs/core/Engines/engine";
 import {
   Check,
   ChevronRight,
@@ -21,7 +20,7 @@ import {
   VolumeX,
   X,
 } from "lucide-react";
-import { createGameScene, type GameHandle } from "@/game/scene";
+import type { GameHandle } from "@/game/scene";
 import { getStoredEffectsVolume, getStoredMusicVolume, getStoredSoundPreference, HanaAudio, type SoundEffect } from "@/game/audio";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
@@ -56,6 +55,45 @@ const ASSETS = {
 type AppScreen = "welcome" | "profile" | "menu" | "format" | "game" | "summary";
 type ActivityId = "add" | "subtract" | "multiply" | "divide" | "tables" | "test";
 type Language = "vi" | "en";
+
+const SESSION_DRAFT_KEY = "hana-active-session-v1";
+
+type SessionDraft = {
+  version: 1;
+  screen: "menu" | "format" | "game";
+  selectedActivity: ActivityId;
+  mode: ExerciseMode;
+  operation: Operation;
+  difficulty: Difficulty;
+  practiceFormat: PracticeFormat;
+  tableKind: TablePracticeKind;
+  selectedTables: number[];
+  question: QuizQuestion;
+  recentExpressions: string[];
+  playerName: string;
+  sessionPoints: number;
+  correctCount: number;
+  wrongCount: number;
+  elapsedSeconds: number;
+  testStep: number;
+  testCorrect: number;
+};
+
+function readSessionDraft(): SessionDraft | null {
+  try {
+    const raw = window.localStorage.getItem(SESSION_DRAFT_KEY);
+    if (!raw) return null;
+    const draft = JSON.parse(raw) as Partial<SessionDraft>;
+    if (draft.version !== 1 || !draft.question || !isQuestionConsistent(draft.question as QuizQuestion) || !["menu", "format", "game"].includes(draft.screen ?? "")) return null;
+    return draft as SessionDraft;
+  } catch {
+    return null;
+  }
+}
+
+function clearSessionDraft() {
+  window.localStorage.removeItem(SESSION_DRAFT_KEY);
+}
 
 function LanguageControl({ language, onToggle, className = "" }: { language: Language; onToggle: () => void; className?: string }) {
   const code = language === "vi" ? "VIE" : "ENG";
@@ -380,15 +418,23 @@ export default function GameCanvas() {
   const [wrongCount, setWrongCount] = useState(isMaxRewardDemo ? 5 : isSummaryDemo || isScoreDemo ? 2 : 0);
   const [elapsedSeconds, setElapsedSeconds] = useState(isMaxRewardDemo ? 721 : isSummaryDemo || isScoreDemo ? 93 : 0);
   const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
+  const [resumeDraft, setResumeDraft] = useState<SessionDraft | null>(() => isDemo || isTableDemo || isSummaryDemo ? null : readSessionDraft());
+  const [showResumeSession, setShowResumeSession] = useState(() => !isDemo && !isTableDemo && !isSummaryDemo && Boolean(readSessionDraft()));
   const [webglUnavailable, setWebglUnavailable] = useState(false);
   const [imageSaveStatus, setImageSaveStatus] = useState("");
   const [isSavingImage, setIsSavingImage] = useState(false);
-  const [language, setLanguage] = useState<Language>(() => demoParams.get("lang") === "en" || window.localStorage.getItem("hana-language") === "en" ? "en" : "vi");
+  const [language, setLanguage] = useState<Language>(() => {
+    const requestedLanguage = demoParams.get("lang");
+    if (requestedLanguage === "vi" || requestedLanguage === "en") return requestedLanguage;
+    return window.localStorage.getItem("hana-language") === "en" ? "en" : "vi";
+  });
   const [soundEnabled, setSoundEnabled] = useState(getStoredSoundPreference);
   const [musicVolume, setMusicVolume] = useState(getStoredMusicVolume);
   const [effectsVolume, setEffectsVolume] = useState(getStoredEffectsVolume);
   const [menuCollapsed, setMenuCollapsed] = useState(isMenuCollapsedDemo);
   const audioRef = useRef<HanaAudio | null>(null);
+  const pausedStartedAtRef = useRef<number | null>(null);
+  const pausedDurationRef = useRef(0);
   const displayName = playerName.trim() || (language === "en" ? "Young astronaut" : "Phi hành gia nhỏ");
   const copy = (vietnamese: string, english: string) => language === "en" ? english : vietnamese;
   const operationLabel = (value: Operation) => language === "en" ? ({ add: "Addition", subtract: "Subtraction", multiply: "Multiplication", divide: "Division" }[value]) : activityMeta[value].label;
@@ -511,30 +557,26 @@ export default function GameCanvas() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || startedRef.current) return;
-    const supportsWebGL = !forceCanvasFallback && Engine.IsSupported;
-    if (!supportsWebGL) {
-      setWebglUnavailable(true);
-      return;
-    }
-
-    let engine: Engine;
-    try {
-      engine = new Engine(canvas, true, {
-        preserveDrawingBuffer: true,
-        stencil: true,
-        adaptToDeviceRatio: true,
-      });
-    } catch (error) {
-      console.warn("Thiết bị không hỗ trợ WebGL; dùng nền vũ trụ 2D.", error);
-      setWebglUnavailable(true);
-      return;
-    }
-
-    startedRef.current = true;
     let disposed = false;
-
-    createGameScene(engine, canvas)
-      .then((handle) => {
+    let engine: Engine | null = null;
+    const initializeScene = async () => {
+      try {
+        const [{ Engine: BabylonEngine }, { createGameScene }] = await Promise.all([
+          import("@babylonjs/core/Engines/engine"),
+          import("@/game/scene"),
+        ]);
+        if (disposed) return;
+        if (forceCanvasFallback || !BabylonEngine.IsSupported) {
+          setWebglUnavailable(true);
+          return;
+        }
+        engine = new BabylonEngine(canvas, true, {
+          preserveDrawingBuffer: true,
+          stencil: true,
+          adaptToDeviceRatio: true,
+        });
+        startedRef.current = true;
+        const handle = await createGameScene(engine, canvas);
         if (disposed) {
           handle.dispose();
           return;
@@ -542,24 +584,23 @@ export default function GameCanvas() {
         handleRef.current = handle;
         handle.setActivePlanet(initialOperation);
         engine.runRenderLoop(() => handle.scene.render());
-      })
-      .catch((error) => {
+      } catch (error) {
         console.warn("Không thể khởi tạo bản đồ hành tinh; dùng nền vũ trụ 2D.", error);
-        if (!disposed) {
-          engine.dispose();
-          startedRef.current = false;
-          setWebglUnavailable(true);
-        }
-      });
-
-    const onResize = () => engine.resize();
+        engine?.dispose();
+        startedRef.current = false;
+        if (!disposed) setWebglUnavailable(true);
+      }
+    };
+    const idleStart = window.setTimeout(() => { void initializeScene(); }, 120);
+    const onResize = () => engine?.resize();
     window.addEventListener("resize", onResize);
     return () => {
       disposed = true;
+      window.clearTimeout(idleStart);
       window.removeEventListener("resize", onResize);
       handleRef.current?.dispose();
       handleRef.current = null;
-      engine.dispose();
+      engine?.dispose();
       startedRef.current = false;
     };
   }, [forceCanvasFallback, initialOperation, isDemo, isTableDemo]);
@@ -576,6 +617,7 @@ export default function GameCanvas() {
   };
 
   const selectDifficulty = (nextDifficulty: Difficulty) => {
+    if (mode === "test" && (testStep > 0 || feedback !== "idle" || answered !== null)) return;
     setDifficulty(nextDifficulty);
     setTestComplete(false);
     setTestStep(0);
@@ -595,6 +637,7 @@ export default function GameCanvas() {
 
   const setTablePractice = (nextKind: TablePracticeKind, nextTables = selectedTables) => {
     if (nextTables.length === 0) {
+      lastTableSelectionRef.current = null;
       setMode("tables");
       setTableKind(nextKind);
       setSelectedTables([]);
@@ -646,14 +689,7 @@ export default function GameCanvas() {
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
-    if (sessionStartedAt === null) {
-      recentQuestionExpressionsRef.current = [];
-      setSessionPoints(0);
-      setCorrectCount(0);
-      setWrongCount(0);
-      setElapsedSeconds(0);
-      setSessionStartedAt(Date.now());
-    }
+    if (sessionStartedAt === null) startFreshSession();
     setScreen("game");
     setSelectedActivity(nextActivity);
     if (nextActivity === "tables") {
@@ -676,14 +712,7 @@ export default function GameCanvas() {
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
-    if (sessionStartedAt === null) {
-      recentQuestionExpressionsRef.current = [];
-      setSessionPoints(0);
-      setCorrectCount(0);
-      setWrongCount(0);
-      setElapsedSeconds(0);
-      setSessionStartedAt(Date.now());
-    }
+    if (sessionStartedAt === null) startFreshSession();
     setMode("practice");
     setPracticeFormat(nextFormat);
     setQuestion(freshQuestion(() => generatePracticeQuestion(operation, difficulty, nextFormat)));
@@ -707,6 +736,7 @@ export default function GameCanvas() {
   };
 
   const clearAllTables = () => {
+    lastTableSelectionRef.current = null;
     setSelectedTables([]);
     setAnswered(null);
     setFeedback("idle");
@@ -737,7 +767,7 @@ export default function GameCanvas() {
   const continueMission = () => {
     if (mode === "tables" && selectedTables.length === 0) return;
     playSound(feedback === "wrong" ? "tap" : "next");
-    if (feedback === "wrong") {
+    if (feedback === "wrong" && mode !== "test") {
       setAnswered(null);
       setFeedback("idle");
       return;
@@ -768,18 +798,60 @@ export default function GameCanvas() {
     return () => window.removeEventListener("keydown", onKey);
   }, [answerQuestion, feedback, question.options, screen, showEndSessionConfirm, showScorePanel]);
 
-  useEffect(() => {
-    if (screen !== "game" || sessionStartedAt === null) return;
-    const timer = window.setInterval(() => setElapsedSeconds(Math.floor((Date.now() - sessionStartedAt) / 1000)), 1000);
-    return () => window.clearInterval(timer);
-  }, [screen, sessionStartedAt]);
-
   const currentDuration = () => sessionStartedAt === null
     ? elapsedSeconds
-    : Math.max(elapsedSeconds, Math.floor((Date.now() - sessionStartedAt) / 1000));
+    : Math.max(elapsedSeconds, Math.floor((Date.now() - sessionStartedAt - pausedDurationRef.current - (pausedStartedAtRef.current === null ? 0 : Date.now() - pausedStartedAtRef.current)) / 1000));
+
+  useEffect(() => {
+    if (sessionStartedAt === null) return;
+    const syncClock = () => {
+      const isLearningActive = screen === "game" && document.visibilityState === "visible";
+      if (isLearningActive && pausedStartedAtRef.current !== null) {
+        pausedDurationRef.current += Date.now() - pausedStartedAtRef.current;
+        pausedStartedAtRef.current = null;
+      }
+      if (!isLearningActive && pausedStartedAtRef.current === null) pausedStartedAtRef.current = Date.now();
+      if (isLearningActive) setElapsedSeconds(currentDuration());
+    };
+    syncClock();
+    const timer = window.setInterval(syncClock, 1000);
+    document.addEventListener("visibilitychange", syncClock);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", syncClock);
+    };
+  }, [screen, sessionStartedAt]);
+
+  useEffect(() => {
+    const persistedScreen: SessionDraft["screen"] | null = screen === "menu" || screen === "format" || screen === "game" ? screen : null;
+    if (sessionStartedAt === null || persistedScreen === null) return;
+    const draft: SessionDraft = {
+      version: 1,
+      screen: persistedScreen,
+      selectedActivity,
+      mode,
+      operation,
+      difficulty,
+      practiceFormat,
+      tableKind,
+      selectedTables,
+      question,
+      recentExpressions: recentQuestionExpressionsRef.current,
+      playerName,
+      sessionPoints,
+      correctCount,
+      wrongCount,
+      elapsedSeconds: currentDuration(),
+      testStep,
+      testCorrect,
+    };
+    window.localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify(draft));
+  }, [correctCount, difficulty, elapsedSeconds, mode, operation, playerName, practiceFormat, question, screen, selectedActivity, selectedTables, sessionPoints, sessionStartedAt, tableKind, testCorrect, testStep, wrongCount]);
 
   const finishSession = () => {
     setShowEndSessionConfirm(false);
+    clearSessionDraft();
+    setResumeDraft(null);
     playSound("reward");
     setElapsedSeconds(currentDuration());
     setScreen("summary");
@@ -788,6 +860,57 @@ export default function GameCanvas() {
   const requestEndSession = () => {
     playSound("tap");
     setShowEndSessionConfirm(true);
+  };
+
+  const startFreshSession = () => {
+    clearSessionDraft();
+    setResumeDraft(null);
+    setShowResumeSession(false);
+    pausedStartedAtRef.current = null;
+    pausedDurationRef.current = 0;
+    recentQuestionExpressionsRef.current = [];
+    setSessionPoints(0);
+    setCorrectCount(0);
+    setWrongCount(0);
+    setElapsedSeconds(0);
+    setSessionStartedAt(Date.now());
+  };
+
+  const resumeSavedSession = () => {
+    if (!resumeDraft) return;
+    setSelectedActivity(resumeDraft.selectedActivity);
+    setMode(resumeDraft.mode);
+    setOperation(resumeDraft.operation);
+    setDifficulty(resumeDraft.difficulty);
+    setPracticeFormat(resumeDraft.practiceFormat);
+    setTableKind(resumeDraft.tableKind);
+    setSelectedTables(resumeDraft.selectedTables);
+    setQuestion(resumeDraft.question);
+    recentQuestionExpressionsRef.current = resumeDraft.recentExpressions;
+    lastShownQuestionExpressionRef.current = resumeDraft.question.expression;
+    lastTableSelectionRef.current = resumeDraft.mode === "tables" && resumeDraft.selectedTables.length ? `${resumeDraft.tableKind}:${resumeDraft.selectedTables.join(",")}` : null;
+    setPlayerName(resumeDraft.playerName);
+    setSessionPoints(resumeDraft.sessionPoints);
+    setCorrectCount(resumeDraft.correctCount);
+    setWrongCount(resumeDraft.wrongCount);
+    setElapsedSeconds(resumeDraft.elapsedSeconds);
+    setTestStep(resumeDraft.testStep);
+    setTestCorrect(resumeDraft.testCorrect);
+    setTestComplete(false);
+    setAnswered(null);
+    setFeedback("idle");
+    pausedStartedAtRef.current = null;
+    pausedDurationRef.current = 0;
+    setSessionStartedAt(Date.now());
+    setScreen(resumeDraft.screen);
+    setShowResumeSession(false);
+    playSound("launch");
+  };
+
+  const discardSavedSession = () => {
+    clearSessionDraft();
+    setResumeDraft(null);
+    setShowResumeSession(false);
   };
 
   const earnedRewards = rewardsForPoints(sessionPoints);
@@ -805,7 +928,7 @@ export default function GameCanvas() {
   const saveSessionImage = async () => {
     if (isSavingImage) return;
     setIsSavingImage(true);
-    setImageSaveStatus("Hana đang tạo ảnh kỷ niệm...");
+    setImageSaveStatus(copy("Hana đang tạo ảnh kỷ niệm...", "Hana is creating your souvenir image..."));
     const downloadSouvenirBlob = async (blob: Blob) => {
       const fileName = `hanh-trinh-hana-${Date.now()}.png`;
       const file = new File([blob], fileName, { type: "image/png" });
@@ -814,9 +937,9 @@ export default function GameCanvas() {
       if (canUseNativeShare) {
         try {
           await navigator.share({ title: "Ảnh kỷ niệm cùng Robot Hana", text: `Lượt học của ${displayName}`, files: [file] });
-          setImageSaveStatus("Bạn có thể chọn Lưu ảnh trong bảng chia sẻ nhé!");
+          setImageSaveStatus(copy("Bạn có thể chọn Lưu ảnh trong bảng chia sẻ nhé!", "Choose Save Image in the share sheet to keep it."));
         } catch (error) {
-          if ((error as DOMException).name === "AbortError") setImageSaveStatus("Bạn chưa lưu ảnh. Bấm nút để thử lại nhé.");
+          if ((error as DOMException).name === "AbortError") setImageSaveStatus(copy("Bạn chưa lưu ảnh. Bấm nút để thử lại nhé.", "The image was not saved. Tap the button to try again."));
           else throw error;
         }
         return;
@@ -833,7 +956,7 @@ export default function GameCanvas() {
         link.remove();
         URL.revokeObjectURL(imageUrl);
       }, 1000);
-      setImageSaveStatus("Ảnh đã được gửi vào mục Tải xuống của thiết bị.");
+      setImageSaveStatus(copy("Ảnh đã được gửi vào mục Tải xuống của thiết bị.", "The image has been saved to your device downloads."));
     };
     const drawRoundedRectangle = (context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
       const corner = Math.min(radius, width / 2, height / 2);
@@ -867,7 +990,7 @@ export default function GameCanvas() {
     canvas.height = 790;
     const context = canvas.getContext("2d");
     if (!context) {
-      setImageSaveStatus("Thiết bị này chưa thể tạo ảnh. Bạn hãy thử lại trên trình duyệt khác nhé.");
+      setImageSaveStatus(copy("Thiết bị này chưa thể tạo ảnh. Bạn hãy thử lại trên trình duyệt khác nhé.", "This device cannot create the image. Please try another browser."));
       setIsSavingImage(false);
       return;
     }
@@ -875,6 +998,7 @@ export default function GameCanvas() {
     try {
       if (summaryRef.current) {
         try {
+          const { default: html2canvas } = await import("html2canvas");
           const summaryImage = await html2canvas(summaryRef.current, {
             allowTaint: false,
             backgroundColor: null,
@@ -891,7 +1015,7 @@ export default function GameCanvas() {
           return;
         } catch (captureError) {
           console.warn("Không thể chụp toàn bộ màn tổng kết, chuyển sang thẻ dự phòng", captureError);
-          setImageSaveStatus("Hana đang dùng thẻ kỷ niệm dự phòng...");
+          setImageSaveStatus(copy("Hana đang dùng thẻ kỷ niệm dự phòng...", "Hana is preparing a backup souvenir card..."));
         }
       }
       await document.fonts?.ready;
@@ -1048,7 +1172,7 @@ export default function GameCanvas() {
       await downloadSouvenirBlob(blob);
     } catch (error) {
       console.error("Không thể lưu ảnh kỷ niệm", error);
-      setImageSaveStatus("Hana chưa thể lưu ảnh. Bạn hãy thử lại nhé.");
+      setImageSaveStatus(copy("Hana chưa thể lưu ảnh. Bạn hãy thử lại nhé.", "Hana could not save the image. Please try again."));
     } finally {
       setIsSavingImage(false);
     }
@@ -1065,6 +1189,26 @@ export default function GameCanvas() {
       <canvas ref={canvasRef} className={webglUnavailable ? "game-canvas is-hidden" : "game-canvas"} aria-label="Không gian trò chơi toán học" />
       {webglUnavailable && <div className="space-fallback" aria-hidden="true"><span className="fallback-planet coral" /><span className="fallback-planet lavender" /><span className="fallback-planet mint" /><span className="fallback-orbit one" /><span className="fallback-orbit two" /><span className="fallback-stars">✦ · ✧ · ★ · ✦ · ✧</span></div>}
       <div className="space-atmosphere" aria-hidden="true" />
+
+      <AlertDialog open={showResumeSession} onOpenChange={(open) => { if (!open) discardSavedSession(); }}>
+        <AlertDialogContent className="resume-session-card" aria-describedby="resume-session-description">
+          <div className="resume-session-hana" aria-hidden="true"><div className="robot-fallback"><span /><span /><i /></div></div>
+          <p className="end-session-confirm-kicker">{copy("ROBOT HANA ĐÃ GIỮ LẠI", "ROBOT HANA KEPT")}</p>
+          <AlertDialogTitle>{copy("Lượt học trước của bạn vẫn ở đây!", "Your previous learning session is still here!")}</AlertDialogTitle>
+          <AlertDialogDescription id="resume-session-description">
+            {copy("Bạn muốn tiếp tục đúng nơi mình đang học, hay bắt đầu một lượt mới?", "Would you like to continue where you were, or begin a new session?")}
+          </AlertDialogDescription>
+          {resumeDraft && <div className="resume-session-stats" aria-label={copy("Tiến độ đã lưu", "Saved progress")}>
+            <div><span>{copy("Điểm", "Points")}</span><strong>{resumeDraft.sessionPoints}</strong></div>
+            <div><span>{copy("Đúng", "Correct")}</span><strong>{resumeDraft.correctCount}</strong></div>
+            <div><span>{copy("Thời gian", "Time")}</span><strong>{formatDuration(resumeDraft.elapsedSeconds)}</strong></div>
+          </div>}
+          <div className="resume-session-actions">
+            <AlertDialogCancel className="resume-session-new" onClick={discardSavedSession}>{copy("Lượt mới", "New session")}</AlertDialogCancel>
+            <AlertDialogAction className="resume-session-continue" onClick={resumeSavedSession}>{copy("Học tiếp", "Continue learning")} <ChevronRight size={18} /></AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {screen === "welcome" && <WelcomeScreen onStart={() => { playSound("launch"); setScreen("profile"); }} onGuide={() => { playSound("tap"); setShowGuide(true); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} soundEnabled={soundEnabled} onSoundToggle={toggleSound} onSoundSettingsOpen={() => playSound("tap")} musicVolume={musicVolume} effectsVolume={effectsVolume} onMusicVolumeChange={changeMusicVolume} onEffectsVolumeChange={changeEffectsVolume} defaultSoundSettingsOpen={isSoundSettingsDemo} />}
       {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => { playSound("launch"); setScreen("menu"); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
@@ -1092,10 +1236,10 @@ export default function GameCanvas() {
           {highestReward ? <div className="highest-reward"><b>{highestReward.symbol}</b><span><small>HANA CHÚC MỪNG {displayName.toUpperCase()}</small><strong>{rewardLabel(highestReward)}</strong><em>{rewardDetail(highestReward)}</em></span></div> : <p className="reward-empty">{displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
         </section>
         <div className="summary-actions">
-          <button type="button" className="save-memory" onClick={saveSessionImage} disabled={isSavingImage}>{isSavingImage ? "Đang tạo ảnh..." : "Lưu ảnh kỷ niệm"} <Sparkles size={18} /></button>
-          <button type="button" className="summary-again" onClick={() => { setSessionStartedAt(null); setScreen("menu"); }}>Chơi lượt mới <Rocket size={18} /></button>
+          <button type="button" className="save-memory" data-dynamic-text onClick={saveSessionImage} disabled={isSavingImage}>{isSavingImage ? copy("Đang tạo ảnh...", "Creating image...") : copy("Lưu ảnh kỷ niệm", "Save souvenir image")} <Sparkles size={18} /></button>
+          <button type="button" className="summary-again" onClick={() => { setSessionStartedAt(null); setScreen("menu"); }}>{copy("Chơi lượt mới", "Start a new session")} <Rocket size={18} /></button>
         </div>
-        {imageSaveStatus && <p className="image-save-status" role="status">{imageSaveStatus}</p>}
+        {imageSaveStatus && <p className="image-save-status" data-dynamic-text role="status">{imageSaveStatus}</p>}
       </section>}
 
       {screen === "game" && <>
@@ -1126,14 +1270,17 @@ export default function GameCanvas() {
       </div>
 
       <section className={`mission-control operation-${operation} ${menuCollapsed ? "is-menu-collapsed" : ""}`} aria-label="Bảng điều khiển bài tập">
-        <div className="console-topline">
+          <div className="console-topline">
           <div className="mascot-wrap">
+            <span className="cockpit-orbit" aria-hidden="true">
+              {(Object.keys(operationSymbol) as Operation[]).map((planet) => <i key={planet} className={`${planet} ${operation === planet ? "is-active" : ""}`}>{operationSymbol[planet]}</i>)}
+            </span>
             <span className="speech-spark"><Sparkles size={14} /></span>
             <span className="console-operation-symbol" aria-hidden="true">{operationSymbol[operation]}</span>
           </div>
           <div className="console-title">
             <p>{isTableMode ? copy("Học Bảng Nhân và Chia", "Learn multiplication & division") : operationLabel(operation)} <span>•</span> {isTableMode ? tableSubtitle(tableKind) : mode === "test" ? copy("8 câu thử thách", "8-question challenge") : practiceFormatMeta[practiceFormat].shortLabel}</p>
-            <h3>{testComplete ? copy("Hoàn thành kiểm tra!", "Test complete!") : isTableMode && !hasSelectedTables ? copy("Hãy chọn ít nhất một bảng để bắt đầu.", "Choose at least one table to begin.") : translateLearningText(question.mission, language)}</h3>
+            <h3 data-dynamic-text>{testComplete ? copy("Hoàn thành kiểm tra!", "Test complete!") : isTableMode && !hasSelectedTables ? copy("Hãy chọn ít nhất một bảng để bắt đầu.", "Choose at least one table to begin.") : isTableMode ? selectedTables.length === 1 ? (language === "en" ? `Practise the ${selectedTables[0]} table with ${tableLabel(tableKind).toLowerCase()}.` : `Cùng Hana luyện bảng ${selectedTables[0]} với ${tableLabel(tableKind).toLowerCase()}.`) : (language === "en" ? `Practise ${selectedTables.length} tables with ${tableLabel(tableKind).toLowerCase()}.` : `Cùng Hana luyện ${selectedTables.length} bảng với ${tableLabel(tableKind).toLowerCase()}.`) : translateLearningText(question.mission, language)}</h3>
           </div>
           <button className="mission-counter current-score-button" data-current-score type="button" onClick={() => setShowScorePanel(true)} aria-label={copy("Xem điểm hiện tại và tiến độ phần thưởng", "View current points and reward progress")}>
             <span>{mode === "test" ? copy("Câu", "Question") : copy("Điểm hiện tại", "Current points")}</span>
@@ -1231,7 +1378,7 @@ export default function GameCanvas() {
                   <div className="hana-hint-copy"><strong>{language === "en" ? `Robot Hana's hint for ${displayName}:` : `Robot Hana gợi ý cho ${displayName}:`}</strong><span>{language === "en" ? `That is okay. This try loses 2 points. ${translateLearningText(question.hint, language)}` : `Chưa sao đâu, lượt này giảm 2 điểm. ${translateLearningText(question.hint, language)}`}</span><ol>{question.hintSteps.map((step) => <li key={step}>{translateLearningText(step, language)}</li>)}</ol></div>
                 </div>}
                 <button type="button" className={`feedback-action ${feedback === "correct" ? "is-next" : "is-retry"}`} onClick={continueMission}>
-                  {feedback === "correct" ? (mode === "test" && testStep + 1 >= 8 ? copy("Xem kết quả", "View results") : copy("Nhiệm vụ tiếp", "Next mission")) : copy("Thử lại", "Try again")}
+                  {feedback === "correct" ? (mode === "test" && testStep + 1 >= 8 ? copy("Xem kết quả", "View results") : copy("Nhiệm vụ tiếp", "Next mission")) : mode === "test" ? (testStep + 1 >= 8 ? copy("Xem kết quả", "View results") : copy("Câu tiếp", "Next question")) : copy("Thử lại", "Try again")}
                   <ChevronRight size={17} />
                 </button>
               </div>
@@ -1241,10 +1388,11 @@ export default function GameCanvas() {
         )}
 
         <div className="control-row">
-          {!isTableMode && <div className="level-switch" aria-label="Chọn cấp độ">
+          {!isTableMode && <div className={`level-switch ${mode === "test" && (testStep > 0 || feedback !== "idle" || answered !== null) ? "is-locked" : ""}`} aria-label="Chọn cấp độ">
             {(Object.keys(difficultyMeta) as Difficulty[]).map((key) => (
-              <button key={key} type="button" className={difficulty === key ? "is-active" : ""} onClick={() => selectDifficulty(key)}>{difficultyMeta[key].label}</button>
+              <button key={key} type="button" disabled={mode === "test" && (testStep > 0 || feedback !== "idle" || answered !== null)} className={difficulty === key ? "is-active" : ""} onClick={() => selectDifficulty(key)}>{difficultyMeta[key].label}</button>
             ))}
+            {mode === "test" && (testStep > 0 || feedback !== "idle" || answered !== null) && <span className="test-level-lock">{copy("Cấp độ đã khóa cho lượt kiểm tra", "Difficulty is locked for this test")}</span>}
           </div>}
         </div>
         {!testComplete && <div className="session-bottom-actions" aria-label={copy("Điều khiển nhiệm vụ", "Mission controls")}>

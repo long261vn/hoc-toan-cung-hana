@@ -1,4 +1,27 @@
-const quiz = await import("/tmp/hana-quiz-validation/quiz.js");
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const validationDirectory = resolve("/tmp", `hana-quiz-validation-${process.pid}`);
+const bundledQuiz = resolve(validationDirectory, "quiz.js");
+if (existsSync(validationDirectory)) rmSync(validationDirectory, { recursive: true, force: true });
+mkdirSync(validationDirectory, { recursive: true });
+try {
+  execFileSync(resolve(projectRoot, "node_modules/.bin/esbuild"), [
+    resolve(projectRoot, "client/src/game/quiz.ts"),
+    "--bundle",
+    "--platform=node",
+    "--format=esm",
+    `--outfile=${bundledQuiz}`,
+  ], { stdio: "ignore" });
+  const quiz = await import(`${pathToFileURL(bundledQuiz).href}?v=${Date.now()}`);
+  globalThis.__hanaQuizModule = quiz;
+} finally {
+  rmSync(validationDirectory, { recursive: true, force: true });
+}
+const quiz = globalThis.__hanaQuizModule;
 const operations = ["add", "subtract", "multiply", "divide"];
 const difficulties = ["easy", "medium", "challenge"];
 const tableKinds = ["multiply", "divide", "mixed"];

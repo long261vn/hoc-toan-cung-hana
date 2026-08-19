@@ -207,3 +207,19 @@
 - [x] Tái hiện nhãn “Chưa chọn bảng” không đổi sau khi học sinh chọn bảng.
 - [x] Đồng bộ nhãn trạng thái và câu hỏi với danh sách bảng nhân/chia đã chọn.
 - [x] Kiểm thử chọn một, nhiều, tất cả và bỏ chọn bảng trên desktop/mobile; chạy TypeScript và build.
+
+## Rà soát nghiêm ngặt trước phát hành
+
+- [x] Đối chiếu luồng học, chuyển màn, tính điểm, phần thưởng, ngôn ngữ, âm thanh và lưu ảnh với yêu cầu sản phẩm.
+- [x] Kiểm tra tính hợp lệ câu hỏi/đáp án, tình huống biên và trạng thái thay đổi nhiệm vụ/bảng nhân–chia.
+- [x] Rà soát desktop/mobile, trợ năng bàn phím, văn bản, vùng chạm, hiệu năng tải và lỗi console.
+- [x] Tổng hợp các lỗi cùng cơ hội cải thiện theo mức độ ưu tiên và bằng chứng kiểm thử.
+
+## Hoàn thiện sau rà soát
+
+- [x] Làm mới câu hỏi khi bỏ chọn rồi chọn lại cùng bảng; đồng bộ lời dẫn với bảng/chế độ đang chọn.
+- [x] Sửa phản hồi thành công khi lưu ảnh kỷ niệm và loại bỏ nguy cơ bộ dịch ghi đè văn bản động.
+- [x] Làm rõ Bài kiểm tra: khóa cấp độ, xử lý đáp án sai công bằng và giữ ý nghĩa điểm kiểm tra.
+- [x] Lưu/khôi phục lượt học, chỉ tính thời gian học chủ động và tăng vùng chạm bảng nhân–chia trên mobile.
+- [x] Hoàn thiện tham số ngôn ngữ deep link, cập nhật kiểm thử không phụ thuộc thứ tự và tách tải Babylon để giảm tải đầu trang.
+- [x] Kiểm thử đầy đủ câu hỏi, trạng thái, song ngữ, ảnh kỷ niệm, desktop/mobile, TypeScript và build trước khi lưu checkpoint.
