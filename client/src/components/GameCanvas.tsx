@@ -8,7 +8,6 @@ import { Engine } from "@babylonjs/core/Engines/engine";
 import {
   Check,
   ChevronRight,
-  Compass,
   Gem,
   HelpCircle,
   Rocket,
@@ -36,21 +35,17 @@ const ASSETS = {
   logo: "/manus-storage/phi-hanh-tinh-logo_cbefb56f.png",
 } as const;
 
-const planetMeta: Record<Operation, { label: string; subtitle: string; icon: string; color: string }> = {
-  add: { label: "Hành tinh Cộng", subtitle: "Gộp năng lượng", icon: "+", color: "#FF8E67" },
-  subtract: { label: "Hành tinh Trừ", subtitle: "Tìm phần còn lại", icon: "−", color: "#AFA2E9" },
-  multiply: { label: "Hành tinh Nhân", subtitle: "Xếp nhóm bằng nhau", icon: "×", color: "#63D8BF" },
-  divide: { label: "Hành tinh Chia", subtitle: "Chia đều tinh thể", icon: "÷", color: "#F3CD61" },
-};
-
-const mapStops: Array<{ operation: Operation; crystal: string }> = [
-  { operation: "add", crystal: "diamond" },
-  { operation: "subtract", crystal: "hex" },
-  { operation: "multiply", crystal: "star" },
-  { operation: "divide", crystal: "drop" },
-];
-
 type AppScreen = "welcome" | "menu" | "game";
+type ActivityId = "add" | "subtract" | "multiply" | "divide" | "tables" | "test";
+
+const activityMeta: Record<ActivityId, { label: string; kicker: string; description: string }> = {
+  add: { label: "Cộng", kicker: "PHÉP TÍNH CỘNG", description: "Gộp các nhóm năng lượng và tìm tổng thật nhanh." },
+  subtract: { label: "Trừ", kicker: "PHÉP TÍNH TRỪ", description: "Tìm phần còn lại với những nhiệm vụ ngắn gọn." },
+  multiply: { label: "Nhân", kicker: "PHÉP TÍNH NHÂN", description: "Xếp các nhóm bằng nhau để nhân thật tự tin." },
+  divide: { label: "Chia", kicker: "PHÉP TÍNH CHIA", description: "Chia đều tinh thể cho các bạn robot." },
+  tables: { label: "Bảng cửu chương", kicker: "LUYỆN BẢNG 2 ĐẾN 9", description: "Chọn bảng nhân, bảng chia hoặc luyện hỗn hợp." },
+  test: { label: "Bài kiểm tra", kicker: "8 CÂU THỬ THÁCH", description: "Hoàn thành tám nhiệm vụ để nhận thật nhiều sao." },
+};
 
 function WelcomeScreen({ onStart, onGuide }: { onStart: () => void; onGuide: () => void }) {
   return (
@@ -76,12 +71,14 @@ function WelcomeScreen({ onStart, onGuide }: { onStart: () => void; onGuide: () 
   );
 }
 
-function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGuide: () => void; onChoose: (mode: ExerciseMode) => void }) {
-  const activities: Array<{ mode: ExerciseMode; icon: typeof Rocket; eyebrow: string; title: string; detail: string; tone: string }> = [
-    { mode: "journey", icon: Rocket, eyebrow: "BẢN ĐỒ 4 HÀNH TINH", title: "Ôn theo hành trình", detail: "Khám phá từng phép tính theo lộ trình.", tone: "journey" },
-    { mode: "practice", icon: Sparkles, eyebrow: "TỰ CHỌN PHÉP TÍNH", title: "Luyện từng phép", detail: "Tập Cộng, Trừ, Nhân hoặc Chia theo cấp độ.", tone: "practice" },
-    { mode: "tables", icon: Gem, eyebrow: "BẢNG 2 ĐẾN 9", title: "Bảng cửu chương", detail: "Chọn bảng nhân, bảng chia hoặc luyện hỗn hợp.", tone: "tables" },
-    { mode: "test", icon: Trophy, eyebrow: "8 CÂU THỬ THÁCH", title: "Bài kiểm tra", detail: "Xem con đã sẵn sàng bay thật xa chưa nhé!", tone: "test" },
+function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGuide: () => void; onChoose: (activity: ActivityId) => void }) {
+  const activities: Array<{ id: ActivityId; icon: typeof Rocket; eyebrow: string; detail: string; tone: string }> = [
+    { id: "add", icon: Rocket, eyebrow: "PHÉP TÍNH CỘNG", detail: "Gộp các nhóm và tìm tổng.", tone: "add" },
+    { id: "subtract", icon: Gem, eyebrow: "PHÉP TÍNH TRỪ", detail: "Tìm phần còn lại.", tone: "subtract" },
+    { id: "multiply", icon: Sparkles, eyebrow: "PHÉP TÍNH NHÂN", detail: "Xếp những nhóm bằng nhau.", tone: "multiply" },
+    { id: "divide", icon: Star, eyebrow: "PHÉP TÍNH CHIA", detail: "Chia đều các tinh thể.", tone: "divide" },
+    { id: "tables", icon: Gem, eyebrow: "BẢNG 2 ĐẾN 9", detail: "Chọn bảng nhân, chia, hỗn hợp.", tone: "tables" },
+    { id: "test", icon: Trophy, eyebrow: "8 CÂU THỬ THÁCH", detail: "Thử sức và nhận sao.", tone: "test" },
   ];
 
   return (
@@ -100,10 +97,10 @@ function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGui
         {activities.map((activity, index) => {
           const Icon = activity.icon;
           return (
-            <button key={activity.mode} type="button" className={`activity-card ${activity.tone}`} onClick={() => onChoose(activity.mode)}>
+            <button key={activity.id} type="button" className={`activity-card ${activity.tone}`} onClick={() => onChoose(activity.id)}>
               <span className="activity-order">0{index + 1}</span>
               <span className="activity-icon"><Icon size={28} fill="currentColor" /></span>
-              <span className="activity-copy"><b>{activity.eyebrow}</b><strong>{activity.title}</strong><small>{activity.detail}</small></span>
+              <span className="activity-copy"><b>{activity.eyebrow}</b><strong>{activityMeta[activity.id].label}</strong><small>{activity.detail}</small></span>
               <ChevronRight className="activity-arrow" size={22} />
             </button>
           );
@@ -118,13 +115,6 @@ const difficultyMeta: Record<Difficulty, { label: string; detail: string }> = {
   easy: { label: "Làm quen", detail: "Tính nhẩm nhẹ nhàng" },
   medium: { label: "Tự tin", detail: "Tính theo cột và bảng nhân" },
   challenge: { label: "Thám hiểm", detail: "Nhiệm vụ lớn hơn" },
-};
-
-const modeMeta: Record<ExerciseMode, string> = {
-  journey: "Ôn theo hành trình",
-  practice: "Luyện từng phép",
-  tables: "Bảng cửu chương",
-  test: "Bài kiểm tra 8 câu",
 };
 
 const tableKindMeta: Record<TablePracticeKind, { label: string; subtitle: string; accent: string }> = {
@@ -152,7 +142,8 @@ export default function GameCanvas() {
     : "add";
 
   const [screen, setScreen] = useState<AppScreen>(isDemo || isTableDemo ? "game" : isMenuPreview ? "menu" : "welcome");
-  const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "journey");
+  const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "practice");
+  const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isDemo ? "multiply" : "add");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [operation, setOperation] = useState<Operation>(initialOperation);
   const [question, setQuestion] = useState<QuizQuestion>(() => isTableDemo
@@ -270,13 +261,27 @@ export default function GameCanvas() {
     handleRef.current?.setActivePlanet(tableQuestion.operation);
   };
 
-  const startActivity = (nextMode: ExerciseMode) => {
+  const startActivity = (nextActivity: ActivityId) => {
+    setEnergy(0);
+    setStars(0);
+    setAnswered(null);
+    setFeedback("idle");
+    setTestComplete(false);
+    setTestStep(0);
+    setTestCorrect(0);
+    handleRef.current?.setEnergy(0);
     setScreen("game");
-    if (nextMode === "tables") {
+    setSelectedActivity(nextActivity);
+    if (nextActivity === "tables") {
       setTablePractice(tableKind, selectedTables);
       return;
     }
-    selectMode(nextMode);
+    if (nextActivity === "test") {
+      selectMode("test");
+      return;
+    }
+    setMode("practice");
+    selectOperation(nextActivity);
   };
 
   const toggleTable = (table: number) => {
@@ -339,13 +344,13 @@ export default function GameCanvas() {
     return () => window.removeEventListener("keydown", onKey);
   }, [answerQuestion, feedback, question.options, screen]);
 
-  const activePlanet = planetMeta[operation];
   const missionCount = mode === "test" ? `${Math.min(testStep + 1, 8)}/8` : `${energy}/5`;
   const isTableMode = mode === "tables";
+  const activeActivity = activityMeta[selectedActivity];
 
   return (
     <main className="game-shell">
-      <canvas ref={canvasRef} className="game-canvas" aria-label="Bản đồ bốn hành tinh phép tính" />
+      <canvas ref={canvasRef} className="game-canvas" aria-label="Không gian trò chơi toán học" />
       <div className="space-atmosphere" aria-hidden="true" />
 
       {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("menu")} onGuide={() => setShowGuide(true)} />}
@@ -384,58 +389,14 @@ export default function GameCanvas() {
       </header>
 
       <section className="mission-copy" aria-live="polite">
-        <div className="mission-kicker"><Rocket size={15} /> Chuyến bay đang mở</div>
-        <h2>{activePlanet.label}</h2>
-        <p>{activePlanet.subtitle}. Robot Mít đang chờ con nạp tinh thể!</p>
+        <div className="mission-kicker"><Rocket size={15} /> {activeActivity.kicker}</div>
+        <h2>{activeActivity.label}</h2>
+        <p>{activeActivity.description}</p>
       </section>
-
-      <div className="map-destinations" aria-label="Các điểm dừng trên quỹ đạo">
-        <div className="route-beam" aria-hidden="true" />
-        {mapStops.map((stop, index) => {
-          const planet = planetMeta[stop.operation];
-          const selected = stop.operation === operation;
-          return (
-            <button
-              key={stop.operation}
-              type="button"
-              className={selected ? "destination-stop is-active" : "destination-stop"}
-              style={{ "--stop-color": planet.color } as React.CSSProperties}
-              onClick={() => selectOperation(stop.operation)}
-              aria-label={`Đến ${planet.label}`}
-            >
-              <span className={`crystal-shape ${stop.crystal}`} aria-hidden="true" />
-              <span className="destination-copy"><b>0{index + 1}</b>{planet.label.replace("Hành tinh ", "")}</span>
-              <span className="destination-symbol">{planet.icon}</span>
-            </button>
-          );
-        })}
-      </div>
 
       <aside className="robot-guide" aria-label="Robot Mít hướng dẫn">
         <div className="robot-fallback" aria-hidden="true"><span /><span /><i /></div>
         <div className="robot-note"><span className="robot-note-dot" />Robot Mít: “Con làm được mà!”</div>
-      </aside>
-
-      <aside className="orbit-guide" aria-label="Bản đồ hành tinh">
-        <div className="orbit-guide-heading"><Compass size={17} /> Bản đồ hành trình</div>
-        <div className="planet-selector">
-          {(Object.keys(planetMeta) as Operation[]).map((key, index) => (
-            <button
-              key={key}
-              className={operation === key ? "planet-pill is-selected" : "planet-pill"}
-              style={{ "--planet-color": planetMeta[key].color } as React.CSSProperties}
-              type="button"
-              onClick={() => selectOperation(key)}
-            >
-              <span className="planet-order">0{index + 1}</span>
-              <span className={`planet-symbol ${key}`}><span className={`crystal-shape ${key === "add" ? "diamond" : key === "subtract" ? "hex" : key === "multiply" ? "star" : "drop"}`} />{planetMeta[key].icon}</span>
-              <span>{planetMeta[key].label.replace("Hành tinh ", "")}</span>
-            </button>
-          ))}
-        </div>
-        <button type="button" className="route-link" onClick={() => setShowGuide(true)}>
-          Xem lộ trình chuẩn lớp 3 <ChevronRight size={15} />
-        </button>
       </aside>
 
       <section className="mission-control" aria-label="Bảng điều khiển bài tập">
@@ -444,7 +405,7 @@ export default function GameCanvas() {
             <span className="speech-spark"><Sparkles size={14} /></span>
           </div>
           <div className="console-title">
-            <p>{modeMeta[mode]} <span>•</span> {isTableMode ? tableKindMeta[tableKind].subtitle : difficultyMeta[difficulty].label}</p>
+            <p>{activeActivity.label} <span>•</span> {isTableMode ? tableKindMeta[tableKind].subtitle : mode === "test" ? "8 câu thử thách" : difficultyMeta[difficulty].label}</p>
             <h3>{testComplete ? "Hoàn thành kiểm tra!" : question.mission}</h3>
           </div>
           <div className="mission-counter">
@@ -549,11 +510,7 @@ export default function GameCanvas() {
         )}
 
         <div className="control-row">
-          <div className="mode-switch" aria-label="Chọn chế độ">
-            {(Object.keys(modeMeta) as ExerciseMode[]).map((key) => (
-              <button key={key} type="button" className={mode === key ? "is-active" : ""} onClick={() => selectMode(key)}>{modeMeta[key]}</button>
-            ))}
-          </div>
+          <button type="button" className="change-activity" onClick={() => setScreen("menu")}><Rocket size={15} /> Chọn hoạt động khác</button>
           {!isTableMode && <div className="level-switch" aria-label="Chọn cấp độ">
             {(Object.keys(difficultyMeta) as Difficulty[]).map((key) => (
               <button key={key} type="button" className={difficulty === key ? "is-active" : ""} onClick={() => selectDifficulty(key)}>{difficultyMeta[key].label}</button>
@@ -564,25 +521,24 @@ export default function GameCanvas() {
       </>}
 
       {showGuide && (
-        <div className="guide-backdrop" role="dialog" aria-modal="true" aria-label="Lộ trình chuẩn lớp 3">
+        <div className="guide-backdrop" role="dialog" aria-modal="true" aria-label="Hướng dẫn cách chơi">
           <section className="guide-card">
             <button className="guide-close" type="button" onClick={() => setShowGuide(false)} aria-label="Đóng lộ trình"><X size={19} /></button>
             <div className="guide-heading">
-              <img src={ASSETS.planets} alt="Bốn hành tinh phép tính" />
               <div>
-                <p className="eyebrow">ÔN THEO HÀNH TRÌNH</p>
-                <h2>Lộ trình chuẩn lớp 3</h2>
-                <p>Bốn điểm dừng giúp con luyện dần từ tính nhẩm đến bài toán một bước.</p>
+                <p className="eyebrow">ROBOT MÍT HƯỚNG DẪN</p>
+                <h2>Cách chơi thật dễ</h2>
+                <p>Chọn một hoạt động, làm phép tính và thu thập tinh thể năng lượng nhé.</p>
               </div>
             </div>
             <ol className="curriculum-list">
-              <li><span>01</span><div><strong>Cộng và trừ số tự nhiên</strong><p>Tính nhẩm, đặt tính theo cột, tìm số còn lại trong phạm vi phù hợp.</p></div></li>
-              <li><span>02</span><div><strong>Bảng nhân và bảng chia</strong><p>Nhớ các phép nhân, chia cơ bản bằng hoạt động chia nhóm tinh thể.</p></div></li>
-              <li><span>03</span><div><strong>Nhân, chia với số một chữ số</strong><p>Tăng dần độ khó với các phép tính có nhiều chữ số nhưng kết quả luôn rõ ràng.</p></div></li>
-              <li><span>04</span><div><strong>Bài toán một bước</strong><p>Vận dụng phép tính để hoàn thành nhiệm vụ ngắn trong từng chuyến bay.</p></div></li>
+              <li><span>01</span><div><strong>Chọn hoạt động</strong><p>Con chọn Cộng, Trừ, Nhân, Chia, Bảng cửu chương hoặc Bài kiểm tra.</p></div></li>
+              <li><span>02</span><div><strong>Đọc thật kỹ phép tính</strong><p>Nhìn vào bài toán lớn ở bảng điều khiển trước khi chọn đáp án.</p></div></li>
+              <li><span>03</span><div><strong>Chọn đáp án đúng</strong><p>Mỗi câu có bốn đáp án. Con có thể nhấn phím 1 đến 4 trên máy tính.</p></div></li>
+              <li><span>04</span><div><strong>Không sao nếu chưa đúng</strong><p>Robot Mít sẽ đưa gợi ý để con thử lại và tiếp tục học.</p></div></li>
             </ol>
-            <p className="guide-note">Nội dung theo mạch Số và phép tính của Chương trình GDPT 2018 lớp 3; có thể dùng cùng các bộ sách giáo khoa hiện hành.</p>
-            <button type="button" className="primary-action" onClick={() => setShowGuide(false)}>Bắt đầu chuyến bay <Rocket size={18} /></button>
+            <p className="guide-note">Con có thể bấm nút Menu bất cứ lúc nào để đổi sang một hoạt động khác.</p>
+            <button type="button" className="primary-action" onClick={() => setShowGuide(false)}>Mình đã hiểu <Rocket size={18} /></button>
           </section>
         </div>
       )}

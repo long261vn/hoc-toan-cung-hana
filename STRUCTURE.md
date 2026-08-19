@@ -12,7 +12,7 @@ React chỉ đảm nhiệm khung trình bày. `client/src/components/GameCanvas.
 
 ## Luồng trạng thái
 
-Học sinh đi theo luồng `welcome` → `menu` → `game`. Menu chọn một `ExerciseMode`, sau đó `GameCanvas` tạo `QuizQuestion` → học sinh chọn đáp án → cập nhật phản hồi, điểm và tiến độ → gọi `GameHandle` để đồng bộ cảnh. Chế độ kiểm tra đếm 8 câu; các chế độ khác tạo chuyến luyện liên tục. Ở chế độ bảng cửu chương, `GameCanvas` nắm `tableKind` và `selectedTables`, rồi truyền chúng vào bộ sinh câu hỏi để tôn trọng chính xác lựa chọn một hoặc nhiều bảng.
+Học sinh đi theo luồng `welcome` → `menu` → `game`. Menu chọn một trong sáu `ActivityId`: Cộng, Trừ, Nhân, Chia, Bảng cửu chương hoặc Bài kiểm tra. Sau đó `GameCanvas` tạo `QuizQuestion` → học sinh chọn đáp án → cập nhật phản hồi, điểm và tiến độ → gọi `GameHandle` để đồng bộ cảnh. Chế độ kiểm tra đếm 8 câu; các chế độ khác tạo chuyến luyện liên tục. Ở chế độ bảng cửu chương, `GameCanvas` nắm `tableKind` và `selectedTables`, rồi truyền chúng vào bộ sinh câu hỏi để tôn trọng chính xác lựa chọn một hoặc nhiều bảng. Không còn thành phần Bản đồ hành trình trong màn chơi.
 
 ## Kiểm chứng
 

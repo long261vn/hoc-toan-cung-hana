@@ -1,5 +1,13 @@
 # Việc cần làm — Bảng cửu chương
 
+## Menu sáu hoạt động và rà soát lỗi
+
+- [x] Kiểm tra các thành phần đang dùng Bản đồ hành trình và luồng Ôn theo hành trình.
+- [x] Thay menu bằng sáu lựa chọn: Cộng, Trừ, Nhân, Chia, Bảng Cửu Chương, Bài kiểm tra.
+- [x] Loại bỏ Bản đồ hành trình khỏi màn chơi và sắp xếp lại khu vực hiển thị.
+- [x] Rà soát lỗi logic, lỗi console và lỗi hiển thị; khắc phục các lỗi phát hiện được.
+- [x] Kiểm thử menu sáu hoạt động trên máy tính và điện thoại, lưu checkpoint, bàn giao.
+
 ## Giao diện chào mừng và menu
 
 - [x] Thiết kế luồng từ màn hình chào mừng đến menu hoạt động dành cho trẻ em.

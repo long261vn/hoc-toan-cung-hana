@@ -49,7 +49,7 @@ button:focus-visible { outline: 3px solid #ffe28c; outline-offset: 3px; }
   background: radial-gradient(circle at 18% 6%, #283b81 0%, #12194e 30%, #090d2b 74%);
 }
 
-.game-canvas { position: absolute; inset: 0; z-index: -2; display: block; width: 100%; height: 100%; outline: none; }
+.game-canvas { position: absolute; inset: 0; z-index: -2; display: block; width: 100%; height: 100%; outline: none; touch-action: none; }
 .space-atmosphere { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(circle at 20% 8%, rgba(113, 133, 255, .24), transparent 32%), linear-gradient(180deg, rgba(4, 8, 31, .1), rgba(5, 8, 27, .4)); }
 
 .welcome-screen, .activity-screen { position: relative; z-index: 5; min-height: 100dvh; padding: 22px 30px; color: #fff8e7; }.welcome-topbar, .activity-topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }.mini-brand { display: flex; align-items: center; gap: 8px; color: #fff8e7; font-family: "Baloo 2", cursive; font-size: 15px; font-weight: 800; line-height: .82; }.mini-brand-rocket { display: grid; width: 39px; height: 39px; place-items: center; color: #ff7655; border: 1px solid rgba(255,215,156,.32); border-radius: 13px; background: #20295f; box-shadow: inset 0 1px 0 rgba(255,255,255,.14); transform: rotate(23deg); }.welcome-help, .menu-back { display: inline-flex; align-items: center; gap: 6px; padding: 9px 12px; color: #eef1ff; border: 1px solid rgba(218, 228, 255, .28); border-radius: 13px; background: rgba(21, 31, 91, .68); box-shadow: 0 8px 20px rgba(0,0,26,.18); font-size: 11px; font-weight: 800; cursor: pointer; backdrop-filter: blur(8px); transition: transform 160ms ease, background 160ms ease; }.welcome-help:hover, .menu-back:hover { background: rgba(42, 57, 136, .82); transform: translateY(-2px); }
@@ -131,3 +131,12 @@ button:focus-visible { outline: 3px solid #ffe28c; outline-offset: 3px; }
 .robot-guide > img, .mascot-wrap img { display: none; }
 .mascot-wrap::before { content: ""; position: absolute; top: 11px; left: 8px; width: 38px; height: 32px; border: 2px solid #67cdbd; border-radius: 50% 50% 42% 42%; background: #fff5d8; box-shadow: inset -5px -5px 0 rgba(91, 207, 188, .2); }
 .mascot-wrap::after { content: "••"; position: absolute; top: 16px; left: 15px; width: 24px; height: 15px; border-radius: 9px; color: #fdf6d9; background: #25316e; font-size: 12px; line-height: 12px; letter-spacing: 3px; text-align: center; }
+
+/* Six direct activities replace the former journey map; the play screen keeps one clear action to return to the menu. */
+.activity-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(970px, 100%); }
+.activity-card { grid-template-columns: 45px 1fr 20px; gap: 10px; min-height: 118px; padding: 16px; }
+.activity-icon { width: 45px; height: 45px; }.activity-copy strong { font-size: 20px; }.activity-copy small { line-height: 1.35; }
+.activity-card.add { background: linear-gradient(135deg, #ffdfbc, #ff9b79); }.activity-card.subtract { background: linear-gradient(135deg, #e2d8ff, #b6a7ed); }.activity-card.multiply { background: linear-gradient(135deg, #c8fff1, #6adfc4); }.activity-card.divide { background: linear-gradient(135deg, #fff3b9, #f5cc69); }.activity-card.tables { background: linear-gradient(135deg, #c8e6ff, #88bff3); }.activity-card.test { background: linear-gradient(135deg, #ffd9ee, #f2a6cf); }
+.change-activity { display: inline-flex; align-items: center; gap: 5px; padding: 7px 9px; color: #27316b; border: 1px solid #d9dfef; border-radius: 10px; background: #f0f3fb; font-size: 9px; font-weight: 800; cursor: pointer; transition: transform 160ms ease, background 160ms ease; }.change-activity:hover { background: #e3e8f7; transform: translateY(-1px); }
+.guide-heading { display: block; padding-right: 32px; }.guide-heading img { display: none; }
+@media (max-width: 760px) { .activity-grid { grid-template-columns: 1fr; }.activity-card { min-height: 94px; padding: 13px; }.orbit-guide { display: none; }.guide-heading { display: block; }.change-activity { align-self: flex-start; } }
