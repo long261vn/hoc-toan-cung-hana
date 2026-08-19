@@ -1243,7 +1243,6 @@ export default function GameCanvas() {
       {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "summary" && <section ref={summaryRef} className="summary-screen" data-i18n-direct aria-label={copy("Tổng kết lượt chơi", "Learning session summary")}>
         <div className="summary-brand mini-brand" aria-label={language === "en" ? "Math Planet Adventure" : "Phi Hành Tinh Phép Tính"}><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><GameBrand language={language} /></div>
-        <LanguageControl className="summary-language-control" language={language} onToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />
         <div className="summary-orbit" aria-hidden="true" />
         <div className="summary-journey" aria-hidden="true"><i className="add">+</i><i className="subtract">−</i><i className="multiply">×</i><i className="divide">÷</i></div>
         <div className="summary-stars" aria-hidden="true"><span>✦</span><span>★</span><span>✦</span></div>

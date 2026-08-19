@@ -235,3 +235,8 @@
 - [x] Kiểm kê toàn bộ nhãn, phần thưởng, lời Hana và nút còn tiếng Việt ở màn tổng kết khi chọn ENG.
 - [x] Dịch trực tiếp tất cả nội dung tổng kết và bảo vệ chúng khỏi bộ dịch DOM ghi đè trạng thái React.
 - [x] Kiểm thử màn tổng kết English, TypeScript và build trước khi lưu checkpoint.
+
+## Tối giản màn tổng kết
+
+- [x] Bỏ nút chuyển đổi ngôn ngữ riêng trên màn tổng kết.
+- [x] Kiểm tra bố cục tổng kết trên điện thoại và desktop sau khi loại bỏ điều khiển.
