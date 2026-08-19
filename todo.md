@@ -1,5 +1,12 @@
 # Việc cần làm — Bảng cửu chương
 
+## Làm rõ điều khiển bảng cửu chương
+
+- [x] Đổi nhãn Hỗn hợp thành Cả nhân và chia.
+- [x] Thay Chọn cả 2–9 bằng Chọn Tất Cả và thêm Bỏ Chọn Tất Cả.
+- [x] Loại bỏ dấu hoa thị trước số của từng bảng và kiểm tra trạng thái chọn.
+- [x] Kiểm tra giao diện trên máy tính và điện thoại, lưu checkpoint, bàn giao.
+
 ## Menu sáu hoạt động và rà soát lỗi
 
 - [x] Kiểm tra các thành phần đang dùng Bản đồ hành trình và luồng Ôn theo hành trình.

@@ -120,7 +120,7 @@ const difficultyMeta: Record<Difficulty, { label: string; detail: string }> = {
 const tableKindMeta: Record<TablePracticeKind, { label: string; subtitle: string; accent: string }> = {
   multiply: { label: "Bảng nhân", subtitle: "Nhân theo từng bảng", accent: "#54cbb4" },
   divide: { label: "Bảng chia", subtitle: "Chia theo từng bảng", accent: "#f3c85e" },
-  mixed: { label: "Hỗn hợp", subtitle: "Nhân và chia xen kẽ", accent: "#ff7b5a" },
+  mixed: { label: "Cả nhân và chia", subtitle: "Nhân và chia xen kẽ", accent: "#ff7b5a" },
 };
 
 function pickTestOperation() {
@@ -291,6 +291,18 @@ export default function GameCanvas() {
     setTablePractice(tableKind, nextTables);
   };
 
+  const changeTableKind = (nextKind: TablePracticeKind) => {
+    setTableKind(nextKind);
+    if (selectedTables.length > 0) setTablePractice(nextKind, selectedTables);
+  };
+
+  const clearAllTables = () => {
+    setSelectedTables([]);
+    setAnswered(null);
+    setFeedback("idle");
+    setTestComplete(false);
+  };
+
   const answerQuestion = useCallback(
     (choice: number) => {
       if (answered !== null || testComplete) return;
@@ -346,6 +358,8 @@ export default function GameCanvas() {
 
   const missionCount = mode === "test" ? `${Math.min(testStep + 1, 8)}/8` : `${energy}/5`;
   const isTableMode = mode === "tables";
+  const hasSelectedTables = selectedTables.length > 0;
+  const hasAllTables = selectedTables.length === TIMES_TABLES.length;
   const activeActivity = activityMeta[selectedActivity];
 
   return (
@@ -406,7 +420,7 @@ export default function GameCanvas() {
           </div>
           <div className="console-title">
             <p>{activeActivity.label} <span>•</span> {isTableMode ? tableKindMeta[tableKind].subtitle : mode === "test" ? "8 câu thử thách" : difficultyMeta[difficulty].label}</p>
-            <h3>{testComplete ? "Hoàn thành kiểm tra!" : question.mission}</h3>
+            <h3>{testComplete ? "Hoàn thành kiểm tra!" : isTableMode && !hasSelectedTables ? "Hãy chọn ít nhất một bảng để bắt đầu." : question.mission}</h3>
           </div>
           <div className="mission-counter">
             <span>{mode === "test" ? "Câu" : "Tinh thể"}</span>
@@ -434,7 +448,7 @@ export default function GameCanvas() {
                     <span>BẢNG CỬU CHƯƠNG</span>
                     <strong>{tableKindMeta[tableKind].label}</strong>
                   </div>
-                  <p>{selectedTables.length === 1 ? `Đang luyện bảng ${selectedTables[0]}` : `${selectedTables.length} bảng đã chọn`}</p>
+                  <p>{!hasSelectedTables ? "Chưa chọn bảng" : selectedTables.length === 1 ? `Đang luyện bảng ${selectedTables[0]}` : `${selectedTables.length} bảng đã chọn`}</p>
                 </div>
                 <div className="table-kind-switch" aria-label="Chọn kiểu bảng cửu chương">
                   {(Object.keys(tableKindMeta) as TablePracticeKind[]).map((kind) => (
@@ -443,7 +457,7 @@ export default function GameCanvas() {
                       type="button"
                       className={tableKind === kind ? "is-active" : ""}
                       style={{ "--table-accent": tableKindMeta[kind].accent } as React.CSSProperties}
-                      onClick={() => setTablePractice(kind)}
+                      onClick={() => changeTableKind(kind)}
                     >
                       {tableKindMeta[kind].label}
                     </button>
@@ -451,7 +465,10 @@ export default function GameCanvas() {
                 </div>
                 <div className="table-picker-head">
                   <span>Chọn một hoặc nhiều bảng</span>
-                  <button type="button" onClick={() => setTablePractice(tableKind, [...TIMES_TABLES])}>Chọn cả 2–9</button>
+                  <div className="table-picker-actions">
+                    <button type="button" onClick={() => setTablePractice(tableKind, [...TIMES_TABLES])} disabled={hasAllTables}>Chọn Tất Cả</button>
+                    <button type="button" onClick={clearAllTables} disabled={!hasSelectedTables}>Bỏ Chọn Tất Cả</button>
+                  </div>
                 </div>
                 <div className="table-number-grid" aria-label="Các bảng từ 2 đến 9">
                   {TIMES_TABLES.map((table) => (
@@ -463,12 +480,13 @@ export default function GameCanvas() {
                       aria-pressed={selectedTables.includes(table)}
                       onClick={() => toggleTable(table)}
                     >
-                      <span>×</span>{table}
+                      {table}
                     </button>
                   ))}
                 </div>
               </section>
             )}
+            {(!isTableMode || hasSelectedTables) ? <>
             <div className="question-panel">
               <span className="question-label">{isTableMode ? "NHIỆM VỤ CỬU CHƯƠNG" : "NHIỆM VỤ TOÁN HỌC"}</span>
               <p className="math-expression">{question.expression}</p>
@@ -506,6 +524,7 @@ export default function GameCanvas() {
                 </button>
               </div>
             )}
+            </> : <div className="table-empty-state"><Gem size={25} /><strong>Chọn bảng để luyện nhé</strong><span>Con có thể chọn một bảng, nhiều bảng hoặc bấm “Chọn Tất Cả”.</span></div>}
           </>
         )}
 
