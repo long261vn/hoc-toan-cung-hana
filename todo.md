@@ -129,3 +129,9 @@
 - [x] Tích hợp trình quản lý âm thanh tôn trọng cài đặt của người chơi, tự phát sau thao tác đầu tiên và lưu trạng thái bật/tắt.
 - [x] Thêm nút bật/tắt âm thanh dễ nhận biết ở màn hình chính và phản ánh trạng thái hiện tại bằng tiếng Việt/English.
 - [x] Kiểm thử âm thanh, thao tác bật/tắt, fallback trình duyệt, TypeScript, build, desktop/mobile rồi lưu checkpoint.
+
+## Cài đặt âm lượng riêng
+
+- [x] Thiết kế bảng cài đặt âm thanh dễ hiểu với hai thanh trượt: nhạc nền và hiệu ứng.
+- [x] Áp dụng mức âm lượng riêng vào trình phát nhạc và bộ tạo hiệu ứng Web Audio, đồng thời lưu cài đặt.
+- [x] Kiểm thử thao tác thanh trượt, trạng thái bật/tắt, TypeScript, build và bố cục desktop/mobile trước khi lưu checkpoint.

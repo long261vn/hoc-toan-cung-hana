@@ -7,6 +7,10 @@ export type SoundEffect = "tap" | "launch" | "correct" | "wrong" | "next" | "rew
 
 const BACKGROUND_TRACK = "/manus-storage/hana-gentle-orbit-background_1ffb574e.mp3";
 const STORAGE_KEY = "hana-sound-enabled";
+const MUSIC_VOLUME_STORAGE_KEY = "hana-music-volume";
+const EFFECTS_VOLUME_STORAGE_KEY = "hana-effects-volume";
+const DEFAULT_MUSIC_VOLUME = 16;
+const DEFAULT_EFFECTS_VOLUME = 62;
 
 type Tone = { frequency: number; delay: number; duration: number; volume: number; type?: OscillatorType };
 
@@ -24,13 +28,31 @@ export function getStoredSoundPreference() {
   return window.localStorage.getItem(STORAGE_KEY) !== "false";
 }
 
+function getStoredVolume(key: string, fallback: number) {
+  if (typeof window === "undefined") return fallback;
+  const value = Number(window.localStorage.getItem(key));
+  return Number.isFinite(value) ? Math.min(100, Math.max(0, Math.round(value))) : fallback;
+}
+
+export function getStoredMusicVolume() {
+  return getStoredVolume(MUSIC_VOLUME_STORAGE_KEY, DEFAULT_MUSIC_VOLUME);
+}
+
+export function getStoredEffectsVolume() {
+  return getStoredVolume(EFFECTS_VOLUME_STORAGE_KEY, DEFAULT_EFFECTS_VOLUME);
+}
+
 export class HanaAudio {
   private context: AudioContext | null = null;
   private music: HTMLAudioElement | null = null;
   private enabled: boolean;
+  private musicVolume: number;
+  private effectsVolume: number;
 
-  constructor(initiallyEnabled: boolean) {
+  constructor(initiallyEnabled: boolean, musicVolume = getStoredMusicVolume(), effectsVolume = getStoredEffectsVolume()) {
     this.enabled = initiallyEnabled;
+    this.musicVolume = musicVolume / 100;
+    this.effectsVolume = effectsVolume / 100;
   }
 
   private getContext() {
@@ -52,7 +74,7 @@ export class HanaAudio {
       this.music.src = BACKGROUND_TRACK;
       this.music.loop = true;
       this.music.preload = "metadata";
-      this.music.volume = 0.16;
+      this.music.volume = this.musicVolume;
       document.body.appendChild(this.music);
     }
     return this.music;
@@ -75,8 +97,22 @@ export class HanaAudio {
     else void this.activate();
   }
 
+  setMusicVolume(nextVolume: number) {
+    const volume = Math.min(100, Math.max(0, Math.round(nextVolume)));
+    this.musicVolume = volume / 100;
+    if (typeof window !== "undefined") window.localStorage.setItem(MUSIC_VOLUME_STORAGE_KEY, String(volume));
+    const music = this.getMusic();
+    if (music) music.volume = this.musicVolume;
+  }
+
+  setEffectsVolume(nextVolume: number) {
+    const volume = Math.min(100, Math.max(0, Math.round(nextVolume)));
+    this.effectsVolume = volume / 100;
+    if (typeof window !== "undefined") window.localStorage.setItem(EFFECTS_VOLUME_STORAGE_KEY, String(volume));
+  }
+
   play(effect: SoundEffect) {
-    if (!this.enabled) return;
+    if (!this.enabled || this.effectsVolume === 0) return;
     const context = this.getContext();
     if (!context || context.state !== "running") return;
     const now = context.currentTime;
@@ -86,7 +122,7 @@ export class HanaAudio {
       oscillator.type = tone.type ?? "triangle";
       oscillator.frequency.setValueAtTime(tone.frequency, now + tone.delay);
       gain.gain.setValueAtTime(0.0001, now + tone.delay);
-      gain.gain.exponentialRampToValueAtTime(tone.volume, now + tone.delay + 0.012);
+      gain.gain.exponentialRampToValueAtTime(tone.volume * this.effectsVolume, now + tone.delay + 0.012);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + tone.delay + tone.duration);
       oscillator.connect(gain).connect(context.destination);
       oscillator.start(now + tone.delay);

@@ -19,6 +19,18 @@ try {
   await sleep(800);
   const initial = await evaluate(`(() => { localStorage.setItem("hana-sound-enabled", "true"); return document.querySelector(".sound-control")?.getAttribute("aria-pressed"); })()`);
   if (initial !== "true") throw new Error(`Nút âm thanh không ở trạng thái bật ban đầu: ${initial}`);
+  await evaluate(`document.querySelector(".sound-settings-trigger")?.click()`);
+  await sleep(140);
+  const sliderCount = await evaluate(`document.querySelectorAll("[data-slot=slider]").length`);
+  if (sliderCount !== 2) throw new Error(`Không tìm thấy đủ hai thanh trượt âm lượng: ${sliderCount}`);
+  const sliderBoxes = await evaluate(`Array.from(document.querySelectorAll("[data-slot=slider]")).map((slider) => { const rect = slider.getBoundingClientRect(); return { left: rect.left, right: rect.right, middle: rect.top + rect.height / 2 }; })`);
+  await command("Input.dispatchMouseEvent", { type: "mousePressed", x: sliderBoxes[0].right - 1, y: sliderBoxes[0].middle, button: "left", clickCount: 1 });
+  await command("Input.dispatchMouseEvent", { type: "mouseReleased", x: sliderBoxes[0].right - 1, y: sliderBoxes[0].middle, button: "left", clickCount: 1 });
+  await command("Input.dispatchMouseEvent", { type: "mousePressed", x: sliderBoxes[1].left + 1, y: sliderBoxes[1].middle, button: "left", clickCount: 1 });
+  await command("Input.dispatchMouseEvent", { type: "mouseReleased", x: sliderBoxes[1].left + 1, y: sliderBoxes[1].middle, button: "left", clickCount: 1 });
+  await sleep(160);
+  const volumes = await evaluate(`({ music: localStorage.getItem("hana-music-volume"), effects: localStorage.getItem("hana-effects-volume"), audioVolume: document.querySelector("audio[data-hana-background-music]")?.volume, sliderValues: Array.from(document.querySelectorAll("[role=slider]")).map((slider) => slider.getAttribute("aria-valuenow")) })`);
+  if (volumes.music !== "100" || volumes.effects !== "0" || volumes.audioVolume !== 1 || volumes.sliderValues.join(",") !== "100,0") throw new Error(`Âm lượng riêng chưa được áp dụng/lưu đúng: ${JSON.stringify(volumes)}`);
   await evaluate(`document.querySelector(".sound-control")?.click()`);
   await sleep(120);
   const muted = await evaluate(`({ pressed: document.querySelector(".sound-control")?.getAttribute("aria-pressed"), stored: localStorage.getItem("hana-sound-enabled") })`);
@@ -31,5 +43,5 @@ try {
   await sleep(180);
   const playback = await evaluate(`({ playCalls: window.__hanaAudioPlayCalls, requested: document.querySelector("audio[data-hana-background-music]")?.dataset.hanaPlaybackRequested })`);
   if (playback.requested !== "true") throw new Error(`Nhạc nền chưa được yêu cầu phát sau thao tác Bắt đầu: ${JSON.stringify({ enabled, playback })}`);
-  console.log(JSON.stringify({ initial, muted, enabled, playback, status: "sound control valid" }));
+  console.log(JSON.stringify({ initial, volumes, muted, enabled, playback, status: "sound control and volume settings valid" }));
 } finally { socket.close(); }
