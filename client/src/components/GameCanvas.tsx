@@ -1241,26 +1241,26 @@ export default function GameCanvas() {
       {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => { playSound("launch"); setScreen("menu"); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
-      {screen === "summary" && <section ref={summaryRef} className="summary-screen" aria-label="Tổng kết lượt chơi">
-        <div className="summary-brand mini-brand" aria-label="Phi Hành Tinh Phép Tính"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><span data-brand-wordmark>Phi Hành Tinh<br />Phép Tính</span></div>
+      {screen === "summary" && <section ref={summaryRef} className="summary-screen" data-i18n-direct aria-label={copy("Tổng kết lượt chơi", "Learning session summary")}>
+        <div className="summary-brand mini-brand" aria-label={language === "en" ? "Math Planet Adventure" : "Phi Hành Tinh Phép Tính"}><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><GameBrand language={language} /></div>
         <LanguageControl className="summary-language-control" language={language} onToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />
         <div className="summary-orbit" aria-hidden="true" />
         <div className="summary-journey" aria-hidden="true"><i className="add">+</i><i className="subtract">−</i><i className="multiply">×</i><i className="divide">÷</i></div>
         <div className="summary-stars" aria-hidden="true"><span>✦</span><span>★</span><span>✦</span></div>
         <div className="summary-robot"><div className="robot-fallback"><span /><span /><i /></div></div>
-        <p className="summary-kicker">ROBOT HANA CHÚC MỪNG {displayName.toUpperCase()}</p>
-        <h2>Lượt học của {displayName}<br /><em>thật đáng tự hào!</em></h2>
+        <p className="summary-kicker">{language === "en" ? "ROBOT HANA CONGRATULATES" : "ROBOT HANA CHÚC MỪNG"} {displayName.toUpperCase()}</p>
+        <h2>{language === "en" ? <>Your learning session, {displayName}<br /><em>is something to be proud of!</em></> : <>Lượt học của {displayName}<br /><em>thật đáng tự hào!</em></>}</h2>
         <p className="summary-intro">{language === "en" ? `${displayName}, whether right or wrong, you kept going through a session with Hana.` : `${displayName}, dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.`}</p>
         <p className="summary-hana-line">{language === "en" ? `Hana has stored ${displayName}'s badges in the spaceship cabin!` : `Hana đã cất các huy hiệu của ${displayName} vào khoang phi thuyền!`}</p>
         <div className="summary-stats">
-          <div><span>Điểm</span><strong data-dynamic-text>{sessionPoints}</strong></div>
-          <div><span>Đúng</span><strong data-dynamic-text>{correctCount}</strong></div>
-          <div><span>Sai</span><strong data-dynamic-text>{wrongCount}</strong></div>
-          <div><span>Thời gian</span><strong data-dynamic-text>{formatDuration(elapsedSeconds)}</strong></div>
+          <div><span>{copy("Điểm", "Points")}</span><strong data-dynamic-text>{sessionPoints}</strong></div>
+          <div><span>{copy("Đúng", "Correct")}</span><strong data-dynamic-text>{correctCount}</strong></div>
+          <div><span>{copy("Sai", "Incorrect")}</span><strong data-dynamic-text>{wrongCount}</strong></div>
+          <div><span>{copy("Thời gian", "Time")}</span><strong data-dynamic-text>{formatDuration(elapsedSeconds)}</strong></div>
         </div>
-        <section className="reward-board highest-reward-board" aria-label="Phần thưởng cao nhất trong lượt chơi">
-          <div className="reward-board-heading"><span>PHẦN THƯỞNG CAO NHẤT</span><strong>{earnedRewards.length ? `Cấp ${highestReward?.level}/${sessionRewards.length}` : "Chưa mở"}</strong></div>
-          {highestReward ? <div className="highest-reward"><b>{highestReward.symbol}</b><span><small>HANA CHÚC MỪNG {displayName.toUpperCase()}</small><strong>{rewardLabel(highestReward)}</strong><em>{rewardDetail(highestReward)}</em></span></div> : <p className="reward-empty">{displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
+        <section className="reward-board highest-reward-board" aria-label={copy("Phần thưởng cao nhất trong lượt chơi", "Highest reward from this session")}>
+          <div className="reward-board-heading"><span>{copy("PHẦN THƯỞNG CAO NHẤT", "HIGHEST REWARD")}</span><strong>{earnedRewards.length ? `${copy("Cấp", "Level")} ${highestReward?.level}/${sessionRewards.length}` : copy("Chưa mở", "Locked")}</strong></div>
+          {highestReward ? <div className="highest-reward"><b>{highestReward.symbol}</b><span><small>{language === "en" ? "HANA CONGRATULATES" : "HANA CHÚC MỪNG"} {displayName.toUpperCase()}</small><strong>{rewardLabel(highestReward)}</strong><em>{rewardDetail(highestReward)}</em></span></div> : <p className="reward-empty">{language === "en" ? `${displayName}, answer correctly to unlock your first reward!` : `${displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.`}</p>}
         </section>
         <div className="summary-actions">
           <button type="button" className="save-memory" data-dynamic-text onClick={saveSessionImage} disabled={isSavingImage}>{isSavingImage ? copy("Đang tạo ảnh...", "Creating image...") : copy("Lưu ảnh kỷ niệm", "Save souvenir image")} <Sparkles size={18} /></button>

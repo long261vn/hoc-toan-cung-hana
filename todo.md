@@ -229,3 +229,9 @@
 - [x] Kiểm kê nội dung tiếng Việt còn lẫn vào khi chọn ENG: hướng dẫn, wordmark, ví dụ, bảng nhân–chia và lời Hana.
 - [x] Dịch tự nhiên toàn bộ văn bản English, bao gồm “tables”, hướng dẫn chọn bảng và các gợi ý khi trả lời sai.
 - [x] Kiểm thử English trên màn chào mừng, Hướng dẫn, bảng nhân–chia và phản hồi đáp án sai; chạy TypeScript và build.
+
+## Hoàn thiện màn tổng kết English
+
+- [x] Kiểm kê toàn bộ nhãn, phần thưởng, lời Hana và nút còn tiếng Việt ở màn tổng kết khi chọn ENG.
+- [x] Dịch trực tiếp tất cả nội dung tổng kết và bảo vệ chúng khỏi bộ dịch DOM ghi đè trạng thái React.
+- [x] Kiểm thử màn tổng kết English, TypeScript và build trước khi lưu checkpoint.
