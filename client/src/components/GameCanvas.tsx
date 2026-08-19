@@ -1478,11 +1478,11 @@ export default function GameCanvas() {
             )}
             {(!isTableMode || hasSelectedTables) ? <>
             <div className="question-panel" key={`prompt-${question.id}`}>
-              <span className="question-label">{isTableMode ? "NHIỆM VỤ BẢNG NHÂN VÀ CHIA" : question.kind === "missing" ? "TÌM THÀNH PHẦN CHƯA BIẾT" : `${copy("NHIỆM VỤ", "MISSION")} ${operationSymbol[operation]} ${operationLabel(operation).toUpperCase()}`}</span>
-            <p className="math-expression" data-dynamic-text>{question.expression}</p>
-              <p className="math-helper">{question.kind === "missing" ? "Tìm số còn thiếu để hoàn thành phép tính." : "Chọn đáp án đúng để nhận điểm thưởng."}</p>
+              <span className="question-label">{isTableMode ? copy("NHIỆM VỤ BẢNG NHÂN VÀ CHIA", "TIMES-TABLE MISSION") : question.kind === "missing" ? copy("TÌM THÀNH PHẦN CHƯA BIẾT", "FIND THE MISSING NUMBER") : `${copy("NHIỆM VỤ", "MISSION")} ${operationSymbol[operation]} ${operationLabel(operation).toUpperCase()}`}</span>
+              <p className="math-expression" data-dynamic-text>{question.expression}</p>
+              <p className="math-helper">{question.kind === "missing" ? copy("Tìm số còn thiếu để hoàn thành phép tính.", "Find the missing number to complete the equation.") : copy("Chọn đáp án đúng để nhận điểm thưởng.", "Choose the correct answer to earn points.")}</p>
             </div>
-            <div className="answer-grid" key={`answers-${question.id}`} aria-label={`Đáp án cho ${question.expression}`}>
+            <div className="answer-grid" key={`answers-${question.id}`} aria-label={language === "en" ? `Answers for ${question.expression}` : `Đáp án cho ${question.expression}`}>
               {question.options.map((choice, index) => {
                 const isChosen = choice === answered;
                 const isCorrect = choice === question.answer;

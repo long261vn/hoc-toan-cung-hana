@@ -255,3 +255,9 @@
 - [ ] Thêm đồng hồ đếm ngược, chuỗi câu hỏi liên tục và kết thúc tự động khi hết giờ.
 - [ ] Bổ sung tổng kết kiểm tra gồm thời gian/cấp độ đã chọn, số câu đúng/sai và điểm.
 - [ ] Kiểm thử logic, desktop/mobile, song ngữ, TypeScript và build trước khi lưu checkpoint.
+
+## Rà soát ENG sau luồng Bài Kiểm Tra
+
+- [x] Kiểm kê các chuỗi còn tiếng Việt trong màn chọn nhiệm vụ, cấu hình Bài Kiểm Tra, màn làm bài và tổng kết khi chọn ENG.
+- [x] Sửa mọi chuỗi, lời Robot Hana, nhãn đồng hồ và nút hành động để hiển thị English nhất quán.
+- [x] Kiểm thử tự động và trực quan ENG trên desktop/mobile, dựng bản phát hành và lưu checkpoint.
