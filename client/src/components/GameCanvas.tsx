@@ -28,7 +28,6 @@ import {
 } from "@/game/quiz";
 
 const ASSETS = {
-  background: "/manus-storage/phi-hanh-tinh-space-bg_cbcd0710.png",
   mascot: "/manus-storage/robot-mit_d342b189.png",
   planets: "/manus-storage/toan-planets_2d2902d4.png",
   logo: "/manus-storage/phi-hanh-tinh-logo_cbefb56f.png",
@@ -217,7 +216,7 @@ export default function GameCanvas() {
   const missionCount = mode === "test" ? `${Math.min(testStep + 1, 8)}/8` : `${energy}/5`;
 
   return (
-    <main className="game-shell" style={{ "--space-background": `url(${ASSETS.background})` } as React.CSSProperties}>
+    <main className="game-shell">
       <canvas ref={canvasRef} className="game-canvas" aria-label="Bản đồ bốn hành tinh phép tính" />
       <div className="space-atmosphere" aria-hidden="true" />
 
