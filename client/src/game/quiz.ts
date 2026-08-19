@@ -177,9 +177,9 @@ export function generateTableQuestion(settings: TablePracticeSettings): QuizQues
   const table = selectedTables[rand(0, selectedTables.length - 1)];
   const factor = rand(1, 10);
   const isDivision = settings.kind === "mixed" ? Math.random() >= 0.5 : settings.kind === "divide";
-  const answer = factor;
   const operation: Operation = isDivision ? "divide" : "multiply";
   const product = table * factor;
+  const answer = isDivision ? factor : product;
   const expression = isDivision ? `${product} ÷ ${table} = ?` : `${table} × ${factor} = ?`;
   const kindLabel = isDivision ? "chia" : "nhân";
 

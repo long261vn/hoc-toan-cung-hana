@@ -81,15 +81,18 @@ export default function GameCanvas() {
   const demoParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const isDemo = demoParams.has("demo");
   const isTableDemo = demoParams.has("tables");
-  const initialOperation: Operation = isDemo || isTableDemo ? "multiply" : "add";
+  const tableDemoKind: TablePracticeKind = demoParams.get("tables") === "divide" ? "divide" : demoParams.get("tables") === "mixed" ? "mixed" : "multiply";
+  const initialOperation: Operation = isDemo || isTableDemo
+    ? (tableDemoKind === "divide" ? "divide" : "multiply")
+    : "add";
 
   const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "journey");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [operation, setOperation] = useState<Operation>(initialOperation);
   const [question, setQuestion] = useState<QuizQuestion>(() => isTableDemo
-    ? generateTableQuestion({ kind: "multiply", tables: [2, 4, 6] })
+    ? generateTableQuestion({ kind: tableDemoKind, tables: [2, 4, 6] })
     : generateQuestion(initialOperation, "easy"));
-  const [tableKind, setTableKind] = useState<TablePracticeKind>("multiply");
+  const [tableKind, setTableKind] = useState<TablePracticeKind>(tableDemoKind);
   const [selectedTables, setSelectedTables] = useState<number[]>(isTableDemo ? [2, 4, 6] : [2]);
   const [answered, setAnswered] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">("idle");

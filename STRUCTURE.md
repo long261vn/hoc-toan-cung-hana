@@ -16,4 +16,4 @@ React chỉ đảm nhiệm khung trình bày. `client/src/components/GameCanvas.
 
 ## Kiểm chứng
 
-Ảnh kiểm chứng sử dụng cờ `?demo`, tự chọn hành tinh Nhân và nạp sẵn năng lượng để khung hình luôn thể hiện trạng thái gameplay rõ ràng. Cờ `?tables` mở trực tiếp khu bảng cửu chương với ba bảng đã chọn để kiểm chứng bộ chọn hỗn hợp. Các cờ này chỉ phục vụ trình diễn; mọi thao tác học vẫn dùng nút thực trong giao diện.
+Ảnh kiểm chứng sử dụng cờ `?demo`, tự chọn hành tinh Nhân và nạp sẵn năng lượng để khung hình luôn thể hiện trạng thái gameplay rõ ràng. Cờ `?tables` mở trực tiếp khu bảng cửu chương với ba bảng đã chọn; `?tables=divide` và `?tables=mixed` kiểm chứng riêng các luồng chia và hỗn hợp. Các cờ này chỉ phục vụ trình diễn; mọi thao tác học vẫn dùng nút thực trong giao diện.
