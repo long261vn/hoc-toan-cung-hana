@@ -20,38 +20,49 @@ export interface SessionReward {
   symbol: string;
 }
 
-export const sessionRewards: SessionReward[] = [
-  { id: "launch-card", level: 1, label: "Thẻ Khởi Động", detail: "Bạn đã mở đầu chuyến học thật tốt.", threshold: 10, symbol: "✦" },
-  { id: "little-star", level: 2, label: "Nhãn dán Sao Nhỏ", detail: "Bạn đã có 2 câu đúng thật nhanh.", threshold: 20, symbol: "★" },
-  { id: "space-viewer", level: 3, label: "Kính Ngắm Vũ Trụ", detail: "Bạn quan sát bài toán rất chăm chú.", threshold: 30, symbol: "◉" },
-  { id: "explorer", level: 4, label: "Huy hiệu Nhà Thám Hiểm", detail: "Bạn đã chinh phục 4 câu đúng.", threshold: 40, symbol: "✦" },
-  { id: "star-compass", level: 5, label: "La Bàn Sao", detail: "Bạn đã tìm đúng hướng tính toán.", threshold: 50, symbol: "✧" },
-  { id: "astronaut-helmet", level: 6, label: "Mũ Phi Hành Gia", detail: "Bạn đã sẵn sàng cho nhiệm vụ khó hơn.", threshold: 60, symbol: "◒" },
-  { id: "junior-pilot", level: 7, label: "Cúp Phi Công Nhí", detail: "Bạn đã hoàn thành 7 câu đúng trong lượt này.", threshold: 70, symbol: "♛" },
-  { id: "bright-flag", level: 8, label: "Cờ Sao Sáng", detail: "Bạn đã cắm cờ ở một mốc mới.", threshold: 80, symbol: "⚑" },
-  { id: "galaxy-ticket", level: 9, label: "Vé Bay Thiên Hà", detail: "Bạn đã bay xa bằng những phép tính đúng.", threshold: 90, symbol: "✷" },
-  { id: "speed-badge", level: 10, label: "Huy hiệu Tăng Tốc", detail: "Bạn đã đạt 100 điểm trong lượt học.", threshold: 100, symbol: "✹" },
-  { id: "mental-notebook", level: 11, label: "Sổ Tay Tính Nhẩm", detail: "Bạn đã tính ngày càng nhanh hơn.", threshold: 110, symbol: "✎" },
-  { id: "orbit-scope", level: 12, label: "Ống Nhòm Quỹ Đạo", detail: "Bạn đã nhìn rõ các bước làm bài.", threshold: 120, symbol: "◌" },
-  { id: "steady-medal", level: 13, label: "Huy chương Bền Bỉ", detail: "Bạn đã kiên trì qua nhiều nhiệm vụ.", threshold: 130, symbol: "❖" },
-  { id: "friend-planet", level: 14, label: "Hành Tinh Bạn Bè", detail: "Hana rất vui vì được học cùng bạn.", threshold: 140, symbol: "◍" },
-  { id: "clever-star", level: 15, label: "Ngôi Sao Khéo Léo", detail: "Bạn đã dùng cách tính rất thông minh.", threshold: 150, symbol: "✧" },
-  { id: "math-radar", level: 16, label: "Radar Toán Học", detail: "Bạn đã phát hiện đáp án đúng rất nhanh.", threshold: 160, symbol: "◈" },
-  { id: "lightning-badge", level: 17, label: "Huy hiệu Tia Chớp", detail: "Bạn đang có tốc độ thật ấn tượng.", threshold: 170, symbol: "ϟ" },
-  { id: "starlight-medal", level: 18, label: "Huy chương Ánh Sao", detail: "Bạn làm sáng cả bầu trời bài học.", threshold: 180, symbol: "✺" },
-  { id: "team-captain", level: 19, label: "Mũ Trưởng Nhóm", detail: "Bạn đã dẫn dắt lượt học rất tự tin.", threshold: 190, symbol: "◐" },
-  { id: "shining-planet", level: 20, label: "Hành Tinh Lấp Lánh", detail: "Bạn đã cán mốc 200 điểm.", threshold: 200, symbol: "✹" },
-  { id: "smart-compass", level: 21, label: "La Bàn Thông Thái", detail: "Bạn đã chọn hướng giải bài thật chuẩn.", threshold: 210, symbol: "◎" },
-  { id: "confidence-certificate", level: 22, label: "Giấy Khen Tự Tin", detail: "Bạn càng làm càng vững vàng.", threshold: 220, symbol: "✪" },
-  { id: "brave-rocket", level: 23, label: "Tên Lửa Dũng Cảm", detail: "Bạn không ngại thử sức với câu mới.", threshold: 230, symbol: "➤" },
-  { id: "super-mental", level: 24, label: "Huy hiệu Siêu Nhẩm", detail: "Bạn đã xử lý phép tính cực nhanh.", threshold: 240, symbol: "✣" },
-  { id: "galaxy-map", level: 25, label: "Bản Đồ Ngân Hà", detail: "Bạn đã khám phá một chặng dài cùng Hana.", threshold: 250, symbol: "⌁" },
-  { id: "meteor-cup", level: 26, label: "Cúp Sao Băng", detail: "Bạn đã tiến lên thật rực rỡ.", threshold: 260, symbol: "☄" },
-  { id: "conqueror-shield", level: 27, label: "Khiên Chinh Phục", detail: "Bạn đã vượt qua nhiều thử thách liên tiếp.", threshold: 270, symbol: "⬟" },
-  { id: "orbit-crown", level: 28, label: "Vương Miện Quỹ Đạo", detail: "Bạn là ngôi sao nổi bật của lượt học.", threshold: 280, symbol: "♕" },
-  { id: "galaxy-medal", level: 29, label: "Huy chương Thiên Hà", detail: "Bạn đã đến gần đích lớn nhất.", threshold: 290, symbol: "✵" },
-  { id: "hana-captain", level: 30, label: "Cúp Thuyền Trưởng Hana", detail: "Bạn đã chinh phục trọn bộ 30 mốc phần thưởng.", threshold: 300, symbol: "♛" },
-];
+const rewardNames = [
+  "Thẻ Khởi Động", "Nhãn dán Sao Nhỏ", "Kính Ngắm Vũ Trụ", "Huy hiệu Nhà Thám Hiểm", "La Bàn Sao",
+  "Mũ Phi Hành Gia", "Cúp Phi Công Nhí", "Cờ Sao Sáng", "Vé Bay Thiên Hà", "Huy hiệu Tăng Tốc",
+  "Sổ Tay Tính Nhẩm", "Ống Nhòm Quỹ Đạo", "Huy chương Bền Bỉ", "Hành Tinh Bạn Bè", "Ngôi Sao Khéo Léo",
+  "Radar Toán Học", "Huy hiệu Tia Chớp", "Huy chương Ánh Sao", "Mũ Trưởng Nhóm", "Hành Tinh Lấp Lánh",
+  "La Bàn Thông Thái", "Giấy Khen Tự Tin", "Tên Lửa Dũng Cảm", "Huy hiệu Siêu Nhẩm", "Bản Đồ Ngân Hà",
+  "Cúp Sao Băng", "Khiên Chinh Phục", "Vương Miện Quỹ Đạo", "Huy chương Thiên Hà", "Cúp Thuyền Trưởng Nhí",
+  "Hạt Sao May Mắn", "Hộp Bút Tinh Tú", "Đèn Hiệu Sao", "Bộ Đàm Vũ Trụ", "Huy hiệu Siêng Năng",
+  "Mặt Nạ Sao Chổi", "Hành Tinh Kẹo Ngọt", "Sổ Tay Bí Mật", "Ống Nghe Thiên Hà", "Cúp Mây Vàng",
+  "Ngôi Sao Vững Vàng", "Tên Lửa Nhanh Nhẹn", "La Bàn Dũng Sĩ", "Huy chương Tinh Mắt", "Hành Tinh Rực Rỡ",
+  "Huy hiệu Sáng Tạo", "Mũ Bảo Hộ Sao", "Vé Thăm Sao Hỏa", "Hộp Nhạc Ngân Hà", "Cúp Vươn Xa",
+  "Sao Băng Lém Lỉnh", "Kính Thần Kỳ", "Bản Đồ Bí Ẩn", "Tín Hiệu Vàng", "Huy hiệu Nỗ Lực",
+  "Tàu Con Thoi Nhỏ", "Huy chương Can Đảm", "Hành Tinh Xanh Biếc", "Cờ Đội Hana", "Cúp Ngôi Sao Ấm Áp",
+  "La Bàn Kiên Trì", "Ống Nhòm Sắc Sảo", "Tên Lửa Chăm Chỉ", "Huy hiệu Trí Nhớ", "Sao Nhỏ Thông Minh",
+  "Mặt Trăng Nụ Cười", "Sổ Tay Nhà Toán Học", "Giày Bay Quỹ Đạo", "Huy chương Tự Hào", "Cúp Bạn Nhỏ Xuất Sắc",
+  "Sao Kim Dũng Cảm", "Chuông Gió Vũ Trụ", "Khiên Ánh Sáng", "Hành Tinh Mơ Mộng", "Huy hiệu Tỏa Sáng",
+  "Tên Lửa Vượt Gió", "Mũ Chỉ Huy Nhỏ", "Bản Đồ Kho Báu", "Cúp Phép Tính Hay", "Ngôi Sao Siêu Tốc",
+  "Huy chương Nhà Phát Minh", "La Bàn Sao Bắc Đẩu", "Kính Quan Sát Tinh Tường", "Hành Tinh Kỳ Diệu", "Huy hiệu Bứt Phá",
+  "Tàu Thám Hiểm Dũng Mãnh", "Cờ Chinh Phục Vàng", "Cúp Bầu Trời Sao", "Vương Miện Sao Sáng", "Huy chương Thiên Tài Nhí",
+  "Sao Băng Vinh Quang", "Hộp Quà Ngân Hà", "Khiên Thuyền Trưởng", "Tên Lửa Ước Mơ", "Cúp Chinh Phục Tối Cao",
+  "Huy hiệu Huyền Thoại Nhí", "Hành Tinh Danh Dự", "Vương Miện Thiên Hà", "Huy hiệu 99 Chòm Sao", "Cúp Thuyền Trưởng Hana",
+] as const;
+
+const rewardSymbols = ["✦", "★", "◉", "✧", "◒", "♛", "⚑", "✷", "✹", "✎", "◌", "❖", "◍", "◈", "ϟ", "✺", "◎", "✪", "➤", "✣", "⌁", "☄", "⬟", "♕", "✵"] as const;
+
+function rewardDetail(level: number) {
+  if (level === 1) return "Bạn đã khởi động chuyến học thật tốt.";
+  if (level === 100) return "Bạn đã chinh phục trọn bộ 100 cấp phần thưởng cùng Hana!";
+  if (level % 10 === 0) return `Bạn đã chạm cột mốc ${level * 10} điểm thật ấn tượng.`;
+  return "Bạn đang tiến thêm một bước trên chuyến bay toán học.";
+}
+
+export const sessionRewards: SessionReward[] = rewardNames.map((label, index) => {
+  const level = index + 1;
+  return {
+    id: `reward-${level}`,
+    level,
+    label,
+    detail: rewardDetail(level),
+    threshold: level * 10,
+    symbol: rewardSymbols[index % rewardSymbols.length],
+  };
+});
 
 export function rewardsForPoints(points: number) {
   return sessionRewards.filter((reward) => points >= reward.threshold);

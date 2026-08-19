@@ -25,6 +25,15 @@
 - [x] Thêm nút Chơi tiếp trong bảng điểm, đồng thời đặt nút Kết thúc lượt cạnh Đổi nhiệm vụ ở màn chơi.
 - [x] Kiểm thử trên máy tính và điện thoại, dựng bản phát hành, lưu checkpoint và bàn giao.
 
+## Rà soát trải nghiệm lớp 3 và phần thưởng 100 cấp
+
+- [x] Kiểm tra màn hình chờ, hồ sơ, menu, chọn dạng bài, màn chơi, bảng điểm, hướng dẫn và tổng kết trên máy tính lẫn điện thoại để tìm chữ chật, khó đọc hoặc nút chưa đủ nổi bật.
+- [x] Mở rộng bộ phần thưởng từ 30 lên 100 cấp, giữ mốc điểm rõ ràng và tạo hệ tên gọi hấp dẫn cho học sinh lớp 3.
+- [x] Tối giản màn tổng kết: chỉ nhấn mạnh phần thưởng cao nhất người chơi đã mở, không liệt kê toàn bộ phần thưởng.
+- [x] Cập nhật Hướng dẫn, bảng Điểm hiện tại và ảnh kỷ niệm theo 100 cấp phần thưởng.
+- [x] Chơi thử toàn bộ luồng như học sinh lớp 3, ghi nhận và sửa các lỗi thao tác, trạng thái và bố cục.
+- [x] Kiểm tra lại trên máy tính/điện thoại, dựng bản phát hành, lưu checkpoint và bàn giao.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.

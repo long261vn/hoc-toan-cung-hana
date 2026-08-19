@@ -178,6 +178,7 @@ export default function GameCanvas() {
   const isProfileDemo = demoParams.has("profile");
   const isScoreDemo = demoParams.has("score");
   const isGuideDemo = demoParams.has("guide");
+  const isMaxRewardDemo = demoParams.has("maxrewards");
   const missingDemoOperation = demoParams.get("missing");
   const formatDemoOperation = demoParams.get("format");
   const isMissingDemo = missingDemoOperation === "add" || missingDemoOperation === "subtract" || missingDemoOperation === "multiply" || missingDemoOperation === "divide";
@@ -191,7 +192,7 @@ export default function GameCanvas() {
     ? (tableDemoKind === "divide" ? "divide" : "multiply")
     : "add";
 
-  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo ? "summary" : isProfileDemo ? "profile" : isFormatDemo ? "format" : isScoreDemo || isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
+  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo || isMaxRewardDemo ? "summary" : isProfileDemo ? "profile" : isFormatDemo ? "format" : isScoreDemo || isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
   const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "practice");
   const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isMissingDemo || isFormatDemo ? initialOperation : isDemo ? "multiply" : "add");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
@@ -212,11 +213,11 @@ export default function GameCanvas() {
   const [testComplete, setTestComplete] = useState(false);
   const [showGuide, setShowGuide] = useState(isGuideDemo);
   const [showScorePanel, setShowScorePanel] = useState(isScoreDemo);
-  const [playerName, setPlayerName] = useState(isSummaryDemo || isProfileDemo || isScoreDemo ? "Minh Anh" : "");
-  const [sessionPoints, setSessionPoints] = useState(isSummaryDemo || isScoreDemo ? 100 : 0);
-  const [correctCount, setCorrectCount] = useState(isSummaryDemo || isScoreDemo ? 10 : 0);
-  const [wrongCount, setWrongCount] = useState(isSummaryDemo || isScoreDemo ? 2 : 0);
-  const [elapsedSeconds, setElapsedSeconds] = useState(isSummaryDemo || isScoreDemo ? 93 : 0);
+  const [playerName, setPlayerName] = useState(isSummaryDemo || isProfileDemo || isScoreDemo || isMaxRewardDemo ? "Minh Anh" : "");
+  const [sessionPoints, setSessionPoints] = useState(isMaxRewardDemo ? 1000 : isSummaryDemo || isScoreDemo ? 100 : 0);
+  const [correctCount, setCorrectCount] = useState(isMaxRewardDemo ? 100 : isSummaryDemo || isScoreDemo ? 10 : 0);
+  const [wrongCount, setWrongCount] = useState(isMaxRewardDemo ? 5 : isSummaryDemo || isScoreDemo ? 2 : 0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(isMaxRewardDemo ? 721 : isSummaryDemo || isScoreDemo ? 93 : 0);
   const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
   const displayName = playerName.trim() || "Phi hành gia nhỏ";
 
@@ -501,6 +502,7 @@ export default function GameCanvas() {
   };
 
   const earnedRewards = rewardsForPoints(sessionPoints);
+  const highestReward = earnedRewards.at(-1);
   const nextReward = sessionRewards.find((reward) => sessionPoints < reward.threshold);
   const pointsUntilReward = nextReward ? nextReward.threshold - sessionPoints : 0;
 
@@ -548,7 +550,7 @@ export default function GameCanvas() {
     context.fillText("QUÀ BẠN NHẬN ĐƯỢC", 108, 610);
     context.fillStyle = "#2b2e69";
     context.font = "800 30px Baloo 2, sans-serif";
-    const rewardText = earnedRewards.length ? earnedRewards.map((reward) => `${reward.symbol} ${reward.label}`).join("   •   ") : "Hãy trả lời đúng để nhận quà ở lượt sau nhé!";
+    const rewardText = highestReward ? `${highestReward.symbol} Cấp ${highestReward.level}: ${highestReward.label}` : "Hãy trả lời đúng để nhận quà đầu tiên nhé!";
     context.fillText(rewardText, 108, 654);
     const link = document.createElement("a");
     link.download = `hanh-trinh-hana-${Date.now()}.png`;
@@ -585,11 +587,9 @@ export default function GameCanvas() {
           <div><span>Sai</span><strong>{wrongCount}</strong></div>
           <div><span>Thời gian</span><strong>{formatDuration(elapsedSeconds)}</strong></div>
         </div>
-        <section className="reward-board" aria-label="Quà nhận được trong lượt chơi">
-          <div className="reward-board-heading"><span>BỘ SƯU TẬP PHẦN THƯỞNG</span><strong>{earnedRewards.length ? `${earnedRewards.length}/${sessionRewards.length} đã mở` : "Chưa mở huy hiệu"}</strong></div>
-          <div className="reward-grid">
-            {earnedRewards.length ? earnedRewards.map((reward) => <div key={reward.id} className="reward-chip is-earned"><b>{reward.symbol}</b><span><strong>Cấp {reward.level}: {reward.label}</strong><small>{reward.detail}</small></span></div>) : <p className="reward-empty">{displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
-          </div>
+        <section className="reward-board highest-reward-board" aria-label="Phần thưởng cao nhất trong lượt chơi">
+          <div className="reward-board-heading"><span>PHẦN THƯỞNG CAO NHẤT</span><strong>{earnedRewards.length ? `Cấp ${highestReward?.level}/${sessionRewards.length}` : "Chưa mở"}</strong></div>
+          {highestReward ? <div className="highest-reward"><b>{highestReward.symbol}</b><span><small>HANA CHÚC MỪNG {displayName.toUpperCase()}</small><strong>{highestReward.label}</strong><em>{highestReward.detail}</em></span></div> : <p className="reward-empty">{displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
         </section>
         <div className="summary-actions">
           <button type="button" className="save-memory" onClick={saveSessionImage}>Lưu ảnh kỷ niệm <Sparkles size={18} /></button>
@@ -781,7 +781,7 @@ export default function GameCanvas() {
             <ol className="curriculum-list">
               <li><span>01</span><div><strong>Đặt tên phi hành gia</strong><p>Hana sẽ gọi tên bạn trong nhiệm vụ, lúc gợi ý và trên thẻ kỷ niệm cuối lượt.</p></div></li>
               <li><span>02</span><div><strong>Chọn nhiệm vụ và dạng bài</strong><p>Bạn chọn Cộng, Trừ, Học Bảng Nhân và Chia, Nhân, Chia hoặc Bài kiểm tra; với bốn phép tính, hãy chọn dạng bài trước khi chơi.</p></div></li>
-              <li><span>03</span><div><strong>Tích điểm, mở 30 phần thưởng</strong><p>Mỗi câu đúng được +10 điểm. Nếu chưa đúng, bạn trừ 2 điểm nhưng điểm không âm. Cứ đủ 10 điểm, bạn mở một phần thưởng mới, từ Thẻ Khởi Động đến Cúp Thuyền Trưởng Hana ở mốc 300 điểm.</p></div></li>
+              <li><span>03</span><div><strong>Tích điểm, mở 100 phần thưởng</strong><p>Mỗi câu đúng được +10 điểm. Nếu chưa đúng, bạn trừ 2 điểm nhưng điểm không âm. Cứ đủ 10 điểm, bạn mở một phần thưởng mới, từ Thẻ Khởi Động đến Cúp Thuyền Trưởng Hana ở mốc 1.000 điểm.</p></div></li>
               <li><span>04</span><div><strong>Hana luôn gợi ý</strong><p>Mỗi câu có bốn đáp án. Nếu bạn cần thêm thời gian, Hana sẽ gợi ý từng bước để bạn thử lại.</p></div></li>
               <li><span>05</span><div><strong>Xem điểm hoặc đổi nhiệm vụ</strong><p>Bấm Điểm hiện tại để xem tiến độ rồi quay lại chơi tiếp. Bạn cũng có thể Đổi nhiệm vụ mà vẫn giữ điểm, hoặc Kết thúc lượt khi đã sẵn sàng.</p></div></li>
             </ol>
@@ -806,8 +806,8 @@ export default function GameCanvas() {
               <div><span>Thời gian</span><strong>{formatDuration(currentDuration())}</strong></div>
             </div>
             <section className="score-reward-board" aria-label="Phần thưởng đã mở">
-              <div><span>PHẦN THƯỞNG ĐÃ MỞ</span><strong>{earnedRewards.length}/{sessionRewards.length}</strong></div>
-              {earnedRewards.length ? <div className="score-reward-list">{earnedRewards.map((reward) => <span key={reward.id}><b>{reward.symbol}</b><em>Cấp {reward.level}</em><small>{reward.label}</small></span>)}</div> : <p>Hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
+              <div><span>PHẦN THƯỞNG GẦN NHẤT</span><strong>{earnedRewards.length}/{sessionRewards.length}</strong></div>
+              {earnedRewards.length ? <div className="score-reward-list">{earnedRewards.slice(-6).map((reward) => <span key={reward.id}><b>{reward.symbol}</b><em>Cấp {reward.level}</em><small>{reward.label}</small></span>)}</div> : <p>Hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
             </section>
             <button type="button" className="primary-action score-continue" onClick={() => setShowScorePanel(false)}>Quay lại chơi tiếp <Rocket size={18} /></button>
           </section>
