@@ -6,9 +6,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Engine } from "@babylonjs/core/Engines/engine";
 import "./english-polish.css";
+import "./test-flow.css";
 import {
   Check,
   ChevronRight,
+  Clock3,
+  ClipboardCheck,
   Gem,
   HelpCircle,
   Menu,
@@ -53,15 +56,16 @@ const ASSETS = {
   logo: "/manus-storage/phi-hanh-tinh-logo_cbefb56f.png",
 } as const;
 
-type AppScreen = "welcome" | "profile" | "menu" | "format" | "game" | "summary";
+type AppScreen = "welcome" | "profile" | "menu" | "activities" | "format" | "testsetup" | "game" | "summary";
 type ActivityId = "add" | "subtract" | "multiply" | "divide" | "tables" | "test";
 type Language = "vi" | "en";
+type TestDurationSeconds = 120 | 300 | 600;
 
 const SESSION_DRAFT_KEY = "hana-active-session-v1";
 
 type SessionDraft = {
   version: 1;
-  screen: "menu" | "format" | "game";
+  screen: "menu" | "activities" | "format" | "testsetup" | "game";
   selectedActivity: ActivityId;
   mode: ExerciseMode;
   operation: Operation;
@@ -78,6 +82,8 @@ type SessionDraft = {
   elapsedSeconds: number;
   testStep: number;
   testCorrect: number;
+  testDurationSeconds?: TestDurationSeconds;
+  testSecondsRemaining?: number;
 };
 
 function readSessionDraft(): SessionDraft | null {
@@ -85,7 +91,7 @@ function readSessionDraft(): SessionDraft | null {
     const raw = window.localStorage.getItem(SESSION_DRAFT_KEY);
     if (!raw) return null;
     const draft = JSON.parse(raw) as Partial<SessionDraft>;
-    if (draft.version !== 1 || !draft.question || !isQuestionConsistent(draft.question as QuizQuestion) || !["menu", "format", "game"].includes(draft.screen ?? "")) return null;
+    if (draft.version !== 1 || !draft.question || !isQuestionConsistent(draft.question as QuizQuestion) || !["menu", "activities", "format", "testsetup", "game"].includes(draft.screen ?? "")) return null;
     return draft as SessionDraft;
   } catch {
     return null;
@@ -271,7 +277,7 @@ function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle, soundEnab
         <div className="welcome-robot" aria-hidden="true"><div className="robot-fallback"><span /><span /><i /></div><span className="robot-orbit" /></div>
         <p className="welcome-brand-flag" data-brand-wordmark>{language === "en" ? <>MATH PLANET <span>ADVENTURE</span></> : <>PHI HÀNH TINH <span>PHÉP TÍNH</span></>}</p>
         <p className="welcome-kicker"><Sparkles size={15} /> {language === "en" ? "WELCOME, YOUNG ASTRONAUT" : "CHÀO MỪNG PHI HÀNH GIA NHỎ"}</p>
-        <h2>{language === "en" ? <><span>Let’s review</span><em>math with Hana</em></> : <><span>Cùng Hana</span><em>ôn toán học</em></>}</h2>
+        <h2>{language === "en" ? <><span>Learn Math</span><em>with Hana</em></> : <><span>Cùng Hana</span><em>ôn toán học</em></>}</h2>
         <p className="welcome-intro">{language === "en" ? "Join Robot Hana for a cheerful space mission through addition, subtraction, multiplication and division." : "Cùng Robot Hana chinh phục các hoạt động Cộng, Trừ, Nhân và Chia qua những nhiệm vụ thật vui."}</p>
         <div className="welcome-actions">
           <button type="button" className="welcome-primary" onClick={onStart}>{language === "en" ? "Start" : "Bắt đầu"} <Rocket size={19} fill="currentColor" /></button>
@@ -310,7 +316,6 @@ function ActivityMenu({ onBack, onGuide, onChoose, language, onLanguageToggle }:
     { id: "tables", eyebrow: language === "en" ? "MULTIPLICATION & DIVISION TABLES" : "BẢNG NHÂN VÀ CHIA", detail: language === "en" ? "Choose tables or practise both operations." : "Chọn từng bảng hoặc luyện cả nhân và chia.", tone: "tables", symbol: "×÷" },
     { id: "multiply", eyebrow: language === "en" ? "MULTIPLICATION" : "PHÉP TÍNH NHÂN", detail: language === "en" ? "Arrange equal groups." : "Xếp những nhóm bằng nhau.", tone: "multiply", symbol: "×" },
     { id: "divide", eyebrow: language === "en" ? "DIVISION" : "PHÉP TÍNH CHIA", detail: language === "en" ? "Share groups equally." : "Chia đều các nhóm số.", tone: "divide", symbol: "÷" },
-    { id: "test", eyebrow: language === "en" ? "8-QUESTION CHALLENGE" : "8 CÂU THỬ THÁCH", detail: language === "en" ? "Try the challenge and earn stars." : "Thử sức và nhận sao.", tone: "test", symbol: "★" },
   ];
 
   return (
@@ -340,6 +345,46 @@ function ActivityMenu({ onBack, onGuide, onChoose, language, onLanguageToggle }:
       <p className="activity-footer">{language === "en" ? "Robot Hana will join you on every space mission." : "Robot Hana sẽ đồng hành cùng bạn trong mọi chuyến bay."}</p>
     </section>
   );
+}
+
+function StartModeScreen({ onBack, onPractice, onTest, language, onLanguageToggle }: { onBack: () => void; onPractice: () => void; onTest: () => void; language: Language; onLanguageToggle: () => void }) {
+  return <section className="start-mode-screen" data-i18n-direct aria-label={language === "en" ? "Choose learning mode" : "Chọn chế độ học"}>
+    <button type="button" className="format-back" onClick={onBack}>← {language === "en" ? "Back" : "Trở về"}</button>
+    <div className="format-brand mini-brand"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><GameBrand language={language} /></div>
+    <LanguageControl className="screen-language-control" language={language} onToggle={onLanguageToggle} />
+    <div className="start-mode-orbit" aria-hidden="true" />
+    <div className="start-mode-planet-map" aria-label={language === "en" ? "Four maths planets" : "Bốn hành tinh Toán học"}><span className="add">+</span><i /><span className="subtract">−</span><i /><span className="multiply">×</span><i /><span className="divide">÷</span></div>
+    <div className="start-mode-hana"><div className="robot-fallback"><span /><span /><i /></div></div>
+    <p className="format-kicker">{language === "en" ? "ROBOT HANA IS READY" : "ROBOT HANA SẴN SÀNG"}</p>
+    <h2>{language === "en" ? <>Choose your<br /><em>math mission</em></> : <>Chọn chuyến bay<br /><em>toán học của bạn</em></>}</h2>
+    <p className="start-mode-intro">{language === "en" ? "Practise at your own pace, or enjoy a gentle timed mission with Hana." : "Bạn có thể luyện tập theo nhịp riêng hoặc thử sức cùng Hana trong bài kiểm tra tính giờ."}</p>
+    <div className="start-mode-options">
+      <button type="button" className="start-mode-card is-practice" onClick={onPractice}><span className="start-mode-icon"><Rocket size={30} /></span><strong>{language === "en" ? "Practice" : "Luyện Tập"}</strong><small>{language === "en" ? "Choose Addition, Subtraction, Multiplication, Division or Times Tables." : "Chọn Cộng, Trừ, Nhân, Chia hoặc Học Bảng Nhân và Chia."}</small><em>{language === "en" ? "Explore missions" : "Khám phá nhiệm vụ"} <ChevronRight size={16} /></em></button>
+      <button type="button" className="start-mode-card is-test" onClick={onTest}><span className="start-mode-icon"><ClipboardCheck size={30} /></span><strong>{language === "en" ? "Test" : "Bài Kiểm Tra"}</strong><small>{language === "en" ? "Choose a level and time for a calm, continuous mission." : "Chọn cấp độ, thời gian và làm các câu hỏi liên tục."}</small><em>{language === "en" ? "Set up test" : "Thiết lập kiểm tra"} <ChevronRight size={16} /></em></button>
+    </div>
+  </section>;
+}
+
+function TestSetupScreen({ difficulty, durationSeconds, onDifficultyChange, onDurationChange, onBack, onStart, language, onLanguageToggle }: { difficulty: Difficulty; durationSeconds: TestDurationSeconds; onDifficultyChange: (difficulty: Difficulty) => void; onDurationChange: (duration: TestDurationSeconds) => void; onBack: () => void; onStart: () => void; language: Language; onLanguageToggle: () => void }) {
+  const durations: Array<{ seconds: TestDurationSeconds; vi: string; en: string }> = [{ seconds: 120, vi: "2 phút", en: "2 minutes" }, { seconds: 300, vi: "5 phút", en: "5 minutes" }, { seconds: 600, vi: "10 phút", en: "10 minutes" }];
+  const levels: Array<{ value: Difficulty; vi: string; en: string; detailVi: string; detailEn: string }> = [
+    { value: "easy", vi: "Làm quen", en: "Getting started", detailVi: "Tính nhẩm nhẹ nhàng", detailEn: "Gentle mental maths" },
+    { value: "medium", vi: "Tự tin", en: "Confident", detailVi: "Theo cột và bảng nhân", detailEn: "Columns and times tables" },
+    { value: "challenge", vi: "Thám hiểm", en: "Explorer", detailVi: "Nhiệm vụ lớn hơn", detailEn: "Bigger missions" },
+  ];
+  return <section className="test-setup-screen" data-i18n-direct aria-label={language === "en" ? "Set up timed test" : "Thiết lập bài kiểm tra tính giờ"}>
+    <button type="button" className="format-back" onClick={onBack}>← {language === "en" ? "Back" : "Trở về"}</button>
+    <div className="format-brand mini-brand"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><GameBrand language={language} /></div>
+    <LanguageControl className="screen-language-control" language={language} onToggle={onLanguageToggle} />
+    <div className="test-setup-orbit" aria-hidden="true" />
+    <div className="test-setup-planet-map" aria-label={language === "en" ? "Four maths planets" : "Bốn hành tinh Toán học"}><span className="add">+</span><i /><span className="subtract">−</span><i /><span className="multiply">×</span><i /><span className="divide">÷</span></div>
+    <div className="test-setup-heading"><span><Clock3 size={18} /> {language === "en" ? "TIMED TEST" : "BÀI KIỂM TRA TÍNH GIỜ"}</span><h2>{language === "en" ? <>Ready for a gentle<br /><em>math mission?</em></> : <>Sẵn sàng cho<br /><em>thử thách Toán học?</em></>}</h2><p>{language === "en" ? "Choose a level and time. Hana will bring a new question after every answer until time is up." : "Chọn cấp độ và thời gian. Hana sẽ đưa câu hỏi mới sau mỗi đáp án đến khi hết giờ."}</p></div>
+    <div className="test-setup-panel">
+      <section><h3>{language === "en" ? "1. Choose a level" : "1. Chọn cấp độ"}</h3><div className="test-level-options">{levels.map((level) => <button key={level.value} type="button" className={difficulty === level.value ? "is-active" : ""} onClick={() => onDifficultyChange(level.value)}><strong>{language === "en" ? level.en : level.vi}</strong><small>{language === "en" ? level.detailEn : level.detailVi}</small></button>)}</div></section>
+      <section><h3>{language === "en" ? "2. Choose a time" : "2. Chọn thời gian"}</h3><div className="test-duration-options">{durations.map((duration) => <button key={duration.seconds} type="button" className={durationSeconds === duration.seconds ? "is-active" : ""} onClick={() => onDurationChange(duration.seconds)}><Clock3 size={17} /><strong>{language === "en" ? duration.en : duration.vi}</strong></button>)}</div></section>
+      <button type="button" className="test-start-button" onClick={onStart}>{language === "en" ? "Start timed test" : "Bắt đầu kiểm tra"} <Rocket size={18} /></button>
+    </div>
+  </section>;
 }
 
 function PracticeFormatScreen({ operation, playerName, onBack, onStart, language, onLanguageToggle }: { operation: Operation; playerName: string; onBack: () => void; onStart: (format: PracticeFormat) => void; language: Language; onLanguageToggle: () => void }) {
@@ -398,6 +443,7 @@ export default function GameCanvas() {
   const isScoreDemo = demoParams.has("score");
   const isGuideDemo = demoParams.has("guide");
   const isSoundSettingsDemo = demoParams.has("soundsettings");
+  const isTestSetupDemo = demoParams.has("testsetup");
   const isMenuCollapsedDemo = demoParams.has("menucollapsed");
   const isEndSessionConfirmDemo = demoParams.has("endconfirm");
   const isMaxRewardDemo = demoParams.has("maxrewards");
@@ -415,9 +461,9 @@ export default function GameCanvas() {
     ? (tableDemoKind === "divide" ? "divide" : "multiply")
     : "add";
 
-  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo || isMaxRewardDemo ? "summary" : isProfileDemo ? "profile" : isFormatDemo ? "format" : isScoreDemo || isDemo || isTableDemo || isMissingDemo || isEndSessionConfirmDemo ? "game" : isMenuPreview ? "menu" : "welcome");
-  const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "practice");
-  const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isMissingDemo || isFormatDemo ? initialOperation : isDemo ? "multiply" : "add");
+  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo || isMaxRewardDemo ? "summary" : isProfileDemo ? "profile" : isFormatDemo ? "format" : isTestSetupDemo ? "testsetup" : isScoreDemo || isDemo || isTableDemo || isMissingDemo || isEndSessionConfirmDemo ? "game" : isMenuPreview ? "menu" : "welcome");
+  const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : isTestSetupDemo ? "test" : "practice");
+  const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isTestSetupDemo ? "test" : isMissingDemo || isFormatDemo ? initialOperation : isDemo ? "multiply" : "add");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [practiceFormat, setPracticeFormat] = useState<PracticeFormat>("standard");
   const [operation, setOperation] = useState<Operation>(initialOperation);
@@ -436,6 +482,9 @@ export default function GameCanvas() {
   const [testStep, setTestStep] = useState(0);
   const [testCorrect, setTestCorrect] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
+  const [testDurationSeconds, setTestDurationSeconds] = useState<TestDurationSeconds>(120);
+  const [testSecondsRemaining, setTestSecondsRemaining] = useState(120);
+  const [testTimedOut, setTestTimedOut] = useState(false);
   const [showGuide, setShowGuide] = useState(isGuideDemo);
   const [showScorePanel, setShowScorePanel] = useState(isScoreDemo);
   const [showEndSessionConfirm, setShowEndSessionConfirm] = useState(isEndSessionConfirmDemo);
@@ -462,6 +511,8 @@ export default function GameCanvas() {
   const audioRef = useRef<HanaAudio | null>(null);
   const pausedStartedAtRef = useRef<number | null>(null);
   const pausedDurationRef = useRef(0);
+  const testEndsAtRef = useRef<number | null>(null);
+  const testFinalizedRef = useRef(false);
   const displayName = playerName.trim() || (language === "en" ? "Young astronaut" : "Phi hành gia nhỏ");
   const copy = (vietnamese: string, english: string) => language === "en" ? english : vietnamese;
   const operationLabel = (value: Operation) => language === "en" ? ({ add: "Addition", subtract: "Subtraction", multiply: "Multiplication", divide: "Division" }[value]) : activityMeta[value].label;
@@ -644,7 +695,7 @@ export default function GameCanvas() {
   };
 
   const selectDifficulty = (nextDifficulty: Difficulty) => {
-    if (mode === "test" && (testStep > 0 || feedback !== "idle" || answered !== null)) return;
+    if (mode === "test" && testEndsAtRef.current !== null) return;
     setDifficulty(nextDifficulty);
     setTestComplete(false);
     setTestStep(0);
@@ -723,10 +774,7 @@ export default function GameCanvas() {
       setTablePractice(tableKind, []);
       return;
     }
-    if (nextActivity === "test") {
-      selectMode("test");
-      return;
-    }
+    if (nextActivity === "test") return;
     setMode("practice");
     selectOperation(nextActivity);
   };
@@ -744,6 +792,29 @@ export default function GameCanvas() {
     setPracticeFormat(nextFormat);
     setQuestion(freshQuestion(() => generatePracticeQuestion(operation, difficulty, nextFormat)));
     handleRef.current?.setActivePlanet(operation);
+    setScreen("game");
+  };
+
+  const beginTimedTest = () => {
+    playSound("launch");
+    setMenuCollapsed(false);
+    startFreshSession();
+    setSelectedActivity("test");
+    setMode("test");
+    setPracticeFormat("standard");
+    setTestStep(0);
+    setTestCorrect(0);
+    setTestComplete(false);
+    setTestTimedOut(false);
+    testFinalizedRef.current = false;
+    testEndsAtRef.current = Date.now() + testDurationSeconds * 1000;
+    setTestSecondsRemaining(testDurationSeconds);
+    const firstOperation = pickTestOperation();
+    setOperation(firstOperation);
+    setQuestion(freshQuestion(() => generatePracticeQuestion(firstOperation, difficulty, "standard")));
+    setAnswered(null);
+    setFeedback("idle");
+    handleRef.current?.setActivePlanet(firstOperation);
     setScreen("game");
   };
 
@@ -800,10 +871,6 @@ export default function GameCanvas() {
       return;
     }
     if (mode === "test") {
-      if (testStep + 1 >= 8) {
-        setTestComplete(true);
-        return;
-      }
       setTestStep((step) => step + 1);
       createNextQuestion("test");
       return;
@@ -830,6 +897,27 @@ export default function GameCanvas() {
     : Math.max(elapsedSeconds, Math.floor((Date.now() - sessionStartedAt - pausedDurationRef.current - (pausedStartedAtRef.current === null ? 0 : Date.now() - pausedStartedAtRef.current)) / 1000));
 
   useEffect(() => {
+    if (mode !== "test" || screen !== "game" || testComplete || testEndsAtRef.current === null) return;
+    const syncTestClock = () => {
+      const remaining = Math.max(0, Math.ceil((testEndsAtRef.current! - Date.now()) / 1000));
+      setTestSecondsRemaining(remaining);
+      if (remaining > 0 || testFinalizedRef.current) return;
+      testFinalizedRef.current = true;
+      testEndsAtRef.current = null;
+      setTestTimedOut(true);
+      setTestComplete(true);
+      clearSessionDraft();
+      setResumeDraft(null);
+      setElapsedSeconds(currentDuration());
+      playSound("reward");
+      setScreen("summary");
+    };
+    syncTestClock();
+    const timer = window.setInterval(syncTestClock, 250);
+    return () => window.clearInterval(timer);
+  }, [mode, playSound, screen, testComplete]);
+
+  useEffect(() => {
     if (sessionStartedAt === null) return;
     const syncClock = () => {
       const isLearningActive = screen === "game" && document.visibilityState === "visible";
@@ -850,7 +938,7 @@ export default function GameCanvas() {
   }, [screen, sessionStartedAt]);
 
   useEffect(() => {
-    const persistedScreen: SessionDraft["screen"] | null = screen === "menu" || screen === "format" || screen === "game" ? screen : null;
+    const persistedScreen: SessionDraft["screen"] | null = screen === "menu" || screen === "activities" || screen === "format" || screen === "testsetup" || screen === "game" ? screen : null;
     if (sessionStartedAt === null || persistedScreen === null) return;
     const draft: SessionDraft = {
       version: 1,
@@ -871,12 +959,15 @@ export default function GameCanvas() {
       elapsedSeconds: currentDuration(),
       testStep,
       testCorrect,
+      testDurationSeconds,
+      testSecondsRemaining,
     };
     window.localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify(draft));
-  }, [correctCount, difficulty, elapsedSeconds, mode, operation, playerName, practiceFormat, question, screen, selectedActivity, selectedTables, sessionPoints, sessionStartedAt, tableKind, testCorrect, testStep, wrongCount]);
+  }, [correctCount, difficulty, elapsedSeconds, mode, operation, playerName, practiceFormat, question, screen, selectedActivity, selectedTables, sessionPoints, sessionStartedAt, tableKind, testCorrect, testDurationSeconds, testSecondsRemaining, testStep, wrongCount]);
 
   const finishSession = () => {
     setShowEndSessionConfirm(false);
+    testEndsAtRef.current = null;
     clearSessionDraft();
     setResumeDraft(null);
     playSound("reward");
@@ -895,6 +986,8 @@ export default function GameCanvas() {
     setShowResumeSession(false);
     pausedStartedAtRef.current = null;
     pausedDurationRef.current = 0;
+    testEndsAtRef.current = null;
+    testFinalizedRef.current = false;
     recentQuestionExpressionsRef.current = [];
     setSessionPoints(0);
     setCorrectCount(0);
@@ -923,6 +1016,13 @@ export default function GameCanvas() {
     setElapsedSeconds(resumeDraft.elapsedSeconds);
     setTestStep(resumeDraft.testStep);
     setTestCorrect(resumeDraft.testCorrect);
+    setTestDurationSeconds(resumeDraft.testDurationSeconds ?? 120);
+    setTestSecondsRemaining(resumeDraft.testSecondsRemaining ?? resumeDraft.testDurationSeconds ?? 120);
+    testEndsAtRef.current = resumeDraft.mode === "test" && resumeDraft.screen === "game"
+      ? Date.now() + (resumeDraft.testSecondsRemaining ?? resumeDraft.testDurationSeconds ?? 120) * 1000
+      : null;
+    testFinalizedRef.current = false;
+    setTestTimedOut(false);
     setTestComplete(false);
     setAnswered(null);
     setFeedback("idle");
@@ -1210,6 +1310,8 @@ export default function GameCanvas() {
   const hasAllTables = selectedTables.length === TIMES_TABLES.length;
   const activeActivity = activityMeta[selectedActivity];
   const operationSymbol: Record<Operation, string> = { add: "+", subtract: "−", multiply: "×", divide: "÷" };
+  const isTimedTestSummary = mode === "test" && selectedActivity === "test";
+  const testLevelLabel = language === "en" ? ({ easy: "Getting started", medium: "Confident", challenge: "Explorer" } as const)[difficulty] : difficultyMeta[difficulty].label;
 
   return (
     <main className="game-shell">
@@ -1239,18 +1341,21 @@ export default function GameCanvas() {
 
       {screen === "welcome" && <WelcomeScreen onStart={() => { playSound("launch"); setScreen("profile"); }} onGuide={() => { playSound("tap"); setShowGuide(true); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} soundEnabled={soundEnabled} onSoundToggle={toggleSound} onSoundSettingsOpen={() => playSound("tap")} musicVolume={musicVolume} effectsVolume={effectsVolume} onMusicVolumeChange={changeMusicVolume} onEffectsVolumeChange={changeEffectsVolume} defaultSoundSettingsOpen={isSoundSettingsDemo} />}
       {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => { playSound("launch"); setScreen("menu"); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
-      {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
-      {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
+      {screen === "menu" && <StartModeScreen onBack={() => setScreen("welcome")} onPractice={() => { playSound("launch"); setScreen("activities"); }} onTest={() => { playSound("launch"); setSelectedActivity("test"); setMode("test"); setTestTimedOut(false); setTestComplete(false); setScreen("testsetup"); }} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
+      {screen === "activities" && <ActivityMenu onBack={() => setScreen("menu")} onGuide={() => setShowGuide(true)} onChoose={startActivity} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
+      {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("activities")} onStart={beginPractice} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
+      {screen === "testsetup" && <TestSetupScreen difficulty={difficulty} durationSeconds={testDurationSeconds} onDifficultyChange={setDifficulty} onDurationChange={setTestDurationSeconds} onBack={() => setScreen("menu")} onStart={beginTimedTest} language={language} onLanguageToggle={() => setLanguage((current) => current === "vi" ? "en" : "vi")} />}
       {screen === "summary" && <section ref={summaryRef} className="summary-screen" data-i18n-direct aria-label={copy("Tổng kết lượt chơi", "Learning session summary")}>
         <div className="summary-brand mini-brand" aria-label={language === "en" ? "Math Planet Adventure" : "Phi Hành Tinh Phép Tính"}><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><GameBrand language={language} /></div>
         <div className="summary-orbit" aria-hidden="true" />
         <div className="summary-journey" aria-hidden="true"><i className="add">+</i><i className="subtract">−</i><i className="multiply">×</i><i className="divide">÷</i></div>
         <div className="summary-stars" aria-hidden="true"><span>✦</span><span>★</span><span>✦</span></div>
         <div className="summary-robot"><div className="robot-fallback"><span /><span /><i /></div></div>
-        <p className="summary-kicker">{language === "en" ? "ROBOT HANA CONGRATULATES" : "ROBOT HANA CHÚC MỪNG"} {displayName.toUpperCase()}</p>
-        <h2>{language === "en" ? <>Your learning session, {displayName}<br /><em>is something to be proud of!</em></> : <>Lượt học của {displayName}<br /><em>thật đáng tự hào!</em></>}</h2>
-        <p className="summary-intro">{language === "en" ? `${displayName}, whether right or wrong, you kept going through a session with Hana.` : `${displayName}, dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.`}</p>
-        <p className="summary-hana-line">{language === "en" ? `Hana has stored ${displayName}'s badges in the spaceship cabin!` : `Hana đã cất các huy hiệu của ${displayName} vào khoang phi thuyền!`}</p>
+        <p className="summary-kicker">{isTimedTestSummary ? (testTimedOut ? copy("HẾT GIỜ RỒI", "TIME IS UP") : copy("KẾT QUẢ BÀI KIỂM TRA", "TEST RESULTS")) : (language === "en" ? "ROBOT HANA CONGRATULATES" : "ROBOT HANA CHÚC MỪNG")} {displayName.toUpperCase()}</p>
+        <h2>{isTimedTestSummary ? (language === "en" ? <>Your timed test,<br /><em>{displayName}, is complete!</em></> : <>Bài kiểm tra của<br /><em>{displayName} đã hoàn thành!</em></>) : (language === "en" ? <>Your learning session, {displayName}<br /><em>is something to be proud of!</em></> : <>Lượt học của {displayName}<br /><em>thật đáng tự hào!</em></>)}</h2>
+        <p className="summary-intro">{isTimedTestSummary ? (language === "en" ? `${displayName}, you kept working until the timer reached zero. Great focus!` : `${displayName}, bạn đã kiên trì làm bài đến khi đồng hồ về 0. Thật tập trung!`) : (language === "en" ? `${displayName}, whether right or wrong, you kept going through a session with Hana.` : `${displayName}, dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.`)}</p>
+        <p className="summary-hana-line">{isTimedTestSummary ? (language === "en" ? `Hana counted ${correctCount} correct answers and ${wrongCount} incorrect answers.` : `Hana đã ghi nhận ${correctCount} câu đúng và ${wrongCount} câu sai.`) : (language === "en" ? `Hana has stored ${displayName}'s badges in the spaceship cabin!` : `Hana đã cất các huy hiệu của ${displayName} vào khoang phi thuyền!`)}</p>
+        {isTimedTestSummary && <div className="test-summary-settings" aria-label={copy("Thiết lập bài kiểm tra", "Test settings")}><span><Clock3 size={15} /> {copy("Thời gian", "Time")}: <b>{formatDuration(testDurationSeconds)}</b></span><span><Star size={15} /> {copy("Cấp độ", "Level")}: <b>{testLevelLabel}</b></span></div>}
         <div className="summary-stats">
           <div><span>{copy("Điểm", "Points")}</span><strong data-dynamic-text>{sessionPoints}</strong></div>
           <div><span>{copy("Đúng", "Correct")}</span><strong data-dynamic-text>{correctCount}</strong></div>
@@ -1305,12 +1410,12 @@ export default function GameCanvas() {
             <span className="console-operation-symbol" aria-hidden="true">{operationSymbol[operation]}</span>
           </div>
           <div className="console-title">
-            <p>{isTableMode ? copy("Học Bảng Nhân và Chia", "Multiplication & Division Tables") : operationLabel(operation)} <span>•</span> {isTableMode ? tableSubtitle(tableKind) : mode === "test" ? copy("8 câu thử thách", "8-question challenge") : practiceFormatName(practiceFormat, language)}</p>
-            <h3 data-dynamic-text>{testComplete ? copy("Hoàn thành kiểm tra!", "Test complete!") : isTableMode && !hasSelectedTables ? copy("Hãy chọn ít nhất một bảng để bắt đầu.", "Choose at least one table to begin.") : isTableMode ? selectedTables.length === 1 ? (language === "en" ? `Table ${selectedTables[0]}: ${tableKind === "mixed" ? "mixed mission" : `${tableKind} mission`}.` : `Cùng Hana luyện bảng ${selectedTables[0]} với ${tableLabel(tableKind).toLowerCase()}.`) : (language === "en" ? `${selectedTables.length}-table ${tableKind === "mixed" ? "mixed" : tableKind} mission.` : `Cùng Hana luyện ${selectedTables.length} bảng với ${tableLabel(tableKind).toLowerCase()}.`) : translateLearningText(question.mission, language)}</h3>
+            <p>{isTableMode ? copy("Học Bảng Nhân và Chia", "Multiplication & Division Tables") : operationLabel(operation)} <span>•</span> {isTableMode ? tableSubtitle(tableKind) : mode === "test" ? copy("Bài kiểm tra tính giờ", "Timed test") : practiceFormatName(practiceFormat, language)}</p>
+            <h3 data-dynamic-text>{testComplete ? copy("Hết giờ rồi!", "Time is up!") : isTableMode && !hasSelectedTables ? copy("Hãy chọn ít nhất một bảng để bắt đầu.", "Choose at least one table to begin.") : isTableMode ? selectedTables.length === 1 ? (language === "en" ? `Table ${selectedTables[0]}: ${tableKind === "mixed" ? "mixed mission" : `${tableKind} mission`}.` : `Cùng Hana luyện bảng ${selectedTables[0]} với ${tableLabel(tableKind).toLowerCase()}.`) : (language === "en" ? `${selectedTables.length}-table ${tableKind === "mixed" ? "mixed" : tableKind} mission.` : `Cùng Hana luyện ${selectedTables.length} bảng với ${tableLabel(tableKind).toLowerCase()}.`) : translateLearningText(question.mission, language)}</h3>
           </div>
           <button className="mission-counter current-score-button" data-current-score type="button" onClick={() => setShowScorePanel(true)} aria-label={copy("Xem điểm hiện tại và tiến độ phần thưởng", "View current points and reward progress")}>
-            <span>{mode === "test" ? copy("Câu", "Question") : copy("Điểm hiện tại", "Current points")}</span>
-            <strong data-dynamic-text>{mode === "test" ? (testComplete ? "8/8" : `${Math.min(testStep + 1, 8)}/8`) : sessionPoints}</strong>
+            <span>{mode === "test" ? copy("Còn lại", "Remaining") : copy("Điểm hiện tại", "Current points")}</span>
+            <strong data-dynamic-text>{mode === "test" ? formatDuration(testSecondsRemaining) : sessionPoints}</strong>
           </button>
         </div>
         {testComplete ? (
@@ -1404,7 +1509,7 @@ export default function GameCanvas() {
                   <div className="hana-hint-copy"><strong>{language === "en" ? `Robot Hana's hint for ${displayName}:` : `Robot Hana gợi ý cho ${displayName}:`}</strong><span>{language === "en" ? `That is okay. This try loses 2 points. ${translateLearningText(question.hint, language)}` : `Chưa sao đâu, lượt này giảm 2 điểm. ${translateLearningText(question.hint, language)}`}</span><ol>{question.hintSteps.map((step) => <li key={step}>{translateLearningText(step, language)}</li>)}</ol></div>
                 </div>}
                 <button type="button" className={`feedback-action ${feedback === "correct" ? "is-next" : "is-retry"}`} onClick={continueMission}>
-                  {feedback === "correct" ? (mode === "test" && testStep + 1 >= 8 ? copy("Xem kết quả", "View results") : copy("Nhiệm vụ tiếp", "Next mission")) : mode === "test" ? (testStep + 1 >= 8 ? copy("Xem kết quả", "View results") : copy("Câu tiếp", "Next question")) : copy("Thử lại", "Try again")}
+                  {feedback === "correct" ? (mode === "test" ? copy("Câu tiếp", "Next question") : copy("Nhiệm vụ tiếp", "Next mission")) : mode === "test" ? copy("Câu tiếp", "Next question") : copy("Thử lại", "Try again")}
                   <ChevronRight size={17} />
                 </button>
               </div>
@@ -1414,15 +1519,14 @@ export default function GameCanvas() {
         )}
 
         <div className="control-row">
-          {!isTableMode && <div className={`level-switch ${mode === "test" && (testStep > 0 || feedback !== "idle" || answered !== null) ? "is-locked" : ""}`} aria-label="Chọn cấp độ">
+          {!isTableMode && mode !== "test" && <div className="level-switch" aria-label="Chọn cấp độ">
             {(Object.keys(difficultyMeta) as Difficulty[]).map((key) => (
-              <button key={key} type="button" disabled={mode === "test" && (testStep > 0 || feedback !== "idle" || answered !== null)} className={difficulty === key ? "is-active" : ""} onClick={() => selectDifficulty(key)}>{difficultyMeta[key].label}</button>
+              <button key={key} type="button" className={difficulty === key ? "is-active" : ""} onClick={() => selectDifficulty(key)}>{difficultyMeta[key].label}</button>
             ))}
-            {mode === "test" && (testStep > 0 || feedback !== "idle" || answered !== null) && <span className="test-level-lock">{copy("Cấp độ đã khóa cho lượt kiểm tra", "Difficulty is locked for this test")}</span>}
           </div>}
         </div>
         {!testComplete && <div className="session-bottom-actions" aria-label={copy("Điều khiển nhiệm vụ", "Mission controls")}>
-          <button className="session-change-mission" type="button" onClick={() => { playSound("tap"); setMenuCollapsed(false); setScreen("menu"); }}><span>↔</span>{copy("Đổi nhiệm vụ", "Change mission")}</button>
+          <button className="session-change-mission" type="button" onClick={() => { playSound("tap"); setMenuCollapsed(false); setScreen(mode === "test" ? "menu" : "activities"); }}><span>↔</span>{copy("Đổi nhiệm vụ", "Change mission")}</button>
           <button className="session-end-button" type="button" onClick={requestEndSession}><span>■</span>{copy("Kết thúc lượt", "End session")}</button>
         </div>}
       </section>

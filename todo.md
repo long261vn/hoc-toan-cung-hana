@@ -245,3 +245,13 @@
 
 - [x] Thay khẩu hiệu English ở màn chào mừng bằng câu tự nhiên, đúng ý “Cùng Hana ôn toán học”.
 - [x] Kiểm tra giao diện màn chào mừng English, TypeScript và build trước khi lưu checkpoint.
+
+## Luồng Luyện Tập và Bài Kiểm Tra theo thời gian
+
+- [ ] Sửa khẩu hiệu English thành “Learn Math with Hana”.
+- [ ] Thêm màn chọn Luyện Tập hoặc Bài Kiểm Tra khi bắt đầu.
+- [ ] Chuyển Cộng, Trừ, Nhân, Chia và Bảng nhân–chia vào nhánh Luyện Tập.
+- [ ] Tạo cấu hình Bài Kiểm Tra: thời gian 2/5/10 phút và ba cấp độ.
+- [ ] Thêm đồng hồ đếm ngược, chuỗi câu hỏi liên tục và kết thúc tự động khi hết giờ.
+- [ ] Bổ sung tổng kết kiểm tra gồm thời gian/cấp độ đã chọn, số câu đúng/sai và điểm.
+- [ ] Kiểm thử logic, desktop/mobile, song ngữ, TypeScript và build trước khi lưu checkpoint.
