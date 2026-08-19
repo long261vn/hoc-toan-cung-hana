@@ -240,3 +240,8 @@
 
 - [x] Bỏ nút chuyển đổi ngôn ngữ riêng trên màn tổng kết.
 - [x] Kiểm tra bố cục tổng kết trên điện thoại và desktop sau khi loại bỏ điều khiển.
+
+## Sửa khẩu hiệu English
+
+- [x] Thay khẩu hiệu English ở màn chào mừng bằng câu tự nhiên, đúng ý “Cùng Hana ôn toán học”.
+- [x] Kiểm tra giao diện màn chào mừng English, TypeScript và build trước khi lưu checkpoint.

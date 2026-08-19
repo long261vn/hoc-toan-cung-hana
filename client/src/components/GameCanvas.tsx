@@ -271,7 +271,7 @@ function WelcomeScreen({ onStart, onGuide, language, onLanguageToggle, soundEnab
         <div className="welcome-robot" aria-hidden="true"><div className="robot-fallback"><span /><span /><i /></div><span className="robot-orbit" /></div>
         <p className="welcome-brand-flag" data-brand-wordmark>{language === "en" ? <>MATH PLANET <span>ADVENTURE</span></> : <>PHI HÀNH TINH <span>PHÉP TÍNH</span></>}</p>
         <p className="welcome-kicker"><Sparkles size={15} /> {language === "en" ? "WELCOME, YOUNG ASTRONAUT" : "CHÀO MỪNG PHI HÀNH GIA NHỎ"}</p>
-        <h2>{language === "en" ? <><span>Hana's Math</span><em>mission is ready</em></> : <><span>Cùng Hana</span><em>ôn toán học</em></>}</h2>
+        <h2>{language === "en" ? <><span>Let’s review</span><em>math with Hana</em></> : <><span>Cùng Hana</span><em>ôn toán học</em></>}</h2>
         <p className="welcome-intro">{language === "en" ? "Join Robot Hana for a cheerful space mission through addition, subtraction, multiplication and division." : "Cùng Robot Hana chinh phục các hoạt động Cộng, Trừ, Nhân và Chia qua những nhiệm vụ thật vui."}</p>
         <div className="welcome-actions">
           <button type="button" className="welcome-primary" onClick={onStart}>{language === "en" ? "Start" : "Bắt đầu"} <Rocket size={19} fill="currentColor" /></button>
