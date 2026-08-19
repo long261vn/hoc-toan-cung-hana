@@ -50,6 +50,70 @@ const mapStops: Array<{ operation: Operation; crystal: string }> = [
   { operation: "divide", crystal: "drop" },
 ];
 
+type AppScreen = "welcome" | "menu" | "game";
+
+function WelcomeScreen({ onStart, onGuide }: { onStart: () => void; onGuide: () => void }) {
+  return (
+    <section className="welcome-screen" aria-label="Chào mừng đến với Phi Hành Tinh Phép Tính">
+      <div className="welcome-topbar">
+        <div className="mini-brand"><span className="mini-brand-rocket"><Rocket size={19} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
+        <button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button>
+      </div>
+      <div className="welcome-content">
+        <div className="welcome-robot" aria-hidden="true"><div className="robot-fallback"><span /><span /><i /></div><span className="robot-orbit" /></div>
+        <p className="welcome-kicker"><Sparkles size={15} /> CHÀO MỪNG PHI HÀNH GIA NHỎ</p>
+        <h2>Khởi động<br /><em>chuyến bay toán học!</em></h2>
+        <p className="welcome-intro">Cùng Robot Mít chinh phục các hành tinh Cộng, Trừ, Nhân và Chia qua những nhiệm vụ thật vui.</p>
+        <div className="welcome-actions">
+          <button type="button" className="welcome-primary" onClick={onStart}>Bắt đầu <Rocket size={19} fill="currentColor" /></button>
+          <button type="button" className="welcome-secondary" onClick={onGuide}><HelpCircle size={18} /> Xem cách chơi</button>
+        </div>
+        <div className="welcome-path" aria-label="Bốn hành tinh sẽ khám phá">
+          <span><b className="orange">+</b> Cộng</span><i /><span><b className="purple">−</b> Trừ</span><i /><span><b className="teal">×</b> Nhân</span><i /><span><b className="yellow">÷</b> Chia</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGuide: () => void; onChoose: (mode: ExerciseMode) => void }) {
+  const activities: Array<{ mode: ExerciseMode; icon: typeof Rocket; eyebrow: string; title: string; detail: string; tone: string }> = [
+    { mode: "journey", icon: Rocket, eyebrow: "BẢN ĐỒ 4 HÀNH TINH", title: "Ôn theo hành trình", detail: "Khám phá từng phép tính theo lộ trình.", tone: "journey" },
+    { mode: "practice", icon: Sparkles, eyebrow: "TỰ CHỌN PHÉP TÍNH", title: "Luyện từng phép", detail: "Tập Cộng, Trừ, Nhân hoặc Chia theo cấp độ.", tone: "practice" },
+    { mode: "tables", icon: Gem, eyebrow: "BẢNG 2 ĐẾN 9", title: "Bảng cửu chương", detail: "Chọn bảng nhân, bảng chia hoặc luyện hỗn hợp.", tone: "tables" },
+    { mode: "test", icon: Trophy, eyebrow: "8 CÂU THỬ THÁCH", title: "Bài kiểm tra", detail: "Xem con đã sẵn sàng bay thật xa chưa nhé!", tone: "test" },
+  ];
+
+  return (
+    <section className="activity-screen" aria-label="Chọn hoạt động học">
+      <div className="activity-topbar">
+        <button type="button" className="menu-back" onClick={onBack}>← Trở về</button>
+        <div className="mini-brand"><span className="mini-brand-rocket"><Rocket size={19} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
+        <button type="button" className="welcome-help" onClick={onGuide}><HelpCircle size={17} /> Hướng dẫn</button>
+      </div>
+      <div className="activity-heading">
+        <p>CHỌN NHIỆM VỤ</p>
+        <h2>Con muốn chinh phục điều gì?</h2>
+        <span>Chạm vào một thẻ để bắt đầu nhé.</span>
+      </div>
+      <div className="activity-grid">
+        {activities.map((activity, index) => {
+          const Icon = activity.icon;
+          return (
+            <button key={activity.mode} type="button" className={`activity-card ${activity.tone}`} onClick={() => onChoose(activity.mode)}>
+              <span className="activity-order">0{index + 1}</span>
+              <span className="activity-icon"><Icon size={28} fill="currentColor" /></span>
+              <span className="activity-copy"><b>{activity.eyebrow}</b><strong>{activity.title}</strong><small>{activity.detail}</small></span>
+              <ChevronRight className="activity-arrow" size={22} />
+            </button>
+          );
+        })}
+      </div>
+      <p className="activity-footer">Robot Mít sẽ đồng hành cùng con trong mọi chuyến bay.</p>
+    </section>
+  );
+}
+
 const difficultyMeta: Record<Difficulty, { label: string; detail: string }> = {
   easy: { label: "Làm quen", detail: "Tính nhẩm nhẹ nhàng" },
   medium: { label: "Tự tin", detail: "Tính theo cột và bảng nhân" },
@@ -81,11 +145,13 @@ export default function GameCanvas() {
   const demoParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const isDemo = demoParams.has("demo");
   const isTableDemo = demoParams.has("tables");
+  const isMenuPreview = demoParams.has("menu");
   const tableDemoKind: TablePracticeKind = demoParams.get("tables") === "divide" ? "divide" : demoParams.get("tables") === "mixed" ? "mixed" : "multiply";
   const initialOperation: Operation = isDemo || isTableDemo
     ? (tableDemoKind === "divide" ? "divide" : "multiply")
     : "add";
 
+  const [screen, setScreen] = useState<AppScreen>(isDemo || isTableDemo ? "game" : isMenuPreview ? "menu" : "welcome");
   const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "journey");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [operation, setOperation] = useState<Operation>(initialOperation);
@@ -204,6 +270,15 @@ export default function GameCanvas() {
     handleRef.current?.setActivePlanet(tableQuestion.operation);
   };
 
+  const startActivity = (nextMode: ExerciseMode) => {
+    setScreen("game");
+    if (nextMode === "tables") {
+      setTablePractice(tableKind, selectedTables);
+      return;
+    }
+    selectMode(nextMode);
+  };
+
   const toggleTable = (table: number) => {
     const nextTables = selectedTables.includes(table)
       ? (selectedTables.length === 1 ? selectedTables : selectedTables.filter((item) => item !== table))
@@ -252,6 +327,7 @@ export default function GameCanvas() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (screen !== "game") return;
       const numeric = Number(event.key);
       if (numeric >= 1 && numeric <= 4) {
         const option = question.options[numeric - 1];
@@ -261,7 +337,7 @@ export default function GameCanvas() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [answerQuestion, feedback, question.options]);
+  }, [answerQuestion, feedback, question.options, screen]);
 
   const activePlanet = planetMeta[operation];
   const missionCount = mode === "test" ? `${Math.min(testStep + 1, 8)}/8` : `${energy}/5`;
@@ -272,6 +348,10 @@ export default function GameCanvas() {
       <canvas ref={canvasRef} className="game-canvas" aria-label="Bản đồ bốn hành tinh phép tính" />
       <div className="space-atmosphere" aria-hidden="true" />
 
+      {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("menu")} onGuide={() => setShowGuide(true)} />}
+      {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} />}
+
+      {screen === "game" && <>
       <header className="mission-header">
         <div className="brand-lockup">
           <div className="brand-emblem" aria-hidden="true">
@@ -295,6 +375,7 @@ export default function GameCanvas() {
             ))}
           </div>
         </div>
+        <button className="mission-menu-button" type="button" onClick={() => setScreen("menu")}><span>☰</span> Menu</button>
         <button className="star-bank" type="button" onClick={() => setShowGuide(true)} aria-label="Xem thông tin tiến độ">
           <span className="star-icon"><Star size={20} fill="currentColor" /></span>
           <span><strong>{stars}</strong> sao</span>
@@ -480,6 +561,7 @@ export default function GameCanvas() {
           </div>}
         </div>
       </section>
+      </>}
 
       {showGuide && (
         <div className="guide-backdrop" role="dialog" aria-modal="true" aria-label="Lộ trình chuẩn lớp 3">

@@ -1,5 +1,13 @@
 # Việc cần làm — Bảng cửu chương
 
+## Giao diện chào mừng và menu
+
+- [x] Thiết kế luồng từ màn hình chào mừng đến menu hoạt động dành cho trẻ em.
+- [x] Tạo màn hình chính với nút Bắt đầu và Hướng dẫn.
+- [x] Tạo menu chọn Ôn theo hành trình, Luyện từng phép, Bảng cửu chương và Bài kiểm tra.
+- [x] Kết nối menu với các chế độ học hiện có và nút quay về menu.
+- [x] Kiểm tra giao diện mới trên máy tính và điện thoại, lưu checkpoint, bàn giao.
+
 ## Sửa lỗi đáp án
 
 - [x] Tái hiện và xác định sai lệch giữa biểu thức với đáp án trong khu bảng cửu chương.

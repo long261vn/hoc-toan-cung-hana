@@ -89,3 +89,6 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Robot Mít luôn xuất hiện trực tiếp ở khu vực nhiệm vụ, là nguồn của lời gợi ý và phản hồi, thay vì chỉ được nhắc trong câu chữ.
 - Mỗi hành tinh có bộ nhận diện xuyên suốt gồm màu pastel, hình tinh thể và điểm đánh dấu bản đồ riêng: cam/kim cương cho Cộng, tím/lục giác cho Trừ, xanh ngọc/ngôi sao cho Nhân và vàng/giọt sáng cho Chia.
 - Biểu tượng tên lửa trong quỹ đạo-dấu-cộng được trình bày ở kích thước đủ lớn cùng wordmark và dùng làm favicon; khối biểu tượng có phương án hiển thị dự phòng để không thành ô vuông tối khi ảnh đang tải.
+- Trò chơi mở đầu bằng một màn hình chào mừng ít lựa chọn, ưu tiên hai nút lớn “Bắt đầu” và “Hướng dẫn”; chỉ sau khi bấm Bắt đầu, học sinh mới nhìn thấy menu hoạt động.
+- Menu hoạt động dùng bốn thẻ trực quan có màu và biểu tượng riêng cho Ôn theo hành trình, Luyện từng phép, Bảng cửu chương và Bài kiểm tra. Mỗi thẻ nêu một câu ngắn giải thích để trẻ chọn đúng nhu cầu.
+- Trong màn chơi luôn có nút Menu rõ ràng ở đầu trang để trẻ đổi hoạt động mà không cần dựa vào trình duyệt.

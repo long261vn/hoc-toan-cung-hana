@@ -2,7 +2,7 @@
 
 ## Tầng hiển thị
 
-React chỉ đảm nhiệm khung trình bày. `client/src/components/GameCanvas.tsx` chứa canvas Babylon cùng bảng điều khiển DOM dễ đọc, quản lý chế độ học, cấp độ, phản hồi và trạng thái điểm.
+React chỉ đảm nhiệm khung trình bày. `client/src/components/GameCanvas.tsx` chứa canvas Babylon cùng bảng điều khiển DOM dễ đọc, quản lý chế độ học, cấp độ, phản hồi và trạng thái điểm. Trạng thái `screen` kiểm soát ba lớp trải nghiệm: `welcome` (chào mừng), `menu` (chọn hoạt động) và `game` (màn chơi).
 
 ## Tầng gameplay
 
@@ -12,7 +12,7 @@ React chỉ đảm nhiệm khung trình bày. `client/src/components/GameCanvas.
 
 ## Luồng trạng thái
 
-`GameCanvas` → tạo `QuizQuestion` → học sinh chọn đáp án → cập nhật phản hồi, điểm và tiến độ → gọi `GameHandle` để đồng bộ cảnh. Chế độ kiểm tra đếm 8 câu; các chế độ khác tạo chuyến luyện liên tục. Ở chế độ bảng cửu chương, `GameCanvas` nắm `tableKind` và `selectedTables`, rồi truyền chúng vào bộ sinh câu hỏi để tôn trọng chính xác lựa chọn một hoặc nhiều bảng.
+Học sinh đi theo luồng `welcome` → `menu` → `game`. Menu chọn một `ExerciseMode`, sau đó `GameCanvas` tạo `QuizQuestion` → học sinh chọn đáp án → cập nhật phản hồi, điểm và tiến độ → gọi `GameHandle` để đồng bộ cảnh. Chế độ kiểm tra đếm 8 câu; các chế độ khác tạo chuyến luyện liên tục. Ở chế độ bảng cửu chương, `GameCanvas` nắm `tableKind` và `selectedTables`, rồi truyền chúng vào bộ sinh câu hỏi để tôn trọng chính xác lựa chọn một hoặc nhiều bảng.
 
 ## Kiểm chứng
 
