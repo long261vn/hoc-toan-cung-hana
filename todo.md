@@ -48,6 +48,13 @@
 - [x] Kiểm thử ảnh tổng kết ở các mốc phần thưởng và trên màn hình máy tính/điện thoại.
 - [x] Dựng bản phát hành, lưu checkpoint và bàn giao bản sửa lỗi.
 
+## Hoàn thiện đồ họa ảnh kỷ niệm
+
+- [x] Rà soát ảnh PNG hiện tại và xác định các thành phần đồ họa thiếu: Robot Hana, hành tinh, quỹ đạo, huy hiệu và khung thẻ.
+- [x] Vẽ lại thẻ kỷ niệm bằng Canvas với Robot Hana, hành tinh, quỹ đạo, huy hiệu phần thưởng cao nhất và bố cục dễ đọc.
+- [x] Sửa nội dung tiêu đề để tên người chơi luôn hiển thị đúng trong ảnh tải xuống.
+- [x] Tạo ảnh PNG thực tế, kiểm tra trực quan và xác nhận tải tệp trước khi lưu checkpoint.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.
