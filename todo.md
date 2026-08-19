@@ -8,6 +8,16 @@
 - [ ] Kiểm tra tính điểm, mốc mở quà, kết thúc lượt và tải ảnh kỷ niệm; sửa lỗi nếu có.
 - [ ] Kiểm thử giao diện mới trên máy tính, điện thoại, lưu checkpoint và bàn giao.
 
+## Cập nhật hồ sơ người chơi và phần thưởng mở rộng
+
+- [x] Bỏ nhãn MẶC ĐỊNH khỏi thẻ Bài bình thường và đổi tên menu thành Học Bảng Nhân và Chia.
+- [x] Thêm bước nhập tên trước khi bắt đầu, lưu tên trong lượt học và đưa tên vào lời dẫn của Robot Hana cùng màn tổng kết.
+- [x] Thiết kế 30 mốc phần thưởng theo điểm, hiển thị tiến độ dễ hiểu và đưa toàn bộ phần thưởng đã nhận vào ảnh kỷ niệm.
+- [x] Áp dụng +10 điểm cho câu đúng, trừ 2 điểm cho câu sai nhưng không để tổng điểm âm.
+- [x] Ngăn trùng lặp câu hỏi trong năm câu gần nhất cho mọi dạng luyện và bảng nhân–chia.
+- [x] Cho phép đổi nhiệm vụ trong cùng lượt chơi mà vẫn giữ điểm, số đúng/sai và thời gian.
+- [x] Kiểm thử luồng mới trên máy tính, điện thoại, dựng bản phát hành, lưu checkpoint và bàn giao.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.

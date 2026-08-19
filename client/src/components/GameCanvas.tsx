@@ -36,7 +36,7 @@ const ASSETS = {
   logo: "/manus-storage/phi-hanh-tinh-logo_cbefb56f.png",
 } as const;
 
-type AppScreen = "welcome" | "menu" | "format" | "game" | "summary";
+type AppScreen = "welcome" | "profile" | "menu" | "format" | "game" | "summary";
 type ActivityId = "add" | "subtract" | "multiply" | "divide" | "tables" | "test";
 
 const activityMeta: Record<ActivityId, { label: string; kicker: string; description: string }> = {
@@ -44,7 +44,7 @@ const activityMeta: Record<ActivityId, { label: string; kicker: string; descript
   subtract: { label: "Trừ", kicker: "PHÉP TÍNH TRỪ", description: "Tìm phần còn lại với những nhiệm vụ ngắn gọn." },
   multiply: { label: "Nhân", kicker: "PHÉP TÍNH NHÂN", description: "Xếp các nhóm bằng nhau để nhân thật tự tin." },
   divide: { label: "Chia", kicker: "PHÉP TÍNH CHIA", description: "Chia đều các nhóm số theo nhiệm vụ." },
-  tables: { label: "Học Bảng Nhân và Chia từ 2 đến 9", kicker: "BẢNG NHÂN VÀ CHIA 2–9", description: "Chọn bảng nhân, bảng chia hoặc cả nhân và chia." },
+  tables: { label: "Học Bảng Nhân và Chia", kicker: "BẢNG NHÂN VÀ CHIA", description: "Chọn bảng nhân, bảng chia hoặc cả nhân và chia." },
   test: { label: "Bài kiểm tra", kicker: "8 CÂU THỬ THÁCH", description: "Hoàn thành tám nhiệm vụ để nhận thật nhiều sao." },
 };
 
@@ -72,11 +72,25 @@ function WelcomeScreen({ onStart, onGuide }: { onStart: () => void; onGuide: () 
   );
 }
 
+function PlayerProfileScreen({ name, onNameChange, onBack, onContinue }: { name: string; onNameChange: (name: string) => void; onBack: () => void; onContinue: () => void }) {
+  return <section className="profile-screen" aria-label="Đặt tên phi hành gia">
+    <button type="button" className="format-back" onClick={onBack}>← Trở về</button>
+    <div className="format-brand mini-brand" aria-label="Phi Hành Tinh Phép Tính"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
+    <div className="profile-orbit" aria-hidden="true" />
+    <div className="profile-hana"><div className="robot-fallback"><span /><span /><i /></div></div>
+    <p className="format-kicker">ROBOT HANA CHỜ BẠN</p>
+    <h2>Hana nên gọi bạn<br /><em>là gì nhỉ?</em></h2>
+    <p>Nhập tên của bạn để Hana đồng hành trong mỗi nhiệm vụ và ghi tên bạn lên thẻ kỷ niệm.</p>
+    <label className="profile-name-field"><span>TÊN PHI HÀNH GIA</span><input value={name} maxLength={18} autoFocus placeholder="Ví dụ: Minh Anh" onChange={(event) => onNameChange(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && name.trim()) onContinue(); }} /></label>
+    <button type="button" className="profile-continue" disabled={!name.trim()} onClick={onContinue}>Cùng Hana bắt đầu <Rocket size={18} /></button>
+  </section>;
+}
+
 function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGuide: () => void; onChoose: (activity: ActivityId) => void }) {
   const activities: Array<{ id: ActivityId; eyebrow: string; detail: string; tone: string; symbol: string }> = [
     { id: "add", eyebrow: "PHÉP TÍNH CỘNG", detail: "Gộp các nhóm và tìm tổng.", tone: "add", symbol: "+" },
     { id: "subtract", eyebrow: "PHÉP TÍNH TRỪ", detail: "Tìm phần còn lại.", tone: "subtract", symbol: "−" },
-    { id: "tables", eyebrow: "BẢNG NHÂN VÀ CHIA 2–9", detail: "Chọn từng bảng hoặc luyện cả nhân và chia.", tone: "tables", symbol: "×÷" },
+    { id: "tables", eyebrow: "BẢNG NHÂN VÀ CHIA", detail: "Chọn từng bảng hoặc luyện cả nhân và chia.", tone: "tables", symbol: "×÷" },
     { id: "multiply", eyebrow: "PHÉP TÍNH NHÂN", detail: "Xếp những nhóm bằng nhau.", tone: "multiply", symbol: "×" },
     { id: "divide", eyebrow: "PHÉP TÍNH CHIA", detail: "Chia đều các nhóm số.", tone: "divide", symbol: "÷" },
     { id: "test", eyebrow: "8 CÂU THỬ THÁCH", detail: "Thử sức và nhận sao.", tone: "test", symbol: "★" },
@@ -111,7 +125,7 @@ function ActivityMenu({ onBack, onGuide, onChoose }: { onBack: () => void; onGui
   );
 }
 
-function PracticeFormatScreen({ operation, onBack, onStart }: { operation: Operation; onBack: () => void; onStart: (format: PracticeFormat) => void }) {
+function PracticeFormatScreen({ operation, playerName, onBack, onStart }: { operation: Operation; playerName: string; onBack: () => void; onStart: (format: PracticeFormat) => void }) {
   const activity = activityMeta[operation];
   const options: Array<{ format: PracticeFormat; symbol: string; description: string }> = [
     { format: "standard", symbol: "✓", description: "Tính kết quả của phép tính." },
@@ -125,10 +139,9 @@ function PracticeFormatScreen({ operation, onBack, onStart }: { operation: Opera
     <div className="format-hana"><div className="robot-fallback"><span /><span /><i /></div></div>
     <p className="format-kicker">ROBOT HANA SẴN SÀNG</p>
     <h2>{activity.label}<br /><em>Bạn muốn học thế nào?</em></h2>
-    <p className="format-intro">Hãy chọn một dạng bài trước khi Hana khởi động lượt học của bạn.</p>
+    <p className="format-intro">{playerName}, hãy chọn một dạng bài trước khi Hana khởi động lượt học của bạn.</p>
     <div className="format-option-grid">
       {options.map((option, index) => <button key={option.format} type="button" className={index === 0 ? "format-option is-recommended" : "format-option"} onClick={() => onStart(option.format)}>
-        {index === 0 && <span className="format-recommend">MẶC ĐỊNH</span>}
         <b>{option.symbol}</b><strong>{practiceFormatMeta[option.format].label}</strong><small>{option.description}</small><span className="format-go">Bắt đầu <ChevronRight size={16} /></span>
       </button>)}
     </div>
@@ -162,6 +175,7 @@ export default function GameCanvas() {
   const isTableDemo = demoParams.has("tables");
   const isMenuPreview = demoParams.has("menu");
   const isSummaryDemo = demoParams.has("summary");
+  const isProfileDemo = demoParams.has("profile");
   const missingDemoOperation = demoParams.get("missing");
   const formatDemoOperation = demoParams.get("format");
   const isMissingDemo = missingDemoOperation === "add" || missingDemoOperation === "subtract" || missingDemoOperation === "multiply" || missingDemoOperation === "divide";
@@ -175,7 +189,7 @@ export default function GameCanvas() {
     ? (tableDemoKind === "divide" ? "divide" : "multiply")
     : "add";
 
-  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo ? "summary" : isFormatDemo ? "format" : isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
+  const [screen, setScreen] = useState<AppScreen>(isSummaryDemo ? "summary" : isProfileDemo ? "profile" : isFormatDemo ? "format" : isDemo || isTableDemo || isMissingDemo ? "game" : isMenuPreview ? "menu" : "welcome");
   const [mode, setMode] = useState<ExerciseMode>(isTableDemo ? "tables" : "practice");
   const [selectedActivity, setSelectedActivity] = useState<ActivityId>(isTableDemo ? "tables" : isMissingDemo || isFormatDemo ? initialOperation : isDemo ? "multiply" : "add");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
@@ -186,6 +200,7 @@ export default function GameCanvas() {
     : isMissingDemo
     ? generateMissingComponentQuestion(initialOperation, "easy")
     : generateQuestion(initialOperation, "easy"));
+  const recentQuestionExpressionsRef = useRef<string[]>([question.expression]);
   const [tableKind, setTableKind] = useState<TablePracticeKind>(tableDemoKind);
   const [selectedTables, setSelectedTables] = useState<number[]>(isTableDemo ? [2, 4, 6] : [2]);
   const [answered, setAnswered] = useState<number | null>(null);
@@ -194,11 +209,13 @@ export default function GameCanvas() {
   const [testCorrect, setTestCorrect] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [playerName, setPlayerName] = useState(isSummaryDemo || isProfileDemo ? "Minh Anh" : "");
   const [sessionPoints, setSessionPoints] = useState(isSummaryDemo ? 100 : 0);
   const [correctCount, setCorrectCount] = useState(isSummaryDemo ? 10 : 0);
   const [wrongCount, setWrongCount] = useState(isSummaryDemo ? 2 : 0);
   const [elapsedSeconds, setElapsedSeconds] = useState(isSummaryDemo ? 93 : 0);
   const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
+  const displayName = playerName.trim() || "Phi hành gia nhỏ";
 
   const generatePracticeQuestion = useCallback(
     (nextOperation: Operation, nextDifficulty: Difficulty, nextFormat = practiceFormat) => {
@@ -210,6 +227,17 @@ export default function GameCanvas() {
     [practiceFormat],
   );
 
+  const freshQuestion = useCallback((buildQuestion: () => QuizQuestion) => {
+    let candidate = buildQuestion();
+    let attempts = 0;
+    while (recentQuestionExpressionsRef.current.includes(candidate.expression) && attempts < 20) {
+      candidate = buildQuestion();
+      attempts += 1;
+    }
+    recentQuestionExpressionsRef.current = [...recentQuestionExpressionsRef.current, candidate.expression].slice(-5);
+    return candidate;
+  }, []);
+
   const createNextQuestion = useCallback(
     (nextMode = mode, nextOperation = operation, nextDifficulty = difficulty) => {
       if (nextMode === "tables") {
@@ -218,7 +246,7 @@ export default function GameCanvas() {
           setFeedback("idle");
           return;
         }
-        const tableQuestion = generateTableQuestion({ kind: tableKind, tables: selectedTables });
+        const tableQuestion = freshQuestion(() => generateTableQuestion({ kind: tableKind, tables: selectedTables }));
         setOperation(tableQuestion.operation);
         setQuestion(tableQuestion);
         setAnswered(null);
@@ -228,12 +256,12 @@ export default function GameCanvas() {
       }
       const operationForQuestion = nextMode === "test" ? pickTestOperation() : nextOperation;
       setOperation(operationForQuestion);
-      setQuestion(generatePracticeQuestion(operationForQuestion, nextDifficulty));
+      setQuestion(freshQuestion(() => generatePracticeQuestion(operationForQuestion, nextDifficulty)));
       setAnswered(null);
       setFeedback("idle");
       handleRef.current?.setActivePlanet(operationForQuestion);
     },
-    [difficulty, generatePracticeQuestion, mode, operation, selectedTables, tableKind],
+    [difficulty, freshQuestion, generatePracticeQuestion, mode, operation, selectedTables, tableKind],
   );
 
   useEffect(() => {
@@ -276,7 +304,7 @@ export default function GameCanvas() {
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
-    setQuestion(generatePracticeQuestion(nextOperation, difficulty));
+    setQuestion(freshQuestion(() => generatePracticeQuestion(nextOperation, difficulty)));
     setAnswered(null);
     setFeedback("idle");
     handleRef.current?.setActivePlanet(nextOperation);
@@ -287,7 +315,7 @@ export default function GameCanvas() {
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
-    setQuestion(generatePracticeQuestion(operation, nextDifficulty));
+    setQuestion(freshQuestion(() => generatePracticeQuestion(operation, nextDifficulty)));
     setAnswered(null);
     setFeedback("idle");
   };
@@ -312,7 +340,7 @@ export default function GameCanvas() {
       setTestCorrect(0);
       return;
     }
-    const tableQuestion = generateTableQuestion({ kind: nextKind, tables: nextTables });
+    const tableQuestion = freshQuestion(() => generateTableQuestion({ kind: nextKind, tables: nextTables }));
     setMode("tables");
     setTableKind(nextKind);
     setSelectedTables(nextTables);
@@ -329,8 +357,10 @@ export default function GameCanvas() {
   const startActivity = (nextActivity: ActivityId) => {
     if (nextActivity === "add" || nextActivity === "subtract" || nextActivity === "multiply" || nextActivity === "divide") {
       setSelectedActivity(nextActivity);
+      setOperation(nextActivity);
       setMode("practice");
       setPracticeFormat("standard");
+      handleRef.current?.setActivePlanet(nextActivity);
       setScreen("format");
       return;
     }
@@ -339,11 +369,14 @@ export default function GameCanvas() {
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
-    setSessionPoints(0);
-    setCorrectCount(0);
-    setWrongCount(0);
-    setElapsedSeconds(0);
-    setSessionStartedAt(Date.now());
+    if (sessionStartedAt === null) {
+      recentQuestionExpressionsRef.current = [];
+      setSessionPoints(0);
+      setCorrectCount(0);
+      setWrongCount(0);
+      setElapsedSeconds(0);
+      setSessionStartedAt(Date.now());
+    }
     setScreen("game");
     setSelectedActivity(nextActivity);
     if (nextActivity === "tables") {
@@ -364,14 +397,17 @@ export default function GameCanvas() {
     setTestComplete(false);
     setTestStep(0);
     setTestCorrect(0);
-    setSessionPoints(0);
-    setCorrectCount(0);
-    setWrongCount(0);
-    setElapsedSeconds(0);
-    setSessionStartedAt(Date.now());
+    if (sessionStartedAt === null) {
+      recentQuestionExpressionsRef.current = [];
+      setSessionPoints(0);
+      setCorrectCount(0);
+      setWrongCount(0);
+      setElapsedSeconds(0);
+      setSessionStartedAt(Date.now());
+    }
     setMode("practice");
     setPracticeFormat(nextFormat);
-    setQuestion(generatePracticeQuestion(operation, difficulty, nextFormat));
+    setQuestion(freshQuestion(() => generatePracticeQuestion(operation, difficulty, nextFormat)));
     handleRef.current?.setActivePlanet(operation);
     setScreen("game");
   };
@@ -407,6 +443,7 @@ export default function GameCanvas() {
       } else {
         setFeedback("wrong");
         setWrongCount((current) => current + 1);
+        setSessionPoints((current) => Math.max(0, current - 2));
       }
     },
     [answered, mode, question.answer, selectedTables.length, testComplete],
@@ -486,7 +523,7 @@ export default function GameCanvas() {
     context.fillText("Phi Hành Tinh Phép Tính", 72, 112);
     context.fillStyle = "#7de4d1";
     context.font = "700 25px Be Vietnam Pro, sans-serif";
-    context.fillText("KỶ NIỆM LƯỢT HỌC CÙNG ROBOT HANA", 76, 154);
+    context.fillText(`KỶ NIỆM LƯỢT HỌC CỦA ${displayName.toUpperCase()} CÙNG ROBOT HANA`, 76, 154);
     context.fillStyle = "#fff8df";
     context.roundRect(72, 208, 1056, 310, 32);
     context.fill();
@@ -526,18 +563,19 @@ export default function GameCanvas() {
       <canvas ref={canvasRef} className="game-canvas" aria-label="Không gian trò chơi toán học" />
       <div className="space-atmosphere" aria-hidden="true" />
 
-      {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("menu")} onGuide={() => setShowGuide(true)} />}
+      {screen === "welcome" && <WelcomeScreen onStart={() => setScreen("profile")} onGuide={() => setShowGuide(true)} />}
+      {screen === "profile" && <PlayerProfileScreen name={playerName} onNameChange={setPlayerName} onBack={() => setScreen("welcome")} onContinue={() => setScreen("menu")} />}
       {screen === "menu" && <ActivityMenu onBack={() => setScreen("welcome")} onGuide={() => setShowGuide(true)} onChoose={startActivity} />}
-      {screen === "format" && <PracticeFormatScreen operation={operation} onBack={() => setScreen("menu")} onStart={beginPractice} />}
+      {screen === "format" && <PracticeFormatScreen operation={operation} playerName={displayName} onBack={() => setScreen("menu")} onStart={beginPractice} />}
       {screen === "summary" && <section className="summary-screen" aria-label="Tổng kết lượt chơi">
         <div className="summary-brand mini-brand" aria-label="Phi Hành Tinh Phép Tính"><span className="mini-brand-rocket"><Rocket size={17} fill="currentColor" /></span><span>Phi Hành Tinh<br />Phép Tính</span></div>
         <div className="summary-orbit" aria-hidden="true" />
         <div className="summary-stars" aria-hidden="true"><span>✦</span><span>★</span><span>✦</span></div>
         <div className="summary-robot"><div className="robot-fallback"><span /><span /><i /></div></div>
-        <p className="summary-kicker">ROBOT HANA CHÚC MỪNG</p>
-        <h2>Lượt học của bạn<br /><em>thật đáng tự hào!</em></h2>
-        <p className="summary-intro">Dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.</p>
-        <p className="summary-hana-line">Hana đã cất các huy hiệu của bạn vào khoang phi thuyền!</p>
+        <p className="summary-kicker">ROBOT HANA CHÚC MỪNG {displayName.toUpperCase()}</p>
+        <h2>Lượt học của {displayName}<br /><em>thật đáng tự hào!</em></h2>
+        <p className="summary-intro">{displayName}, dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.</p>
+        <p className="summary-hana-line">Hana đã cất các huy hiệu của {displayName} vào khoang phi thuyền!</p>
         <div className="summary-stats">
           <div><span>Điểm</span><strong>{sessionPoints}</strong></div>
           <div><span>Đúng</span><strong>{correctCount}</strong></div>
@@ -547,15 +585,12 @@ export default function GameCanvas() {
         <section className="reward-board" aria-label="Quà nhận được trong lượt chơi">
           <div className="reward-board-heading"><span>BỘ SƯU TẬP PHẦN THƯỞNG</span><strong>{earnedRewards.length ? `${earnedRewards.length}/${sessionRewards.length} đã mở` : "Chưa mở huy hiệu"}</strong></div>
           <div className="reward-grid">
-            {sessionRewards.map((reward) => {
-              const unlocked = earnedRewards.some((earned) => earned.id === reward.id);
-              return <div key={reward.id} className={unlocked ? "reward-chip is-earned" : "reward-chip"}><b>{reward.symbol}</b><span><strong>{reward.label}</strong><small>{unlocked ? reward.detail : `Đạt ${reward.threshold} điểm để nhận`}</small></span></div>;
-            })}
+            {earnedRewards.length ? earnedRewards.map((reward) => <div key={reward.id} className="reward-chip is-earned"><b>{reward.symbol}</b><span><strong>Cấp {reward.level}: {reward.label}</strong><small>{reward.detail}</small></span></div>) : <p className="reward-empty">{displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
           </div>
         </section>
         <div className="summary-actions">
           <button type="button" className="save-memory" onClick={saveSessionImage}>Lưu ảnh kỷ niệm <Sparkles size={18} /></button>
-          <button type="button" className="summary-again" onClick={() => setScreen("menu")}>Chơi lượt mới <Rocket size={18} /></button>
+          <button type="button" className="summary-again" onClick={() => { setSessionStartedAt(null); setScreen("menu"); }}>Chơi lượt mới <Rocket size={18} /></button>
         </div>
       </section>}
 
@@ -569,11 +604,11 @@ export default function GameCanvas() {
             <img className="brand-mark" src={ASSETS.logo} alt="" />
           </div>
           <div>
-            <p className="eyebrow">TOÁN LỚP 3</p>
+            <p className="eyebrow">PHI HÀNH GIA: {displayName.toUpperCase()}</p>
             <h1>Phi Hành Tinh<br />Phép Tính</h1>
           </div>
         </div>
-        <button className="mission-menu-button" type="button" onClick={finishSession}><span>■</span> Dừng lượt</button>
+        <button className="mission-menu-button" type="button" onClick={() => setScreen("menu")}><span>↔</span> Đổi nhiệm vụ</button>
         <button className="reward-progress" type="button" onClick={finishSession} aria-label="Xem điểm và tiến độ nhận quà">
           <span className="reward-progress-icon">{nextReward?.symbol ?? "♛"}</span>
           <span><small>ĐIỂM LƯỢT</small><strong>{sessionPoints}</strong><em>{nextReward ? `Còn ${pointsUntilReward} điểm nhận ${nextReward.label}` : "Đã mở đủ phần thưởng!"}</em></span>
@@ -598,7 +633,7 @@ export default function GameCanvas() {
 
       <aside className="robot-guide" aria-label="Robot Hana hướng dẫn">
         <div className="robot-fallback" aria-hidden="true"><span /><span /><i /></div>
-        <div className="robot-note"><span className="robot-note-dot" />Robot Hana: “Bạn làm được mà!”</div>
+        <div className="robot-note"><span className="robot-note-dot" />Robot Hana: “{displayName}, bạn làm được mà!”</div>
       </aside>
 
       <section className="mission-control" aria-label="Bảng điều khiển bài tập">
@@ -702,9 +737,9 @@ export default function GameCanvas() {
             </div>
             {feedback !== "idle" && (
               <div className={feedback === "correct" ? "feedback-banner is-correct" : "feedback-banner is-wrong"}>
-                {feedback === "correct" ? <div><Check size={18} /><span>Đúng rồi! +10 điểm. {nextReward ? `Còn ${pointsUntilReward} điểm để nhận ${nextReward.label}.` : "Bạn đã mở đủ phần thưởng!"}</span></div> : <div className="hana-hint">
+                {feedback === "correct" ? <div><Check size={18} /><span>Đúng rồi, {displayName}! +10 điểm. {nextReward ? `Còn ${pointsUntilReward} điểm để nhận ${nextReward.label}.` : "Bạn đã mở đủ phần thưởng!"}</span></div> : <div className="hana-hint">
                   <div className="hana-hint-robot" aria-label="Robot Hana đang gợi ý"><span /><span /><i /></div>
-                  <div className="hana-hint-copy"><strong>Robot Hana gợi ý:</strong><span>{question.hint}</span><ol>{question.hintSteps.map((step) => <li key={step}>{step}</li>)}</ol></div>
+                  <div className="hana-hint-copy"><strong>Robot Hana gợi ý cho {displayName}:</strong><span>Chưa sao đâu, lượt này giảm 2 điểm. {question.hint}</span><ol>{question.hintSteps.map((step) => <li key={step}>{step}</li>)}</ol></div>
                 </div>}
                 <button type="button" onClick={continueMission}>
                   {feedback === "correct" ? (mode === "test" && testStep + 1 >= 8 ? "Xem kết quả" : "Nhiệm vụ tiếp") : "Thử lại"}
@@ -739,7 +774,7 @@ export default function GameCanvas() {
               </div>
             </div>
             <ol className="curriculum-list">
-              <li><span>01</span><div><strong>Chọn hoạt động</strong><p>Bạn chọn Cộng, Trừ, Học Bảng Nhân và Chia từ 2 đến 9, Nhân, Chia hoặc Bài kiểm tra.</p></div></li>
+              <li><span>01</span><div><strong>Chọn hoạt động</strong><p>Bạn chọn Cộng, Trừ, Học Bảng Nhân và Chia, Nhân, Chia hoặc Bài kiểm tra.</p></div></li>
               <li><span>02</span><div><strong>Đọc thật kỹ phép tính</strong><p>Nhìn vào bài toán lớn ở bảng điều khiển trước khi chọn đáp án.</p></div></li>
               <li><span>03</span><div><strong>Chọn đáp án đúng</strong><p>Mỗi câu có bốn đáp án. Bạn có thể nhấn phím 1 đến 4 trên máy tính.</p></div></li>
               <li><span>04</span><div><strong>Không sao nếu chưa đúng</strong><p>Robot Hana sẽ đưa gợi ý để bạn thử lại và tiếp tục học.</p></div></li>
