@@ -221,6 +221,8 @@ export default function GameCanvas() {
   const [elapsedSeconds, setElapsedSeconds] = useState(isMaxRewardDemo ? 721 : isSummaryDemo || isScoreDemo ? 93 : 0);
   const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
   const [webglUnavailable, setWebglUnavailable] = useState(false);
+  const [imageSaveStatus, setImageSaveStatus] = useState("");
+  const [isSavingImage, setIsSavingImage] = useState(false);
   const displayName = playerName.trim() || "Phi hành gia nhỏ";
 
   const generatePracticeQuestion = useCallback(
@@ -529,56 +531,124 @@ export default function GameCanvas() {
   const nextReward = sessionRewards.find((reward) => sessionPoints < reward.threshold);
   const pointsUntilReward = nextReward ? nextReward.threshold - sessionPoints : 0;
 
-  const saveSessionImage = () => {
+  const saveSessionImage = async () => {
+    if (isSavingImage) return;
+    setIsSavingImage(true);
+    setImageSaveStatus("Hana đang tạo ảnh kỷ niệm...");
+    const drawRoundedRectangle = (context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
+      const corner = Math.min(radius, width / 2, height / 2);
+      context.beginPath();
+      context.moveTo(x + corner, y);
+      context.arcTo(x + width, y, x + width, y + height, corner);
+      context.arcTo(x + width, y + height, x, y + height, corner);
+      context.arcTo(x, y + height, x, y, corner);
+      context.arcTo(x, y, x + width, y, corner);
+      context.closePath();
+    };
+    const drawWrappedText = (context: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number) => {
+      const words = text.split(" ");
+      let line = "";
+      let lineY = y;
+      words.forEach((word) => {
+        const nextLine = line ? `${line} ${word}` : word;
+        if (context.measureText(nextLine).width > maxWidth && line) {
+          context.fillText(line, x, lineY);
+          line = word;
+          lineY += lineHeight;
+        } else {
+          line = nextLine;
+        }
+      });
+      if (line) context.fillText(line, x, lineY);
+    };
+
     const canvas = document.createElement("canvas");
     canvas.width = 1200;
-    canvas.height = 760;
+    canvas.height = 790;
     const context = canvas.getContext("2d");
-    if (!context) return;
-    const background = context.createLinearGradient(0, 0, 1200, 760);
-    background.addColorStop(0, "#101b62");
-    background.addColorStop(1, "#2b175e");
-    context.fillStyle = background;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "rgba(255,255,255,0.08)";
-    for (let index = 0; index < 34; index += 1) {
-      context.beginPath();
-      context.arc((index * 89) % 1180 + 12, (index * 53) % 600 + 18, index % 3 === 0 ? 4 : 2, 0, Math.PI * 2);
-      context.fill();
+    if (!context) {
+      setImageSaveStatus("Thiết bị này chưa thể tạo ảnh. Bạn hãy thử lại trên trình duyệt khác nhé.");
+      setIsSavingImage(false);
+      return;
     }
-    context.fillStyle = "#fdf7e5";
-    context.font = "800 64px Baloo 2, sans-serif";
-    context.fillText("Phi Hành Tinh Phép Tính", 72, 112);
-    context.fillStyle = "#7de4d1";
-    context.font = "700 25px Be Vietnam Pro, sans-serif";
-    context.fillText(`KỶ NIỆM LƯỢT HỌC CỦA ${displayName.toUpperCase()} CÙNG ROBOT HANA`, 76, 154);
-    context.fillStyle = "#fff8df";
-    context.roundRect(72, 208, 1056, 310, 32);
-    context.fill();
-    const stats = [["Điểm", `${sessionPoints}`], ["Đúng", `${correctCount}`], ["Sai", `${wrongCount}`], ["Thời gian", formatDuration(currentDuration())]];
-    stats.forEach(([label, value], index) => {
-      const x = 118 + index * 254;
-      context.fillStyle = "#766f94";
-      context.font = "700 23px Be Vietnam Pro, sans-serif";
-      context.fillText(label, x, 290);
-      context.fillStyle = "#292963";
+
+    try {
+      const background = context.createLinearGradient(0, 0, 1200, 790);
+      background.addColorStop(0, "#101b62");
+      background.addColorStop(1, "#2b175e");
+      context.fillStyle = background;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = "rgba(255,255,255,0.08)";
+      for (let index = 0; index < 34; index += 1) {
+        context.beginPath();
+        context.arc((index * 89) % 1180 + 12, (index * 53) % 630 + 18, index % 3 === 0 ? 4 : 2, 0, Math.PI * 2);
+        context.fill();
+      }
+      context.fillStyle = "#fdf7e5";
       context.font = "800 64px Baloo 2, sans-serif";
-      context.fillText(value, x, 365);
-    });
-    context.fillStyle = "#f3eee0";
-    context.roundRect(72, 560, 1056, 126, 26);
-    context.fill();
-    context.fillStyle = "#5f5d89";
-    context.font = "700 21px Be Vietnam Pro, sans-serif";
-    context.fillText("QUÀ BẠN NHẬN ĐƯỢC", 108, 610);
-    context.fillStyle = "#2b2e69";
-    context.font = "800 30px Baloo 2, sans-serif";
-    const rewardText = highestReward ? `${highestReward.symbol} Cấp ${highestReward.level}: ${highestReward.label}` : "Hãy trả lời đúng để nhận quà đầu tiên nhé!";
-    context.fillText(rewardText, 108, 654);
-    const link = document.createElement("a");
-    link.download = `hanh-trinh-hana-${Date.now()}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+      context.fillText("Phi Hành Tinh Phép Tính", 72, 112);
+      context.fillStyle = "#7de4d1";
+      context.font = "700 25px Be Vietnam Pro, sans-serif";
+      context.fillText(`KỶ NIỆM LƯỢT HỌC CỦA ${displayName.toUpperCase()} CÙNG ROBOT HANA`, 76, 154);
+      context.fillStyle = "#fff8df";
+      drawRoundedRectangle(context, 72, 208, 1056, 310, 32);
+      context.fill();
+      const stats = [["Điểm", `${sessionPoints}`], ["Đúng", `${correctCount}`], ["Sai", `${wrongCount}`], ["Thời gian", formatDuration(currentDuration())]];
+      stats.forEach(([label, value], index) => {
+        const x = 118 + index * 254;
+        context.fillStyle = "#766f94";
+        context.font = "700 23px Be Vietnam Pro, sans-serif";
+        context.fillText(label, x, 290);
+        context.fillStyle = "#292963";
+        context.font = "800 64px Baloo 2, sans-serif";
+        context.fillText(value, x, 365);
+      });
+      context.fillStyle = "#f3eee0";
+      drawRoundedRectangle(context, 72, 560, 1056, 154, 26);
+      context.fill();
+      context.fillStyle = "#5f5d89";
+      context.font = "700 21px Be Vietnam Pro, sans-serif";
+      context.fillText("PHẦN THƯỞNG CAO NHẤT", 108, 610);
+      context.fillStyle = "#2b2e69";
+      context.font = "800 30px Baloo 2, sans-serif";
+      const rewardText = highestReward ? `${highestReward.symbol} Cấp ${highestReward.level}: ${highestReward.label}` : "Hãy trả lời đúng để nhận quà đầu tiên nhé!";
+      drawWrappedText(context, rewardText, 108, 654, 930, 38);
+
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((imageBlob) => imageBlob ? resolve(imageBlob) : reject(new Error("Không thể tạo tệp PNG")), "image/png");
+      });
+      const fileName = `hanh-trinh-hana-${Date.now()}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+      const canUseNativeShare = window.matchMedia("(pointer: coarse)").matches && typeof navigator.share === "function" && typeof navigator.canShare === "function" && navigator.canShare({ files: [file] });
+
+      if (canUseNativeShare) {
+        try {
+          await navigator.share({ title: "Ảnh kỷ niệm cùng Robot Hana", text: `Lượt học của ${displayName}`, files: [file] });
+          setImageSaveStatus("Bạn có thể chọn Lưu ảnh trong bảng chia sẻ nhé!");
+        } catch (error) {
+          if ((error as DOMException).name === "AbortError") setImageSaveStatus("Bạn chưa lưu ảnh. Bấm nút để thử lại nhé.");
+          else throw error;
+        }
+      } else {
+        const imageUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = imageUrl;
+        link.download = fileName;
+        link.style.display = "none";
+        document.body.appendChild(link);
+        link.click();
+        window.setTimeout(() => {
+          link.remove();
+          URL.revokeObjectURL(imageUrl);
+        }, 1000);
+        setImageSaveStatus("Ảnh đã được gửi vào mục Tải xuống của thiết bị.");
+      }
+    } catch (error) {
+      console.error("Không thể lưu ảnh kỷ niệm", error);
+      setImageSaveStatus("Hana chưa thể lưu ảnh. Bạn hãy thử lại nhé.");
+    } finally {
+      setIsSavingImage(false);
+    }
   };
 
   const isTableMode = mode === "tables";
@@ -616,9 +686,10 @@ export default function GameCanvas() {
           {highestReward ? <div className="highest-reward"><b>{highestReward.symbol}</b><span><small>HANA CHÚC MỪNG {displayName.toUpperCase()}</small><strong>{highestReward.label}</strong><em>{highestReward.detail}</em></span></div> : <p className="reward-empty">{displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.</p>}
         </section>
         <div className="summary-actions">
-          <button type="button" className="save-memory" onClick={saveSessionImage}>Lưu ảnh kỷ niệm <Sparkles size={18} /></button>
+          <button type="button" className="save-memory" onClick={saveSessionImage} disabled={isSavingImage}>{isSavingImage ? "Đang tạo ảnh..." : "Lưu ảnh kỷ niệm"} <Sparkles size={18} /></button>
           <button type="button" className="summary-again" onClick={() => { setSessionStartedAt(null); setScreen("menu"); }}>Chơi lượt mới <Rocket size={18} /></button>
         </div>
+        {imageSaveStatus && <p className="image-save-status" role="status">{imageSaveStatus}</p>}
       </section>}
 
       {screen === "game" && <>

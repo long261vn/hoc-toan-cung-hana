@@ -41,6 +41,13 @@
 - [x] Bảo vệ luồng lỗi khởi tạo để giao diện trò chơi không bị hỏng nếu Babylon thất bại ngoài dự kiến.
 - [x] Kiểm thử khởi động, dựng bản phát hành, lưu checkpoint và bàn giao bản sửa lỗi.
 
+## Sửa lưu ảnh kỷ niệm
+
+- [x] Rà soát hàm tạo canvas, mã hóa PNG và thao tác tải tệp của ảnh kỷ niệm.
+- [x] Sửa cơ chế xuất ảnh để hoạt động ổn định khi WebGL có hoặc không khả dụng.
+- [x] Kiểm thử ảnh tổng kết ở các mốc phần thưởng và trên màn hình máy tính/điện thoại.
+- [x] Dựng bản phát hành, lưu checkpoint và bàn giao bản sửa lỗi.
+
 ## Lượt chơi, điểm và quà thưởng
 
 - [x] Xác định quy tắc điểm, quà thưởng và điều kiện kết thúc lượt chơi.
