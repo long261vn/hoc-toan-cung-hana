@@ -5351,6 +5351,15 @@ button:focus-visible {
   min-width: auto;
   gap: 7px;
 }
+.compact-mission-brand .mission-brand-rocket {
+  width: 39px;
+  height: 39px;
+  flex: 0 0 39px;
+  border-radius: 13px;
+  box-shadow:
+    0 4px 11px rgba(1, 6, 35, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
 .compact-mission-brand .brand-emblem {
   width: 42px;
   height: 42px;
@@ -5514,6 +5523,12 @@ button:focus-visible {
   }
   .compact-mission-brand .eyebrow {
     font-size: 0;
+  }
+  .compact-mission-brand .mission-brand-rocket {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+    border-radius: 11px;
   }
   .compact-mission-brand .eyebrow::after {
     content: "Học Toán Cùng Hana";

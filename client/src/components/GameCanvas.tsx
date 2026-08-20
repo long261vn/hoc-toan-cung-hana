@@ -73,12 +73,6 @@ import {
   type PracticeFormat,
 } from "@/game/session";
 
-const ASSETS = {
-  mascot: "/manus-storage/robot-mit_d342b189.png",
-  planets: "/manus-storage/toan-planets_2d2902d4.png",
-  logo: "/manus-storage/phi-hanh-tinh-logo_cbefb56f.png",
-} as const;
-
 type AppScreen =
   | "welcome"
   | "profile"
@@ -894,17 +888,6 @@ function WelcomeScreen({
           </div>
           <span className="robot-orbit" />
         </div>
-        <p className="welcome-brand-flag" data-brand-wordmark>
-          {language === "en" ? (
-            <>
-              LEARN MATH <span>WITH HANA</span>
-            </>
-          ) : (
-            <>
-              HỌC TOÁN <span>CÙNG HANA</span>
-            </>
-          )}
-        </p>
         <p className="welcome-kicker">
           <Sparkles size={15} />{" "}
           {language === "en"
@@ -919,8 +902,8 @@ function WelcomeScreen({
             </>
           ) : (
             <>
-              <span>Cùng Hana</span>
-              <em>ôn toán học</em>
+              <span>Học Toán</span>
+              <em>Cùng Hana</em>
             </>
           )}
         </h2>
@@ -3394,16 +3377,9 @@ export default function GameCanvas() {
             className={`mission-header ${menuCollapsed ? "is-collapsed" : ""}`}
           >
             <div className="brand-lockup compact-mission-brand">
-              <div className="brand-emblem" aria-hidden="true">
-                <span className="emblem-orbit" />
-                <Rocket
-                  className="emblem-rocket"
-                  size={24}
-                  fill="currentColor"
-                />
-                <span className="emblem-plus">+</span>
-                <img className="brand-mark" src={ASSETS.logo} alt="" />
-              </div>
+              <span className="mini-brand-rocket mission-brand-rocket" aria-hidden="true">
+                <Rocket size={19} fill="currentColor" />
+              </span>
               <p className="eyebrow" data-brand-wordmark>
                 {language === "en" ? (
                   <>

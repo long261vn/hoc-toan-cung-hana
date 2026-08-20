@@ -276,3 +276,10 @@
 - [x] Áp dụng tên “Học Toán Cùng Hana” khi chọn VIE và “Learn Math with Hana” khi chọn ENG trên mọi màn hình.
 - [x] Rà soát cỡ chữ, khoảng cách, độ tương phản và vùng đặt chữ trên nền ở desktop/mobile; tinh chỉnh để học sinh lớp 3 đọc dễ dàng.
 - [x] Kiểm thử song ngữ, chụp giao diện, dựng bản phát hành và lưu checkpoint.
+
+## Chuẩn hóa tiêu đề và logo phi thuyền
+
+- [x] Đổi tiêu đề lớn ở màn bắt đầu thành Học Toán Cùng Hana/Learn Math with Hana theo ngôn ngữ đang chọn.
+- [x] Bỏ nhãn thương hiệu nhỏ trùng lặp phía trên tiêu đề lớn ở màn bắt đầu.
+- [x] Kiểm kê và thay các biến thể biểu tượng cũ để mọi màn dùng cùng logo phi thuyền.
+- [x] Kiểm tra desktop/mobile, TypeScript, bản dựng và lưu checkpoint.
