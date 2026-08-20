@@ -304,3 +304,10 @@
 - [x] Bỏ nhãn thừa trong bảng làm bài, sửa Robot Hana trùng lặp hoặc che chữ và tăng khoảng trắng nội dung.
 - [x] Làm rõ nhãn/chỉ dẫn cho chọn bảng nhân–chia và thêm nhãn Cấp độ cho ba mức kiểm tra.
 - [x] Kiểm tra trực quan desktop/mobile, TypeScript, build và lưu checkpoint.
+
+## Điều hướng logo và bố cục nút quay lại
+
+- [x] Kiểm kê thành phần logo, các nút Trở về, Cài đặt và cơ chế xóa/làm mới phiên hiện có.
+- [x] Biến logo cố định góc trái thành nút về màn đầu với hộp thoại xác nhận hủy điểm/lượt đang làm.
+- [x] Canh giữa các nút Trở về trên màn phụ và ẩn Cài đặt ở màn tổng kết.
+- [x] Kiểm thử xác nhận đồng ý/hủy, giao diện desktop/mobile, TypeScript, build và lưu checkpoint.

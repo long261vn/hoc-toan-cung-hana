@@ -6166,3 +6166,83 @@ html[lang="vi"] .console-topline::after {
     font-size: 9px;
   }
 }
+
+/* One fixed home brand owns the upper-left corner; each Back action is centered. */
+.welcome-topbar,
+.format-brand,
+.summary-brand,
+.compact-mission-brand,
+.activity-topbar > .mini-brand {
+  display: none !important;
+}
+.app-home-brand {
+  position: fixed;
+  z-index: 71;
+  top: 22px;
+  left: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px;
+  color: #fff8e7;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), filter 160ms ease;
+}
+.app-home-brand:hover { transform: translateY(-2px); filter: brightness(1.1); }
+.app-home-brand:active { transform: translateY(1px) scale(0.98); }
+.app-home-brand:focus-visible { outline: 3px solid #fff3aa; outline-offset: 4px; border-radius: 12px; }
+.app-home-brand .mini-brand-rocket { width: 39px; height: 39px; }
+.format-back {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.activity-topbar {
+  position: relative;
+  min-height: 42px;
+  justify-content: center;
+}
+.activity-topbar .menu-back {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.activity-topbar .menu-back:hover { transform: translateX(-50%) translateY(-2px); }
+.home-confirm-card {
+  max-width: min(430px, calc(100vw - 28px));
+  text-align: center;
+}
+.home-confirm-rocket {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  margin: -43px auto 9px;
+  place-items: center;
+  color: #ff7655;
+  border: 3px solid #fff6dc;
+  border-radius: 19px;
+  background: #28366f;
+  box-shadow: 0 7px 16px rgba(16, 31, 83, 0.25);
+  transform: rotate(23deg);
+}
+.home-confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 16px;
+}
+.home-confirm-actions button {
+  min-height: 43px;
+  font-weight: 800;
+}
+@media (max-width: 760px) {
+  .app-home-brand { top: 15px; left: 15px; }
+  .app-home-brand .mini-brand-rocket { width: 34px; height: 34px; }
+  .app-home-brand { font-size: 13px; }
+  .format-back { top: 15px; left: 50%; }
+  .activity-topbar { min-height: 40px; }
+  .home-confirm-actions { grid-template-columns: 1fr; }
+}

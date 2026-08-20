@@ -1925,6 +1925,7 @@ export default function GameCanvas() {
   const [showEndSessionConfirm, setShowEndSessionConfirm] = useState(
     isEndSessionConfirmDemo
   );
+  const [showHomeConfirm, setShowHomeConfirm] = useState(false);
   const [playerName, setPlayerName] = useState(
     isSummaryDemo || isProfileDemo || isScoreDemo || isMaxRewardDemo
       ? "Minh Anh"
@@ -2639,6 +2640,35 @@ export default function GameCanvas() {
     setSessionStartedAt(Date.now());
   };
 
+  const requestHome = () => {
+    if (screen === "welcome") return;
+    playSound("tap");
+    setShowHomeConfirm(true);
+  };
+
+  const returnHomeAndReset = () => {
+    startFreshSession();
+    setPlayerName("");
+    setSelectedActivity("add");
+    setMode("practice");
+    setOperation("add");
+    setDifficulty("easy");
+    setPracticeFormat("standard");
+    setTableKind("multiply");
+    setSelectedTables([]);
+    setTestStep(0);
+    setTestCorrect(0);
+    setTestTimedOut(false);
+    setTestComplete(false);
+    setAnswered(null);
+    setFeedback("idle");
+    setShowGuide(false);
+    setShowScorePanel(false);
+    setShowHomeConfirm(false);
+    setScreen("welcome");
+    playSound("launch");
+  };
+
   const resumeSavedSession = () => {
     if (!resumeDraft) return;
     setSelectedActivity(resumeDraft.selectedActivity);
@@ -3166,26 +3196,78 @@ export default function GameCanvas() {
         </div>
       )}
       <div className="space-atmosphere" aria-hidden="true" />
-      <div className="app-settings-dock" data-i18n-direct>
-        <AppSettings
-          language={language}
-          onLanguageToggle={() =>
-            setLanguage(current => (current === "vi" ? "en" : "vi"))
-          }
-          onGuide={() => {
-            playSound("tap");
-            setShowGuide(true);
-          }}
-          enabled={soundEnabled}
-          onSoundToggle={toggleSound}
-          onSettingsOpen={() => playSound("tap")}
-          musicVolume={musicVolume}
-          effectsVolume={effectsVolume}
-          onMusicVolumeChange={changeMusicVolume}
-          onEffectsVolumeChange={changeEffectsVolume}
-          defaultOpen={isSoundSettingsDemo}
-        />
-      </div>
+      <button
+        className="app-home-brand mini-brand"
+        type="button"
+        data-i18n-direct
+        onClick={requestHome}
+        aria-label={
+          language === "en"
+            ? "Return to the start and reset this learning session"
+            : "Quay về màn đầu và làm mới lượt học"
+        }
+      >
+        <span className="mini-brand-rocket">
+          <Rocket size={19} fill="currentColor" />
+        </span>
+        <GameBrand language={language} />
+      </button>
+      {screen !== "summary" && (
+        <div className="app-settings-dock" data-i18n-direct>
+          <AppSettings
+            language={language}
+            onLanguageToggle={() =>
+              setLanguage(current => (current === "vi" ? "en" : "vi"))
+            }
+            onGuide={() => {
+              playSound("tap");
+              setShowGuide(true);
+            }}
+            enabled={soundEnabled}
+            onSoundToggle={toggleSound}
+            onSettingsOpen={() => playSound("tap")}
+            musicVolume={musicVolume}
+            effectsVolume={effectsVolume}
+            onMusicVolumeChange={changeMusicVolume}
+            onEffectsVolumeChange={changeEffectsVolume}
+            defaultOpen={isSoundSettingsDemo}
+          />
+        </div>
+      )}
+
+      <AlertDialog open={showHomeConfirm} onOpenChange={setShowHomeConfirm}>
+        <AlertDialogContent
+          className="home-confirm-card"
+          aria-describedby="home-confirm-description"
+        >
+          <div className="home-confirm-rocket" aria-hidden="true">
+            <Rocket size={30} fill="currentColor" />
+          </div>
+          <p className="end-session-confirm-kicker">
+            {copy("VỀ MÀN HÌNH ĐẦU", "RETURN TO START")}
+          </p>
+          <AlertDialogTitle>
+            {copy(
+              "Bạn có chắc muốn bỏ điểm của lượt này không?",
+              "Are you sure you want to discard this session's points?"
+            )}
+          </AlertDialogTitle>
+          <AlertDialogDescription id="home-confirm-description">
+            {copy(
+              "Nếu đồng ý, Hana sẽ xóa điểm và tiến độ hiện tại rồi đưa bạn về màn hình đầu tiên.",
+              "If you agree, Hana will clear this session's points and progress, then return you to the first screen."
+            )}
+          </AlertDialogDescription>
+          <div className="home-confirm-actions">
+            <AlertDialogCancel onClick={() => setShowHomeConfirm(false)}>
+              {copy("Không, học tiếp", "No, keep learning")}
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={returnHomeAndReset}>
+              {copy("Đồng ý, quay về đầu", "Yes, return to start")}
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog
         open={showResumeSession}

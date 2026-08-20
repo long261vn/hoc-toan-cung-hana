@@ -122,6 +122,37 @@ try {
     `document.querySelector(".end-session-confirm-action")?.click()`
   );
   await waitFor(".summary-screen");
+  const settingsVisibleOnSummary = await evaluate(
+    `Boolean(document.querySelector(".app-settings-dock"))`
+  );
+  if (settingsVisibleOnSummary)
+    throw new Error("Nút Cài đặt vẫn xuất hiện trong màn tổng kết.");
+
+  await openPractice();
+  await evaluate(`document.querySelector(".app-home-brand")?.click()`);
+  await waitFor(".home-confirm-card");
+  const homeConfirm = await evaluate(
+    `document.querySelector(".home-confirm-card")?.textContent?.replace(/\\s+/g, " ").trim()`
+  );
+  if (
+    !homeConfirm?.includes("Bạn có chắc muốn bỏ điểm của lượt này không?") ||
+    !homeConfirm.includes("Không, học tiếp") ||
+    !homeConfirm.includes("Đồng ý, quay về đầu")
+  )
+    throw new Error(`Xác nhận quay về đầu chưa đúng: ${homeConfirm}`);
+  await evaluate(
+    `document.querySelector(".home-confirm-actions button:first-child")?.click()`
+  );
+  await waitUntilGone(".home-confirm-card");
+  if (!(await evaluate(`Boolean(document.querySelector(".mission-control"))`)))
+    throw new Error("Hủy quay về đầu đã làm mất màn đang học.");
+
+  await evaluate(`document.querySelector(".app-home-brand")?.click()`);
+  await waitFor(".home-confirm-card");
+  await evaluate(
+    `document.querySelector(".home-confirm-actions button:last-child")?.click()`
+  );
+  await waitFor(".welcome-screen");
 
   await command("Emulation.setDeviceMetricsOverride", {
     width: 1280,
@@ -142,7 +173,8 @@ try {
     JSON.stringify({
       mobileConfirm,
       desktopConfirm,
-      status: "end-session confirmation valid",
+      homeConfirm,
+      status: "end-session and home confirmation valid",
     })
   );
 } finally {
