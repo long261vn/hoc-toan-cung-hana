@@ -101,3 +101,9 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - 100 cấp thưởng vẫn được giữ theo yêu cầu học tập; khi xem English, nhãn thưởng hiển thị theo ba họ vật phẩm nhất quán — Little Star Sticker, Explorer Badge và Junior Pilot Trophy — với Hana Captain's Trophy là đích cấp 100.
 - Màn chào mừng trình bày quỹ đạo bốn hành tinh như sân khấu nhiệm vụ chính. Các hành tinh lớn luôn có màu và ký hiệu phép tính: cam cộng, tím trừ, xanh ngọc nhân, vàng chia.
 - Wordmark **Phi Hành Tinh Phép Tính** là neo nhận diện ở cả thanh đầu và vùng hero; Hana là người hướng dẫn của thương hiệu, không thay thế tên game bằng một khẩu hiệu chung chung.
+
+### Bổ sung sau đánh giá đồ họa
+
+- Trên mọi màn học, giao diện vận hành như một **buồng lái trên bản đồ quỹ đạo**: nhận diện hành tinh hiện tại, tín hiệu tiến độ/phần thưởng và lời dẫn Hana phải cùng thuộc một cụm thị giác, không rải rác như các thẻ biểu mẫu độc lập.
+- Bốn màu hành tinh là ngôn ngữ điều hướng chính cho thẻ nhiệm vụ, lựa chọn và trạng thái đang chọn; mỗi bề mặt chọn nhiệm vụ cần mang ít nhất một dấu mốc quỹ đạo hoặc ký hiệu phép tính.
+- Cam Sao Băng **#FF6B4A** chỉ dành cho hành động khởi động/tiếp tục quan trọng và điểm nhấn hành tinh Cộng; các mảng nhấn còn lại ưu tiên kem, tím, xanh ngọc và vàng để giao diện cân bằng hơn.

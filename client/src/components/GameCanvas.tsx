@@ -14,6 +14,7 @@ import {
 import type { Engine } from "@babylonjs/core/Engines/engine";
 import "./english-polish.css";
 import "./test-flow.css";
+import "./graphic-polish.css";
 import {
   Check,
   ChevronRight,

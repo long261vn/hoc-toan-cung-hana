@@ -318,3 +318,10 @@
 - [x] Ở màn điền tên và phiên chưa có điểm, chỉ hỏi có quay về màn đầu; ở phiên có điểm/tiến độ mới cảnh báo bỏ lượt.
 - [x] Thiết kế lại hộp thoại với phân cấp màu, biểu tượng và nút lựa chọn dễ hiểu cho học sinh lớp 3.
 - [x] Kiểm thử tất cả nhánh logo trên desktop/mobile, TypeScript, build và lưu checkpoint.
+
+## Đánh giá và cải tiến đồ họa toàn diện
+
+- [x] Chơi thử và đánh giá trực quan các màn chào mừng, hồ sơ, lựa chọn, luyện tập, kiểm tra và tổng kết trên desktop/mobile.
+- [x] Lập danh sách cải tiến về nhịp bố cục, điểm nhấn màu sắc, độ cân đối, minh họa và trạng thái thao tác cho học sinh lớp 3.
+- [x] Áp dụng một lượt thiết kế tổng thể theo danh sách, giữ hệ nhận diện Hana và không làm giảm khả năng đọc.
+- [x] Kiểm tra trực quan, TypeScript, build và lưu checkpoint giao diện hoàn thiện.
