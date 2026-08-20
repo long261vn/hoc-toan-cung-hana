@@ -350,3 +350,12 @@
 - [x] Thiết lập vùng an toàn cho bảng làm bài, không chồng lấn logo góc trái hoặc nút Cài đặt góc phải trên desktop/mobile.
 - [x] Thiết kế lại ảnh PNG kỷ niệm để có bố cục giàu hình ảnh, số liệu rõ ràng, avatar, huy hiệu và nền không gian thống nhất với màn tổng kết.
 - [x] Kiểm thử lưu ảnh PNG thực tế, các luồng VIE/ENG, desktop/mobile, TypeScript, build và lưu checkpoint.
+
+## Avatar học sinh, huy hiệu cấp điểm và ảnh kỷ niệm cân đối
+
+- [x] Tạo bộ bốn avatar dễ thương gồm hai bé trai và hai bé gái, có phong cách thống nhất với Robot Hana và thân thiện học sinh lớp 3.
+- [x] Chuyển đổi an toàn lựa chọn avatar Hệ Mặt Trời đã lưu sang bộ avatar học sinh mới; cập nhật hồ sơ, tổng kết và ảnh kỷ niệm.
+- [x] Điều chỉnh bốn huy hiệu chủ đề theo đúng mốc phần thưởng cấp 20, 60, 80 và 100; cập nhật hiệu ứng mở khóa, tổng kết và bộ sưu tập.
+- [x] Đổi nhãn bốn hành tinh thành Hành Tinh Phép Cộng, Hành Tinh Phép Trừ, Hành Tinh Phép Nhân và Hành Tinh Phép Chia, gồm cả bản English.
+- [x] Thiết kế lại thẻ PNG kỷ niệm để cân đối hơn giữa vùng nhận diện, chân dung, số liệu, phần thưởng và huy hiệu.
+- [x] Kiểm thử avatar, mốc điểm, VIE/ENG, hiệu ứng, desktop/mobile, PNG tải thực tế, TypeScript, build và lưu checkpoint.

@@ -29,6 +29,18 @@
   letter-spacing: 0.11em;
 }
 
+.theme-badge-heading span {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.theme-badge-heading span small {
+  color: #b9d5ff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
 .avatar-chooser-heading small {
   color: #b9d5ff;
   font-size: 0.78rem;
@@ -221,6 +233,15 @@
   background: rgba(7, 22, 62, 0.48);
 }
 
+.theme-badge-item.is-locked {
+  opacity: 0.48;
+  filter: saturate(0.55);
+}
+
+.theme-badge-item.is-collected {
+  box-shadow: inset 0 0 0 1px rgba(255, 245, 186, 0.14), 0 0.4rem 0.9rem rgba(2, 10, 43, 0.16);
+}
+
 .theme-badge-item > b,
 .planet-unlock-badge > b {
   display: grid;
@@ -253,6 +274,14 @@
   color: #c6dafb;
   font-size: 0.7rem;
   line-height: 1.28;
+}
+
+.theme-badge-item .theme-badge-level {
+  color: #ffe596;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .accent-coral > b { background: #ffad9a; }

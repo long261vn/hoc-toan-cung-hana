@@ -94,7 +94,7 @@ type ActivityId =
   | "test";
 type Language = "vi" | "en";
 type TestDurationSeconds = 120 | 300 | 600;
-type AvatarId = "earth-astronaut" | "mars" | "jupiter" | "saturn";
+type AvatarId = "minh-khoa" | "ngoc-anh" | "gia-huy" | "linh-chi";
 
 type ThemeBadge = {
   id: string;
@@ -131,10 +131,18 @@ const DRAFT_PRACTICE_FORMATS = ["standard", "missing", "mixed"] as const;
 const DRAFT_TABLE_KINDS = ["multiply", "divide", "mixed"] as const;
 const DRAFT_TEST_DURATIONS = [120, 300, 600] as const;
 const LEGACY_AVATAR_IDS: Record<string, AvatarId> = {
-  "sao-mai": "earth-astronaut",
-  "sao-bang": "mars",
-  "ngan-ha": "jupiter",
-  "hanh-tinh": "saturn",
+  "minh-khoa": "minh-khoa",
+  "ngoc-anh": "ngoc-anh",
+  "gia-huy": "gia-huy",
+  "linh-chi": "linh-chi",
+  "earth-astronaut": "minh-khoa",
+  mars: "ngoc-anh",
+  jupiter: "gia-huy",
+  saturn: "linh-chi",
+  "sao-mai": "minh-khoa",
+  "sao-bang": "ngoc-anh",
+  "ngan-ha": "gia-huy",
+  "hanh-tinh": "linh-chi",
 };
 const AVATAR_OPTIONS: Array<{
   id: AvatarId;
@@ -142,22 +150,22 @@ const AVATAR_OPTIONS: Array<{
   vi: string;
   en: string;
 }> = [
-  { id: "earth-astronaut", image: "/manus-storage/avatar-phi-hanh-gia-trai-dat_543e9d43.png", vi: "Phi hành gia Trái Đất", en: "Earth astronaut" },
-  { id: "mars", image: "/manus-storage/avatar-sao-hoa_5aa71fd0.png", vi: "Sao Hỏa", en: "Mars" },
-  { id: "jupiter", image: "/manus-storage/avatar-sao-moc_21395ea2.png", vi: "Sao Mộc", en: "Jupiter" },
-  { id: "saturn", image: "/manus-storage/avatar-sao-tho_6dfbd101.png", vi: "Sao Thổ", en: "Saturn" },
+  { id: "minh-khoa", image: "/manus-storage/avatar-be-trai-minh-khoa_7cfd3781.png", vi: "Bé trai Minh Khoa", en: "Minh Khoa" },
+  { id: "ngoc-anh", image: "/manus-storage/avatar-be-gai-ngoc-anh_c72068d7.png", vi: "Bé gái Ngọc Anh", en: "Ngọc Anh" },
+  { id: "gia-huy", image: "/manus-storage/avatar-be-trai-gia-huy_15eb4c71.png", vi: "Bé trai Gia Huy", en: "Gia Huy" },
+  { id: "linh-chi", image: "/manus-storage/avatar-be-gai-linh-chi_fe69e6ee.png", vi: "Bé gái Linh Chi", en: "Linh Chi" },
 ];
 const THEME_BADGES: ThemeBadge[] = [
-  { id: "star-spark", symbol: "✦", threshold: 30, accent: "coral", vi: { label: "Sao Khởi Động", detail: "Đạt 30 điểm trong một lượt." }, en: { label: "Starter Star", detail: "Earn 30 points in one session." } },
-  { id: "orbit-explorer", symbol: "◌", threshold: 50, accent: "lavender", vi: { label: "Nhà Thám Hiểm Quỹ Đạo", detail: "Đạt 50 điểm thật tập trung." }, en: { label: "Orbit Explorer", detail: "Reach 50 points with focus." } },
-  { id: "math-comet", symbol: "☄", threshold: 80, accent: "mint", vi: { label: "Sao Băng Toán Học", detail: "Đạt 80 điểm trong một lượt." }, en: { label: "Math Comet", detail: "Earn 80 points in one session." } },
-  { id: "hana-pilot", symbol: "♛", threshold: 100, accent: "gold", vi: { label: "Phi Công Nhí Hana", detail: "Đạt 100 điểm xuất sắc." }, en: { label: "Hana Junior Pilot", detail: "Reach an excellent 100 points." } },
+  { id: "level-20-pathfinder", symbol: "✦", threshold: 200, accent: "coral", vi: { label: "Người Mở Đường", detail: "Chinh phục Cấp 20 của hành trình 100 cấp." }, en: { label: "Pathfinder", detail: "Reach Level 20 in the 100-level journey." } },
+  { id: "level-60-orbit-captain", symbol: "◌", threshold: 600, accent: "lavender", vi: { label: "Thuyền Trưởng Quỹ Đạo", detail: "Chinh phục Cấp 60 với sự kiên trì." }, en: { label: "Orbit Captain", detail: "Reach Level 60 with persistence." } },
+  { id: "level-80-math-comet", symbol: "☄", threshold: 800, accent: "mint", vi: { label: "Sao Chổi Toán Học", detail: "Chinh phục Cấp 80 thật xuất sắc." }, en: { label: "Math Comet", detail: "Reach Level 80 with skill." } },
+  { id: "level-100-hana-legend", symbol: "♛", threshold: 1000, accent: "gold", vi: { label: "Huyền Thoại Hana", detail: "Hoàn thành trọn vẹn Cấp 100 huy hoàng." }, en: { label: "Hana Legend", detail: "Complete the triumphant Level 100." } },
 ];
 const UNLOCKED_PLANET_NAMES: Record<Operation, { vi: string; en: string }> = {
-  add: { vi: "Hành tinh Cộng", en: "Addition Planet" },
-  subtract: { vi: "Hành tinh Trừ", en: "Subtraction Planet" },
-  multiply: { vi: "Hành tinh Nhân", en: "Multiplication Planet" },
-  divide: { vi: "Hành tinh Chia", en: "Division Planet" },
+  add: { vi: "Hành Tinh Phép Cộng", en: "Addition Planet" },
+  subtract: { vi: "Hành Tinh Phép Trừ", en: "Subtraction Planet" },
+  multiply: { vi: "Hành Tinh Phép Nhân", en: "Multiplication Planet" },
+  divide: { vi: "Hành Tinh Phép Chia", en: "Division Planet" },
 };
 
 type SessionDraft = {
@@ -218,9 +226,9 @@ function isAvatarId(value: unknown): value is AvatarId {
 function readAvatarPreference(): AvatarId {
   try {
     const stored = window.localStorage.getItem(AVATAR_STORAGE_KEY);
-    return normalizeAvatarId(stored) ?? "earth-astronaut";
+    return normalizeAvatarId(stored) ?? "minh-khoa";
   } catch {
-    return "earth-astronaut";
+    return "minh-khoa";
   }
 }
 
@@ -308,7 +316,7 @@ function readSessionDraft(): SessionDraft | null {
       avatarId:
         draft.avatarId === undefined
           ? undefined
-          : normalizeAvatarId(draft.avatarId) ?? "earth-astronaut",
+          : normalizeAvatarId(draft.avatarId) ?? "minh-khoa",
     } as SessionDraft;
   } catch {
     return null;
@@ -1231,8 +1239,8 @@ function PlayerProfileScreen({
           </span>
           <small>
             {language === "en"
-              ? "Meet a friend from the Solar System"
-              : "Gặp một người bạn từ Hệ Mặt Trời"}
+              ? "Pick a friendly learning companion"
+              : "Chọn một người bạn đồng hành"}
           </small>
         </div>
         <div className="collectible-operation-route" aria-hidden="true">
@@ -2956,7 +2964,7 @@ export default function GameCanvas() {
 
     const canvas = document.createElement("canvas");
     canvas.width = 1080;
-    canvas.height = 1350;
+    canvas.height = 1440;
     const context = canvas.getContext("2d");
     if (!context) {
       setImageSaveStatus(
@@ -3116,69 +3124,69 @@ export default function GameCanvas() {
         );
         context.fill();
       }
-      drawOrbit(540, 230, 472, 148, -0.1, "rgba(160, 221, 255, .34)");
-      drawOrbit(510, 245, 350, 105, 0.2, "rgba(122, 238, 209, .27)");
-      drawPlanet(86, 236, 60, "#ffd7ac", "#ed8778", true);
-      drawPlanet(984, 170, 48, "#e7ddff", "#a99be5", false);
-      drawPlanet(954, 1110, 66, "#d7fff2", "#5bcbb3", true);
+      drawOrbit(540, 205, 454, 124, -0.08, "rgba(160, 221, 255, .3)");
+      drawOrbit(540, 208, 334, 92, 0.18, "rgba(122, 238, 209, .24)");
+      drawPlanet(104, 210, 54, "#ffd7ac", "#ed8778", true);
+      drawPlanet(976, 210, 54, "#e7ddff", "#a99be5", true);
+      drawPlanet(960, 1350, 52, "#d7fff2", "#5bcbb3", true);
       context.save();
-      context.translate(850, 152);
-      context.scale(0.82, 0.82);
+      context.translate(540, 210);
+      context.scale(0.7, 0.7);
       drawHana(0, 0);
       context.restore();
 
       context.fillStyle = "#d8fff2";
       context.font = "800 20px Be Vietnam Pro, Trebuchet MS, sans-serif";
-      context.textAlign = "left";
+      context.textAlign = "center";
       context.fillText(
         copy("THẺ KỶ NIỆM CHUYẾN BAY", "FLIGHT SOUVENIR CARD"),
-        70,
-        104
+        540,
+        70
       );
       context.fillStyle = "#fff9e3";
-      context.font = "800 54px Baloo 2, Trebuchet MS, sans-serif";
-      context.fillText(copy("Học Toán Cùng Hana", "Learn Math with Hana"), 70, 166);
+      context.font = "800 52px Baloo 2, Trebuchet MS, sans-serif";
+      context.fillText(copy("Học Toán Cùng Hana", "Learn Math with Hana"), 540, 126);
 
       context.shadowColor = "rgba(1, 8, 49, .34)";
       context.shadowBlur = 28;
       context.shadowOffsetY = 14;
       context.fillStyle = "#fffaf0";
-      drawRoundedRectangle(context, 48, 308, 984, 916, 42);
+      drawRoundedRectangle(context, 66, 310, 948, 1000, 42);
       context.fill();
       context.shadowColor = "transparent";
 
       context.fillStyle = "#dff9f4";
-      drawRoundedRectangle(context, 78, 340, 924, 204, 30);
+      drawRoundedRectangle(context, 98, 350, 884, 210, 30);
       context.fill();
       context.save();
       context.beginPath();
-      context.arc(182, 442, 82, 0, Math.PI * 2);
+      context.arc(220, 455, 82, 0, Math.PI * 2);
       context.clip();
       if (avatarImage) {
-        context.drawImage(avatarImage, 92, 352, 180, 180);
+        context.drawImage(avatarImage, 130, 365, 180, 180);
       } else {
-        const avatarFill = context.createRadialGradient(148, 402, 12, 182, 442, 100);
+        const avatarFill = context.createRadialGradient(186, 415, 12, 220, 455, 100);
         avatarFill.addColorStop(0, "#eafffa");
         avatarFill.addColorStop(1, "#78d8c7");
         context.fillStyle = avatarFill;
-        context.fillRect(92, 352, 180, 180);
+        context.fillRect(130, 365, 180, 180);
       }
       context.restore();
       context.lineWidth = 7;
       context.strokeStyle = "#ffffff";
       context.beginPath();
-      context.arc(182, 442, 85, 0, Math.PI * 2);
+      context.arc(220, 455, 85, 0, Math.PI * 2);
       context.stroke();
       context.fillStyle = "#1a2b67";
       context.font = "800 42px Baloo 2, sans-serif";
       context.textAlign = "left";
-      context.fillText(displayName, 298, 418);
+      context.fillText(displayName, 360, 435);
       context.fillStyle = "#267b72";
       context.font = "800 18px Be Vietnam Pro, sans-serif";
       context.fillText(
         language === "en" ? selectedAvatar.en.toUpperCase() : selectedAvatar.vi.toUpperCase(),
-        300,
-        454
+        360,
+        470
       );
       context.fillStyle = "#63759a";
       context.font = "700 20px Be Vietnam Pro, sans-serif";
@@ -3193,9 +3201,9 @@ export default function GameCanvas() {
               "Bạn đã hoàn thành một chuyến học thật chăm chỉ cùng Hana!",
               "You completed a thoughtful learning mission with Hana!"
             ),
-        300,
-        492,
-        620,
+        360,
+        510,
+        540,
         28
       );
 
@@ -3206,38 +3214,38 @@ export default function GameCanvas() {
         [copy("Thời gian", "Time"), formatDuration(currentDuration())],
       ];
       stats.forEach(([label, value], index) => {
-        const x = 78 + index * 231;
+        const x = 98 + index * 221;
         context.fillStyle = index === 0 ? "#fff1c8" : "#eef5ff";
-        drawRoundedRectangle(context, x, 582, 207, 150, 24);
+        drawRoundedRectangle(context, x, 600, 201, 152, 24);
         context.fill();
         context.fillStyle = index === 0 ? "#a0692f" : "#5e709b";
         context.font = "800 18px Be Vietnam Pro, sans-serif";
         context.textAlign = "center";
-        context.fillText(label, x + 103, 624);
+        context.fillText(label, x + 100, 644);
         context.fillStyle = "#27316d";
         context.font = "800 47px Baloo 2, sans-serif";
-        context.fillText(value, x + 103, 687);
+        context.fillText(value, x + 100, 708);
       });
 
       context.fillStyle = "#fff4cf";
-      drawRoundedRectangle(context, 78, 770, 924, 190, 30);
+      drawRoundedRectangle(context, 98, 790, 884, 190, 30);
       context.fill();
       context.fillStyle = "#a66f2d";
       context.font = "800 18px Be Vietnam Pro, sans-serif";
       context.textAlign = "left";
-      context.fillText(copy("PHẦN THƯỞNG CAO NHẤT", "HIGHEST REWARD"), 116, 816);
-      const badgeFill = context.createRadialGradient(164, 875, 8, 164, 875, 58);
+      context.fillText(copy("PHẦN THƯỞNG CAO NHẤT", "HIGHEST REWARD"), 138, 838);
+      const badgeFill = context.createRadialGradient(188, 896, 8, 188, 896, 58);
       badgeFill.addColorStop(0, "#fffbe0");
       badgeFill.addColorStop(0.64, "#ffd66d");
       badgeFill.addColorStop(1, "#ec9a48");
       context.fillStyle = badgeFill;
       context.beginPath();
-      context.arc(164, 874, 58, 0, Math.PI * 2);
+      context.arc(188, 896, 58, 0, Math.PI * 2);
       context.fill();
       context.fillStyle = "#8a4211";
       context.font = "800 45px Baloo 2, sans-serif";
       context.textAlign = "center";
-      context.fillText(highestReward?.symbol ?? "✦", 164, 890);
+      context.fillText(highestReward?.symbol ?? "✦", 188, 912);
       context.fillStyle = "#29316c";
       context.font = "800 31px Baloo 2, sans-serif";
       context.textAlign = "left";
@@ -3246,9 +3254,9 @@ export default function GameCanvas() {
         highestReward
           ? `${language === "en" ? "Level" : "Cấp"} ${highestReward.level} · ${rewardLabel(highestReward)}`
           : copy("Phần thưởng đầu tiên đang chờ bạn!", "Your first reward is waiting!"),
-        254,
-        862,
-        690,
+        286,
+        886,
+        620,
         38
       );
       context.fillStyle = "#756d8d";
@@ -3261,9 +3269,9 @@ export default function GameCanvas() {
               "Hãy làm thêm vài phép tính để mở phần thưởng nhé!",
               "Solve a few more questions to unlock a reward!"
             ),
-        254,
-        916,
-        690,
+        286,
+        940,
+        620,
         27
       );
 
@@ -3271,36 +3279,35 @@ export default function GameCanvas() {
       context.fillStyle = "#32417c";
       context.font = "800 18px Be Vietnam Pro, sans-serif";
       context.textAlign = "left";
-      context.fillText(
-        copy("HUY HIỆU CỦA LƯỢT HỌC", "SESSION BADGES"),
-        78,
-        1022
-      );
+      context.fillText(copy("BỘ SƯU TẬP HUY HIỆU", "BADGE COLLECTION"), 98, 1034);
       const badgeColors: Record<ThemeBadge["accent"], string> = {
         coral: "#ffae95",
         lavender: "#cfc3ff",
         mint: "#a8f1dc",
         gold: "#ffe27c",
       };
-      const displayedBadges = earnedBadges.length ? earnedBadges : THEME_BADGES.slice(0, 1);
+      const displayedBadges = THEME_BADGES;
       displayedBadges.forEach((badge, index) => {
-        const x = 78 + index * 224;
-        context.fillStyle = earnedBadges.length ? "#eef5ff" : "#f3f0f7";
-        drawRoundedRectangle(context, x, 1052, 202, 102, 22);
+        const isEarned = earnedBadges.some(earnedBadge => earnedBadge.id === badge.id);
+        const x = 98 + (index % 2) * 442;
+        const y = 1062 + Math.floor(index / 2) * 108;
+        context.fillStyle = isEarned ? "#eef5ff" : "#f3f0f7";
+        drawRoundedRectangle(context, x, y, 410, 92, 22);
         context.fill();
-        context.fillStyle = badgeColors[badge.accent];
+        context.fillStyle = isEarned ? badgeColors[badge.accent] : "#d7d9e1";
         context.beginPath();
-        context.arc(x + 42, 1103, 25, 0, Math.PI * 2);
+        context.arc(x + 44, y + 46, 25, 0, Math.PI * 2);
         context.fill();
         context.fillStyle = "#29316c";
         context.font = "800 26px Baloo 2, sans-serif";
         context.textAlign = "center";
-        context.fillText(badge.symbol, x + 42, 1112);
+        context.fillText(badge.symbol, x + 44, y + 55);
         context.fillStyle = "#33416f";
-        context.font = "800 16px Be Vietnam Pro, sans-serif";
+        context.font = "800 15px Be Vietnam Pro, sans-serif";
         context.textAlign = "left";
         const badgeName = language === "en" ? badge.en.label : badge.vi.label;
-        drawWrappedText(context, badgeName, x + 76, 1089, 112, 19);
+        context.fillText(`${copy("Cấp", "Level")} ${badge.threshold / 10}`, x + 84, y + 30);
+        drawWrappedText(context, badgeName, x + 84, y + 55, 290, 19);
       });
       context.fillStyle = "#b9c8ef";
       context.font = "700 17px Be Vietnam Pro, sans-serif";
@@ -3308,7 +3315,7 @@ export default function GameCanvas() {
       context.fillText(
         copy("Hana luôn sẵn sàng bay cùng bạn ở chuyến học tiếp theo!", "Hana is ready for your next learning flight!"),
         540,
-        1282
+        1384
       );
 
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -3762,7 +3769,10 @@ export default function GameCanvas() {
             )}
           >
             <div className="theme-badge-heading">
-              <span>{copy("BỘ SƯU TẬP HUY HIỆU", "THEME BADGE COLLECTION")}</span>
+              <span>
+                {copy("BỘ SƯU TẬP HUY HIỆU", "THEME BADGE COLLECTION")}
+                <small>{copy("Cấp 20 · 60 · 80 · 100", "Levels 20 · 60 · 80 · 100")}</small>
+              </span>
               <strong>
                 {displayedBadgeCollectionIds.length}/{THEME_BADGES.length}
               </strong>
@@ -3770,33 +3780,34 @@ export default function GameCanvas() {
             <div className="collectible-operation-route is-summary" aria-hidden="true">
               <i className="add">+</i><i className="subtract">−</i><i className="multiply">×</i><i className="divide">÷</i>
             </div>
-            {sessionThemeBadges.length ? (
-              <div className="theme-badge-row" role="list">
-                {sessionThemeBadges.map(badge => {
-                  const badgeCopy = language === "en" ? badge.en : badge.vi;
-                  return (
-                    <article
-                      key={badge.id}
-                      className={`theme-badge-item accent-${badge.accent}`}
-                      role="listitem"
-                    >
-                      <b aria-hidden="true">{badge.symbol}</b>
-                      <span>
-                        <strong>{badgeCopy.label}</strong>
-                        <small>{badgeCopy.detail}</small>
-                      </span>
-                    </article>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="theme-badge-empty">
-                {copy(
-                  "Đạt 30 điểm để nhận huy hiệu chủ đề đầu tiên nhé!",
-                  "Reach 30 points to earn your first theme badge!"
-                )}
-              </p>
-            )}
+            <div className="theme-badge-row" role="list">
+              {THEME_BADGES.map(badge => {
+                const badgeCopy = language === "en" ? badge.en : badge.vi;
+                const isCollected = displayedBadgeCollectionIds.includes(badge.id);
+                const isEarnedThisSession = sessionThemeBadges.some(
+                  earnedBadge => earnedBadge.id === badge.id
+                );
+                return (
+                  <article
+                    key={badge.id}
+                    className={`theme-badge-item accent-${badge.accent} ${isCollected ? "is-collected" : "is-locked"}`}
+                    role="listitem"
+                  >
+                    <b aria-hidden="true">{badge.symbol}</b>
+                    <span>
+                      <small className="theme-badge-level">
+                        {copy("Cấp", "Level")} {badge.threshold / 10}
+                        {isEarnedThisSession
+                          ? ` · ${copy("Mới nhận", "New")}`
+                          : ""}
+                      </small>
+                      <strong>{badgeCopy.label}</strong>
+                      <small>{badgeCopy.detail}</small>
+                    </span>
+                  </article>
+                );
+              })}
+            </div>
           </section>
           <div className="summary-actions">
             <button
