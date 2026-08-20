@@ -1826,6 +1826,7 @@ export default function GameCanvas() {
   const isTestSetupDemo = demoParams.has("testsetup");
   const isMenuCollapsedDemo = demoParams.has("menucollapsed");
   const isEndSessionConfirmDemo = demoParams.has("endconfirm");
+  const isHomeConfirmDemo = demoParams.has("homeconfirm");
   const isMaxRewardDemo = demoParams.has("maxrewards");
   const forceCanvasFallback = demoParams.has("nowebgl");
   const missingDemoOperation = demoParams.get("missing");
@@ -1925,7 +1926,7 @@ export default function GameCanvas() {
   const [showEndSessionConfirm, setShowEndSessionConfirm] = useState(
     isEndSessionConfirmDemo
   );
-  const [showHomeConfirm, setShowHomeConfirm] = useState(false);
+  const [showHomeConfirm, setShowHomeConfirm] = useState(isHomeConfirmDemo);
   const [playerName, setPlayerName] = useState(
     isSummaryDemo || isProfileDemo || isScoreDemo || isMaxRewardDemo
       ? "Minh Anh"
@@ -2724,6 +2725,7 @@ export default function GameCanvas() {
   };
 
   const earnedRewards = rewardsForPoints(sessionPoints);
+  const hasSessionPoints = sessionPoints > 0;
   const highestReward = earnedRewards.at(-1);
   const nextReward = sessionRewards.find(
     reward => sessionPoints < reward.threshold
@@ -3237,33 +3239,50 @@ export default function GameCanvas() {
 
       <AlertDialog open={showHomeConfirm} onOpenChange={setShowHomeConfirm}>
         <AlertDialogContent
-          className="home-confirm-card"
+          className={`home-confirm-card ${hasSessionPoints ? "has-points" : "no-points"}`}
+          data-i18n-direct
           aria-describedby="home-confirm-description"
         >
           <div className="home-confirm-rocket" aria-hidden="true">
-            <Rocket size={30} fill="currentColor" />
+            {hasSessionPoints ? <Trophy size={30} fill="currentColor" /> : <Rocket size={30} fill="currentColor" />}
           </div>
           <p className="end-session-confirm-kicker">
-            {copy("VỀ MÀN HÌNH ĐẦU", "RETURN TO START")}
+            {hasSessionPoints
+              ? copy("ĐIỂM CỦA BẠN", "YOUR POINTS")
+              : copy("QUAY VỀ MÀN HÌNH ĐẦU", "RETURN TO THE START")}
           </p>
           <AlertDialogTitle>
-            {copy(
-              "Bạn có chắc muốn bỏ điểm của lượt này không?",
-              "Are you sure you want to discard this session's points?"
-            )}
+            {hasSessionPoints
+              ? copy(
+                  `Bạn có chắc muốn bỏ ${sessionPoints} điểm của lượt này không?`,
+                  `Are you sure you want to discard this session's ${sessionPoints} points?`
+                )
+              : copy(
+                  "Bạn muốn trở lại từ đầu không?",
+                  "Would you like to return to the beginning?"
+                )}
           </AlertDialogTitle>
           <AlertDialogDescription id="home-confirm-description">
-            {copy(
-              "Nếu đồng ý, Hana sẽ xóa điểm và tiến độ hiện tại rồi đưa bạn về màn hình đầu tiên.",
-              "If you agree, Hana will clear this session's points and progress, then return you to the first screen."
-            )}
+            {hasSessionPoints
+              ? copy(
+                  "Điểm và tiến độ của lượt này sẽ được làm mới. Hana sẽ đưa bạn về màn hình đầu tiên.",
+                  "This session's points and progress will reset. Hana will take you to the first screen."
+                )
+              : copy(
+                  "Hana sẽ đưa bạn về màn hình đầu tiên để bắt đầu một chuyến học mới.",
+                  "Hana will take you to the first screen to begin a new learning journey."
+                )}
           </AlertDialogDescription>
           <div className="home-confirm-actions">
             <AlertDialogCancel onClick={() => setShowHomeConfirm(false)}>
-              {copy("Không, học tiếp", "No, keep learning")}
+              {hasSessionPoints
+                ? copy("Không, học tiếp", "No, keep learning")
+                : copy("Ở lại đây", "Stay here")}
             </AlertDialogCancel>
             <AlertDialogAction onClick={returnHomeAndReset}>
-              {copy("Đồng ý, quay về đầu", "Yes, return to start")}
+              {hasSessionPoints
+                ? copy("Đồng ý, bỏ điểm", "Yes, discard points")
+                : copy("Đồng ý, về đầu", "Yes, return to start")}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>

@@ -6238,6 +6238,93 @@ html[lang="vi"] .console-topline::after {
   min-height: 43px;
   font-weight: 800;
 }
+.home-confirm-card {
+  width: min(418px, calc(100vw - 28px));
+  overflow: visible;
+  padding: 30px 25px 23px;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  border-radius: 25px;
+  box-shadow: 0 20px 55px rgba(4, 10, 47, 0.38), inset 0 1px 0 #fff;
+}
+.home-confirm-card::before {
+  content: "";
+  position: absolute;
+  inset: 11px;
+  z-index: -1;
+  border: 1px dashed rgba(71, 159, 151, 0.32);
+  border-radius: 18px;
+  pointer-events: none;
+}
+.home-confirm-card.no-points {
+  color: #243a72;
+  background: linear-gradient(145deg, #f7fffc, #e4f6ff);
+}
+.home-confirm-card.has-points {
+  color: #674029;
+  background: linear-gradient(145deg, #fffaf0, #fff0cf);
+}
+.home-confirm-card .end-session-confirm-kicker {
+  margin: 6px 0 5px;
+}
+.home-confirm-card.has-points .end-session-confirm-kicker { color: #b56c2b; }
+.home-confirm-card [data-slot="alert-dialog-title"] {
+  margin: 0;
+  color: inherit;
+  font-family: "Baloo 2", cursive;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.08;
+}
+.home-confirm-card [data-slot="alert-dialog-description"] {
+  max-width: 330px;
+  margin: 8px auto 13px;
+  color: #63729a;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.48;
+}
+.home-confirm-card.has-points [data-slot="alert-dialog-description"] { color: #856d62; }
+.home-confirm-rocket {
+  width: 58px;
+  height: 58px;
+  margin: -48px auto 9px;
+  color: #2c8579;
+  border-color: #f7fffc;
+  border-radius: 20px;
+  background: #bff1e1;
+  box-shadow: 0 8px 18px rgba(21, 100, 113, 0.2);
+  transform: rotate(0deg);
+}
+.home-confirm-card.has-points .home-confirm-rocket {
+  color: #a96027;
+  background: #ffd57e;
+  box-shadow: 0 8px 18px rgba(176, 112, 35, 0.2);
+}
+.home-confirm-actions {
+  gap: 9px;
+  margin-top: 12px;
+}
+.home-confirm-actions button {
+  min-height: 45px;
+  border-radius: 13px;
+  font-family: "Baloo 2", cursive;
+  font-size: 14px;
+  font-weight: 800;
+}
+.home-confirm-actions [data-slot="alert-dialog-cancel"] {
+  color: #516890;
+  border-color: #bed0e7;
+  background: #f8fcff;
+}
+.home-confirm-actions [data-slot="alert-dialog-action"] {
+  color: #fffdf3;
+  background: #ff6d4f;
+  box-shadow: 0 3px 0 #c84a35;
+}
+.home-confirm-card.has-points .home-confirm-actions [data-slot="alert-dialog-action"] {
+  background: #d78039;
+  box-shadow: 0 3px 0 #a65c24;
+}
 @media (max-width: 760px) {
   .app-home-brand { top: 15px; left: 15px; }
   .app-home-brand .mini-brand-rocket { width: 34px; height: 34px; }
@@ -6245,4 +6332,7 @@ html[lang="vi"] .console-topline::after {
   .format-back { top: 15px; left: 50%; }
   .activity-topbar { min-height: 40px; }
   .home-confirm-actions { grid-template-columns: 1fr; }
+  .home-confirm-card { padding: 28px 19px 19px; border-radius: 22px; }
+  .home-confirm-card [data-slot="alert-dialog-title"] { font-size: 23px; }
+  .home-confirm-card [data-slot="alert-dialog-description"] { font-size: 10px; }
 }

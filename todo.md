@@ -311,3 +311,10 @@
 - [x] Biến logo cố định góc trái thành nút về màn đầu với hộp thoại xác nhận hủy điểm/lượt đang làm.
 - [x] Canh giữa các nút Trở về trên màn phụ và ẩn Cài đặt ở màn tổng kết.
 - [x] Kiểm thử xác nhận đồng ý/hủy, giao diện desktop/mobile, TypeScript, build và lưu checkpoint.
+
+## Xác nhận logo theo ngữ cảnh
+
+- [x] Phân loại màn điền tên, phiên chưa có điểm và phiên có điểm/tiến độ để chọn nội dung xác nhận phù hợp.
+- [x] Ở màn điền tên và phiên chưa có điểm, chỉ hỏi có quay về màn đầu; ở phiên có điểm/tiến độ mới cảnh báo bỏ lượt.
+- [x] Thiết kế lại hộp thoại với phân cấp màu, biểu tượng và nút lựa chọn dễ hiểu cho học sinh lớp 3.
+- [x] Kiểm thử tất cả nhánh logo trên desktop/mobile, TypeScript, build và lưu checkpoint.

@@ -135,11 +135,11 @@ try {
     `document.querySelector(".home-confirm-card")?.textContent?.replace(/\\s+/g, " ").trim()`
   );
   if (
-    !homeConfirm?.includes("Bạn có chắc muốn bỏ điểm của lượt này không?") ||
-    !homeConfirm.includes("Không, học tiếp") ||
-    !homeConfirm.includes("Đồng ý, quay về đầu")
+    !homeConfirm?.includes("Bạn muốn trở lại từ đầu không?") ||
+    !homeConfirm.includes("Ở lại đây") ||
+    !homeConfirm.includes("Đồng ý, về đầu")
   )
-    throw new Error(`Xác nhận quay về đầu chưa đúng: ${homeConfirm}`);
+    throw new Error(`Xác nhận quay về đầu khi chưa có điểm chưa đúng: ${homeConfirm}`);
   await evaluate(
     `document.querySelector(".home-confirm-actions button:first-child")?.click()`
   );
@@ -147,8 +147,31 @@ try {
   if (!(await evaluate(`Boolean(document.querySelector(".mission-control"))`)))
     throw new Error("Hủy quay về đầu đã làm mất màn đang học.");
 
+  const correctIndex = await evaluate(`(() => {
+    const expression = document.querySelector(".math-expression")?.textContent?.replace(/\\s+/g, " ").trim() ?? "";
+    const match = expression.match(/(\\d+)\\s*([+−×÷])\\s*(\\d+)\\s*=\\s*\\?/);
+    if (!match) return null;
+    const left = Number(match[1]);
+    const operator = match[2];
+    const right = Number(match[3]);
+    const answer = operator === "+" ? left + right : operator === "−" ? left - right : operator === "×" ? left * right : left / right;
+    return Array.from(document.querySelectorAll(".answer-button strong")).findIndex((node) => Number(node.textContent) === answer);
+  })()`);
+  if (correctIndex === null || correctIndex < 0)
+    throw new Error("Không xác định được đáp án đúng để kiểm thử phiên có điểm.");
+  await evaluate(`document.querySelectorAll(".answer-button")[${correctIndex}]?.click()`);
+  await sleep(120);
   await evaluate(`document.querySelector(".app-home-brand")?.click()`);
   await waitFor(".home-confirm-card");
+  const pointsHomeConfirm = await evaluate(
+    `document.querySelector(".home-confirm-card")?.textContent?.replace(/\\s+/g, " ").trim()`
+  );
+  if (
+    !pointsHomeConfirm?.includes("Bạn có chắc muốn bỏ 10 điểm của lượt này không?") ||
+    !pointsHomeConfirm.includes("Không, học tiếp") ||
+    !pointsHomeConfirm.includes("Đồng ý, bỏ điểm")
+  )
+    throw new Error(`Xác nhận quay về đầu khi có điểm chưa đúng: ${pointsHomeConfirm}`);
   await evaluate(
     `document.querySelector(".home-confirm-actions button:last-child")?.click()`
   );
@@ -174,6 +197,7 @@ try {
       mobileConfirm,
       desktopConfirm,
       homeConfirm,
+      pointsHomeConfirm,
       status: "end-session and home confirmation valid",
     })
   );
