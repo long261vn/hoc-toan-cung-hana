@@ -1,5 +1,12 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Rà soát chồng lấn toàn giao diện
+
+- [x] Kiểm tra màn chào mừng, hồ sơ, chọn Luyện tập/Bài kiểm tra, menu nhiệm vụ và chọn dạng bài trên desktop lẫn điện thoại.
+- [x] Sửa riêng luồng Luyện Tập → chọn nhiệm vụ để nút Trở về, logo cố định, hành tinh và thẻ lựa chọn luôn có vùng an toàn độc lập.
+- [x] Rà soát bảng nhân–chia, bài kiểm tra, màn làm bài, tổng kết và toàn bộ cửa sổ phủ để không có chữ, nút hoặc hình ảnh chồng lấn.
+- [x] Kiểm thử trực quan các màn chính ở desktop/mobile, TypeScript, production build và lưu checkpoint.
+
 ## Vùng an toàn cửa sổ và hệ điểm–huy hiệu
 
 - [x] Thiết lập vùng an toàn chung phía trên cho Hướng dẫn, bảng điểm, xác nhận kết thúc, xác nhận về trang đầu và lớp mở khóa hành tinh; không cửa sổ nào được che logo hoặc Cài đặt.

@@ -1235,7 +1235,7 @@ function PlayerProfileScreen({
         language === "en" ? "Choose an astronaut name" : "Đặt tên phi hành gia"
       }
     >
-      <button type="button" className="format-back" onClick={onBack}>
+      <button type="button" className="format-back profile-back" onClick={onBack}>
         ← {language === "en" ? "Back" : "Trở về"}
       </button>
       <div className="profile-orbit" aria-hidden="true" />
@@ -1778,7 +1778,7 @@ function PracticeFormatScreen({
       data-i18n-direct
       aria-label={language === "en" ? "Choose practice type" : "Chọn dạng bài"}
     >
-      <button type="button" className="format-back" onClick={onBack}>
+      <button type="button" className="format-back format-back-secondary" onClick={onBack}>
         ← {language === "en" ? "Back to activities" : "Trở về chọn hoạt động"}
       </button>
       <div className="format-orbit" aria-hidden="true" />
@@ -4053,7 +4053,7 @@ export default function GameCanvas() {
                         ? "×"
                         : "÷"}
                 </b>
-                <span>
+                <span className="mission-planet-label">
                   {language === "en"
                     ? UNLOCKED_PLANET_NAMES[operation].en
                     : UNLOCKED_PLANET_NAMES[operation].vi}
@@ -4073,9 +4073,11 @@ export default function GameCanvas() {
               </span>
               <span className="mission-reward-signal">
                 <Trophy size={14} aria-hidden="true" />
-                {mode === "test"
-                  ? copy("Chế độ kiểm tra", "Test mode")
-                  : `${copy("Mốc huy hiệu", "Badge milestones")} ${sessionThemeBadges.length}/${THEME_BADGES.length}`}
+                <span className="mission-badge-label">
+                  {mode === "test"
+                    ? copy("Chế độ kiểm tra", "Test mode")
+                    : `${copy("Mốc huy hiệu", "Badge milestones")} ${sessionThemeBadges.length}/${THEME_BADGES.length}`}
+                </span>
               </span>
             </div>
             {testComplete ? (

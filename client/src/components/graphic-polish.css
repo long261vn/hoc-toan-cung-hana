@@ -170,3 +170,9 @@
   .mission-hana-signal { display: inline-flex; }
   .mission-hana-label { display: none; }
 }
+@media (max-width: 360px) {
+  .mission-flight-rail { gap: 0.38rem; }
+  .mission-planet-chip { max-width: none; padding-right: 0; border-right: 0; }
+  .mission-planet-label,
+  .mission-badge-label { display: none; }
+}
