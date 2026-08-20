@@ -1,5 +1,12 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Hành trình gọn và minh họa Hana theo câu
+
+- [x] Di chuyển Loại bài tập và Mức độ khó xuống dưới dải Hành trình trong màn Cộng, Trừ, Nhân và Chia.
+- [x] Rút gọn dải hiển thị đang học thành Điểm hiện tại và Cấp hành trình; giữ chi tiết huy hiệu trong bảng điểm khi bấm.
+- [x] Tạo minh họa Hana dựa trên chính các số, phép tính và dạng bài của câu đang làm sai.
+- [x] Kiểm thử VIE/ENG, nhiều dạng bài, điện thoại/desktop, TypeScript, production build và lưu checkpoint.
+
 ## Bộ chọn dạng bài và mức độ cố định
 
 - [x] Bỏ hoàn toàn menu dạng bài sổ xuống trong màn Cộng, Trừ, Nhân và Chia.

@@ -3622,7 +3622,7 @@ button:focus-visible {
 .hana-learning-context span { color: #aa6b54; font-size: 10px; font-weight: 800; text-align: right; }
 .hana-math-visual {
   display: grid;
-  min-height: 94px;
+  min-height: 104px;
   place-items: center;
   margin-top: 8px;
   padding: 8px;
@@ -3631,19 +3631,108 @@ button:focus-visible {
   background: #edf9ff;
 }
 .hana-visual-label { color: #43818a; font-size: 9px; font-weight: 900; letter-spacing: 0.08em; }
-.hana-visual-dots {
-  display: grid;
-  grid-template-columns: repeat(6, 14px);
-  gap: 7px;
+.hana-equation-model,
+.hana-sharing-model {
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 6px;
+  width: 100%;
   margin-top: 5px;
 }
-.hana-visual-dots i { width: 14px; height: 14px; border-radius: 50%; background: #ff9875; box-shadow: inset 0 1px 0 #fff; }
-.hana-math-visual.operation-subtract .hana-visual-dots i:nth-child(n + 7) { background: #c9c1f4; opacity: 0.5; }
-.hana-math-visual.operation-multiply .hana-visual-dots { grid-template-columns: repeat(4, 14px); }
-.hana-math-visual.operation-multiply .hana-visual-dots i { background: #67cfb8; }
-.hana-math-visual.operation-divide .hana-visual-dots { grid-template-columns: repeat(3, 14px); }
-.hana-math-visual.operation-divide .hana-visual-dots i { background: #f2cd6c; }
+.hana-visual-operator,
+.hana-visual-arrow {
+  color: #3c6790;
+  font-family: "Baloo 2", cursive;
+  font-size: 22px;
+  line-height: 1;
+}
+.hana-quantity {
+  display: grid;
+  min-width: 54px;
+  place-items: center;
+  gap: 3px;
+  padding: 4px 5px;
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  background: #fff;
+}
+.hana-quantity > b { font-family: "Baloo 2", cursive; font-size: 18px; line-height: 1; }
+.hana-quantity.tone-coral { color: #c85f4a; background: #fff1ec; }
+.hana-quantity.tone-violet { color: #7962af; background: #f1edff; }
+.hana-quantity.tone-mint { color: #247d72; background: #e9fbf6; }
+.hana-quantity.tone-gold { color: #a17323; background: #fff7dc; }
+.hana-quantity.is-hidden { border-style: dashed; color: #5b7793; background: #f4f8fb; }
+.hana-quantity.is-hidden small { font-size: 10px; font-weight: 900; }
+.hana-quantity-dots {
+  display: flex;
+  max-width: 86px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+}
+.hana-quantity-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+}
+.hana-place-value {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+}
+.hana-place-value i {
+  min-width: 16px;
+  padding: 2px 3px;
+  border-radius: 4px;
+  color: currentColor;
+  background: rgba(255, 255, 255, 0.7);
+  font-style: normal;
+}
+.hana-place-value b { font-size: 8px; }
+.hana-equal-groups {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(30px, 1fr));
+  gap: 4px;
+  width: 100%;
+  margin-top: 5px;
+}
+.hana-group {
+  display: grid;
+  min-height: 34px;
+  place-items: center;
+  padding: 3px;
+  border: 1px solid #8dd7c8;
+  border-radius: 8px;
+  color: #227c71;
+  background: #f0fffa;
+}
+.hana-group b { font-family: "Baloo 2", cursive; font-size: 16px; line-height: 1; }
+.hana-group small { margin-top: 2px; color: #5f9189; font-size: 6px; font-weight: 800; line-height: 1; }
+.hana-visual-equation { margin-top: 4px; color: #2d8377; font-size: 9px; font-weight: 900; }
+.hana-share-groups {
+  display: flex;
+  max-width: 190px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+.hana-share-groups i {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border: 1px solid #e7bf55;
+  border-radius: 8px;
+  color: #8e6b26;
+  background: #fff9e3;
+  font-family: "Baloo 2", cursive;
+  font-size: 14px;
+  font-style: normal;
+}
 .hana-learning-step {
   display: grid;
   align-content: center;

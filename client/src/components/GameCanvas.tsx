@@ -1883,23 +1883,185 @@ function pickTestOperation() {
   return operations[Math.floor(Math.random() * operations.length)];
 }
 
-function hanaWorkedExample(operation: Operation, kind: QuizQuestion["kind"], language: Language) {
-  if (kind === "missing") {
-    const examples: Record<Operation, string> = {
-      add: "? + 5 = 12  →  12 − 5 = 7",
-      subtract: "? − 4 = 9  →  9 + 4 = 13",
-      multiply: "? × 4 = 20  →  20 ÷ 4 = 5",
-      divide: "20 ÷ ? = 5  →  20 ÷ 5 = 4",
-    };
-    return examples[operation];
+type HanaVisualPlan = {
+  operation: Operation;
+  first: number;
+  second: number;
+  result: number;
+  hiddenPart: "first" | "second" | "result" | null;
+};
+
+function hanaEquation(question: QuizQuestion) {
+  const match = question.expression.match(
+    /^\s*(\?|\d+)\s*([+−×÷])\s*(\?|\d+)\s*=\s*(\?|\d+)\s*$/
+  );
+  if (!match) {
+    return { first: 0, second: 0, result: question.answer, missing: null };
   }
-  const examples: Record<Operation, string> = {
-    add: language === "en" ? "14 + 3 = 17 · Count on 3 from 14." : "14 + 3 = 17 · Đếm thêm 3 bước từ 14.",
-    subtract: language === "en" ? "18 − 4 = 14 · Count back 4 from 18." : "18 − 4 = 14 · Đếm lùi 4 bước từ 18.",
-    multiply: language === "en" ? "3 × 4 = 12 · 3 equal groups of 4." : "3 × 4 = 12 · Có 3 nhóm bằng nhau, mỗi nhóm 4.",
-    divide: language === "en" ? "12 ÷ 3 = 4 · Share 12 equally into 3 groups." : "12 ÷ 3 = 4 · Chia đều 12 vào 3 nhóm.",
-  };
-  return examples[operation];
+  const [, firstToken, , secondToken, resultToken] = match;
+  const resolve = (token: string) => (token === "?" ? question.answer : Number(token));
+  return {
+    first: resolve(firstToken),
+    second: resolve(secondToken),
+    result: resolve(resultToken),
+    missing: firstToken === "?" ? "first" : secondToken === "?" ? "second" : resultToken === "?" ? "result" : null,
+  } as const;
+}
+
+/** Câu tìm thành phần dùng phép tính ngược để hình vẽ vẫn khớp chính xác với các số của câu đó. */
+function hanaVisualPlan(question: QuizQuestion): HanaVisualPlan {
+  const equation = hanaEquation(question);
+  if (question.kind !== "missing") {
+    return {
+      operation: question.operation,
+      first: equation.first,
+      second: equation.second,
+      result: equation.result,
+      hiddenPart: equation.missing,
+    };
+  }
+
+  if (question.operation === "add") {
+    const knownAddend = equation.missing === "first" ? equation.second : equation.first;
+    return { operation: "add", first: knownAddend, second: question.answer, result: equation.result, hiddenPart: "second" };
+  }
+  if (question.operation === "subtract") {
+    if (equation.missing === "first") {
+      return { operation: "add", first: equation.result, second: equation.second, result: question.answer, hiddenPart: "result" };
+    }
+    return { operation: "add", first: equation.result, second: question.answer, result: equation.first, hiddenPart: "second" };
+  }
+  if (question.operation === "multiply") {
+    const knownFactor = equation.missing === "first" ? equation.second : equation.first;
+    return { operation: "multiply", first: knownFactor, second: question.answer, result: equation.result, hiddenPart: "second" };
+  }
+  if (equation.missing === "first") {
+    return { operation: "multiply", first: equation.result, second: equation.second, result: question.answer, hiddenPart: "result" };
+  }
+  return { operation: "multiply", first: equation.result, second: question.answer, result: equation.first, hiddenPart: "second" };
+}
+
+function hanaWorkedExample(question: QuizQuestion, language: Language) {
+  const plan = hanaVisualPlan(question);
+  const equation = `${plan.first} ${plan.operation === "add" ? "+" : plan.operation === "subtract" ? "−" : plan.operation === "multiply" ? "×" : "÷"} ${plan.second} = ${plan.result}`;
+  if (plan.operation === "add") {
+    return language === "en"
+      ? `${equation} · Put the two exact groups together.`
+      : `${equation} · Gộp đúng hai nhóm số lại với nhau.`;
+  }
+  if (plan.operation === "subtract") {
+    return language === "en"
+      ? `${equation} · Take away the second group from the first.`
+      : `${equation} · Bớt nhóm số thứ hai ra khỏi nhóm số đầu.`;
+  }
+  if (plan.operation === "multiply") {
+    return language === "en"
+      ? `${equation} · Make ${plan.first} equal groups of ${plan.second}.`
+      : `${equation} · Xếp ${plan.first} nhóm bằng nhau, mỗi nhóm ${plan.second}.`;
+  }
+  return language === "en"
+    ? `${equation} · Share ${plan.first} equally into ${plan.second} groups.`
+    : `${equation} · Chia đều ${plan.first} thành ${plan.second} nhóm.`;
+}
+
+function HanaQuantity({
+  value,
+  hidden,
+  tone,
+}: {
+  value: number;
+  hidden: boolean;
+  tone: "coral" | "violet" | "mint" | "gold";
+}) {
+  const hundreds = Math.floor(value / 100);
+  const tens = Math.floor((value % 100) / 10);
+  const ones = value % 10;
+  return (
+    <span className={`hana-quantity tone-${tone}${hidden ? " is-hidden" : ""}`}>
+      <b>{hidden ? "?" : value}</b>
+      {hidden ? <small>?</small> : value <= 24 ? (
+        <span className="hana-quantity-dots" aria-hidden="true">
+          {Array.from({ length: value }).map((_, index) => <i key={index} />)}
+        </span>
+      ) : (
+        <span className="hana-place-value" aria-label={`${value}`}>
+          {hundreds > 0 && <i><b>{hundreds * 100}</b></i>}
+          {tens > 0 && <i><b>{tens * 10}</b></i>}
+          {ones > 0 && <i><b>{ones}</b></i>}
+        </span>
+      )}
+    </span>
+  );
+}
+
+function HanaMathVisual({
+  question,
+  language,
+  revealUnknown,
+}: {
+  question: QuizQuestion;
+  language: Language;
+  revealUnknown: boolean;
+}) {
+  const plan = hanaVisualPlan(question);
+  const hidden = (part: HanaVisualPlan["hiddenPart"]) => !revealUnknown && plan.hiddenPart === part;
+  const visualLabel =
+    plan.operation === "add"
+      ? language === "en" ? "Exact groups combined" : "Gộp đúng các nhóm số"
+      : plan.operation === "subtract"
+        ? language === "en" ? "Exact group taken away" : "Bớt đúng nhóm số"
+        : plan.operation === "multiply"
+          ? language === "en" ? "Exact equal groups" : "Các nhóm bằng nhau"
+          : language === "en" ? "Exact equal sharing" : "Chia đều chính xác";
+
+  if (plan.operation === "multiply") {
+    return (
+      <div className={`hana-math-visual operation-${plan.operation}`} aria-label={visualLabel}>
+        <span className="hana-visual-label">{visualLabel}</span>
+        <div className="hana-equal-groups" aria-hidden="true">
+          {Array.from({ length: Math.min(plan.first, 10) }).map((_, groupIndex) => (
+            <span className="hana-group" key={groupIndex}>
+              <b>{hidden("second") ? "?" : plan.second}</b>
+              <small>{language === "en" ? "in group" : "mỗi nhóm"}</small>
+            </span>
+          ))}
+        </div>
+        <span className="hana-visual-equation">
+          {hidden("result") ? "?" : plan.result} {language === "en" ? "in all" : "tất cả"}
+        </span>
+      </div>
+    );
+  }
+
+  if (plan.operation === "divide") {
+    return (
+      <div className={`hana-math-visual operation-${plan.operation}`} aria-label={visualLabel}>
+        <span className="hana-visual-label">{visualLabel}</span>
+        <div className="hana-sharing-model" aria-hidden="true">
+          <HanaQuantity value={plan.first} hidden={hidden("first")} tone="gold" />
+          <span className="hana-visual-arrow">→</span>
+          <span className="hana-share-groups">
+            {Array.from({ length: Math.min(plan.second, 9) }).map((_, groupIndex) => (
+              <i key={groupIndex}>{hidden("result") ? "?" : plan.result}</i>
+            ))}
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`hana-math-visual operation-${plan.operation}`} aria-label={visualLabel}>
+      <span className="hana-visual-label">{visualLabel}</span>
+      <div className="hana-equation-model" aria-hidden="true">
+        <HanaQuantity value={plan.first} hidden={hidden("first")} tone={plan.operation === "add" ? "coral" : "violet"} />
+        <b className="hana-visual-operator">{plan.operation === "add" ? "+" : "−"}</b>
+        <HanaQuantity value={plan.second} hidden={hidden("second")} tone="mint" />
+        <b className="hana-visual-operator">=</b>
+        <HanaQuantity value={plan.result} hidden={hidden("result")} tone="gold" />
+      </div>
+    </div>
+  );
 }
 
 function HanaLearningDialog({
@@ -1928,26 +2090,9 @@ function HanaLearningDialog({
   );
   const isExample = step === instructionPages.length;
   const pageText = isExample
-    ? hanaWorkedExample(question.operation, question.kind, language)
+    ? hanaWorkedExample(question, language)
     : instructionPages[step] ?? translateLearningText(question.hint, language);
   const totalPages = instructionPages.length + 1;
-  const visualLabel =
-    question.operation === "add"
-      ? language === "en"
-        ? "Count forward"
-        : "Đếm tiến"
-      : question.operation === "subtract"
-        ? language === "en"
-          ? "Count backward"
-          : "Đếm lùi"
-        : question.operation === "multiply"
-          ? language === "en"
-            ? "Equal groups"
-            : "Nhóm bằng nhau"
-          : language === "en"
-            ? "Share equally"
-            : "Chia đều";
-
   return (
     <div
       className="hana-learning-backdrop"
@@ -1986,14 +2131,11 @@ function HanaLearningDialog({
               : `Bạn đã chọn ${chosenAnswer ?? "?"}`}
           </span>
         </div>
-        <div className={`hana-math-visual operation-${question.operation}`} aria-label={visualLabel}>
-          <span className="hana-visual-label">{visualLabel}</span>
-          <div className="hana-visual-dots" aria-hidden="true">
-            {Array.from({ length: question.operation === "multiply" || question.operation === "divide" ? 12 : 10 }).map((_, index) => (
-              <i key={index} />
-            ))}
-          </div>
-        </div>
+        <HanaMathVisual
+          question={question}
+          language={language}
+          revealUnknown={isExample}
+        />
         <div className="hana-learning-step" aria-live="polite">
           <span>{language === "en" ? `Step ${step + 1} of ${totalPages}` : `Bước ${step + 1}/${totalPages}`}</span>
           <strong>
@@ -4288,6 +4430,44 @@ export default function GameCanvas() {
                 </strong>
               </button>
             </div>
+            <div className="mission-flight-rail" data-i18n-direct>
+              <span className={`mission-planet-chip operation-${operation}`}>
+                <b aria-hidden="true">
+                  {operation === "add"
+                    ? "+"
+                    : operation === "subtract"
+                      ? "−"
+                      : operation === "multiply"
+                        ? "×"
+                        : "÷"}
+                </b>
+                <span className="mission-planet-label">
+                  {language === "en"
+                    ? UNLOCKED_PLANET_NAMES[operation].en
+                    : UNLOCKED_PLANET_NAMES[operation].vi}
+                </span>
+              </span>
+              <span className="mission-hana-signal">
+                <span className="mission-hana-avatar" aria-hidden="true">
+                  <span className="robot-fallback">
+                    <span />
+                    <span />
+                    <i />
+                  </span>
+                </span>
+                <span className="mission-hana-label">
+                  {copy("Hana sẵn sàng", "Hana is ready")}
+                </span>
+              </span>
+              {!isTableMode && mode !== "test" && (
+                <span className="mission-journey-signal">
+                  <span aria-hidden="true">✦</span>
+                  <span>
+                    {language === "en" ? `Level ${journeyLevel}/100` : `Cấp ${journeyLevel}/100`}
+                  </span>
+                </span>
+              )}
+            </div>
             {!isTableMode && mode === "practice" && (
               <div className="mission-study-controls" data-i18n-direct>
                 <section
@@ -4332,59 +4512,6 @@ export default function GameCanvas() {
                 </section>
               </div>
             )}
-            <div className="mission-flight-rail" data-i18n-direct>
-              <span className={`mission-planet-chip operation-${operation}`}>
-                <b aria-hidden="true">
-                  {operation === "add"
-                    ? "+"
-                    : operation === "subtract"
-                      ? "−"
-                      : operation === "multiply"
-                        ? "×"
-                        : "÷"}
-                </b>
-                <span className="mission-planet-label">
-                  {language === "en"
-                    ? UNLOCKED_PLANET_NAMES[operation].en
-                    : UNLOCKED_PLANET_NAMES[operation].vi}
-                </span>
-              </span>
-              <span className="mission-hana-signal">
-                <span className="mission-hana-avatar" aria-hidden="true">
-                  <span className="robot-fallback">
-                    <span />
-                    <span />
-                    <i />
-                  </span>
-                </span>
-                <span className="mission-hana-label">
-                  {copy("Hana sẵn sàng", "Hana is ready")}
-                </span>
-              </span>
-              <span className="mission-reward-signal">
-                <Trophy size={14} aria-hidden="true" />
-                <span className="mission-badge-label">
-                  <span className="mission-badge-full">
-                    {mode === "test"
-                      ? copy("Chế độ kiểm tra", "Test mode")
-                      : nextThemeBadge
-                        ? language === "en"
-                          ? `L${journeyLevel}/100 → Badge L${nextThemeBadge.threshold / JOURNEY_LEVEL_POINTS}`
-                          : `Cấp ${journeyLevel}/100 → Huy hiệu ${nextThemeBadge.threshold / JOURNEY_LEVEL_POINTS}`
-                        : language === "en"
-                          ? "L100/100 → 4 badges"
-                          : "Cấp 100/100 → Đủ 4 huy hiệu"}
-                  </span>
-                  <span className="mission-badge-compact">
-                    {mode === "test"
-                      ? copy("KT", "Test")
-                      : language === "en"
-                        ? `L${journeyLevel}`
-                        : `Cấp ${journeyLevel}`}
-                  </span>
-                </span>
-              </span>
-            </div>
             {testComplete ? (
               <div className="completion-card">
                 <div className="completion-icon">
