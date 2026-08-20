@@ -718,10 +718,8 @@ const englishText: Record<string, string> = {
   "Quay lại chơi tiếp": "Keep playing",
   "Lưu ảnh kỷ niệm": "Save souvenir image",
   "Chơi lượt mới": "Start a new session",
-  "PHẦN THƯỞNG CAO NHẤT": "TOP REWARD",
-  "Chưa mở": "Locked",
-  "Hãy trả lời đúng để nhận quà đầu tiên nhé.":
-    "Answer correctly to unlock your first reward!",
+  "MỐC HÀNH TRÌNH CAO NHẤT": "HIGHEST JOURNEY LEVEL",
+  "Chưa có điểm": "No points yet",
   "Mình đã hiểu": "Got it!",
   "Đang tạo ảnh...": "Creating image...",
   "Tên phi hành gia": "Astronaut name",
@@ -807,7 +805,6 @@ const englishText: Record<string, string> = {
   "Nhân và chia xen kẽ": "Mix multiplication and division",
   "Học Toán": "Learn Math",
   "BẢNG CỬU CHƯƠNG": "TIMES TABLES",
-  "PHẦN THƯỞNG GẦN NHẤT": "LATEST REWARDS",
   "TIẾN ĐỘ CỦA": "PROGRESS FOR",
 };
 
@@ -2858,11 +2855,11 @@ export default function GameCanvas() {
   const earnedRewards = rewardsForPoints(sessionPoints);
   const hasSessionPoints = sessionPoints > 0;
   const highestReward = earnedRewards.at(-1);
-  const nextReward = sessionRewards.find(
-    reward => sessionPoints < reward.threshold
+  const nextThemeBadge = THEME_BADGES.find(
+    badge => sessionPoints < badge.threshold
   );
-  const pointsUntilReward = nextReward
-    ? nextReward.threshold - sessionPoints
+  const pointsUntilNextBadge = nextThemeBadge
+    ? nextThemeBadge.threshold - sessionPoints
     : 0;
   const selectedAvatar =
     AVATAR_OPTIONS.find(avatar => avatar.id === avatarId) ?? AVATAR_OPTIONS[0];
@@ -3791,16 +3788,16 @@ export default function GameCanvas() {
           <section
             className="reward-board highest-reward-board"
             aria-label={copy(
-              "Phần thưởng cao nhất trong lượt chơi",
-              "Highest reward from this session"
+              "Mốc hành trình cao nhất trong lượt chơi",
+              "Highest journey level from this session"
             )}
           >
             <div className="reward-board-heading">
-              <span>{copy("PHẦN THƯỞNG CAO NHẤT", "HIGHEST REWARD")}</span>
+              <span>{copy("MỐC HÀNH TRÌNH CAO NHẤT", "HIGHEST JOURNEY LEVEL")}</span>
               <strong>
                 {earnedRewards.length
                   ? `${copy("Cấp", "Level")} ${highestReward?.level}/${sessionRewards.length}`
-                  : copy("Chưa mở", "Locked")}
+                  : copy("Chưa có điểm", "No points yet")}
               </strong>
             </div>
             {highestReward ? (
@@ -3820,8 +3817,8 @@ export default function GameCanvas() {
             ) : (
               <p className="reward-empty">
                 {language === "en"
-                  ? `${displayName}, answer correctly to unlock your first reward!`
-                  : `${displayName}, bạn hãy trả lời đúng để mở phần thưởng đầu tiên nhé.`}
+                  ? `${displayName}, solve a few questions to begin your journey.`
+                  : `${displayName}, hãy làm vài phép tính để bắt đầu hành trình nhé.`}
               </p>
             )}
           </section>
@@ -4063,14 +4060,22 @@ export default function GameCanvas() {
                 </span>
               </span>
               <span className="mission-hana-signal">
-                <Sparkles size={14} aria-hidden="true" />
-                {copy("Hana sẵn sàng", "Hana is ready")}
+                <span className="mission-hana-avatar" aria-hidden="true">
+                  <span className="robot-fallback">
+                    <span />
+                    <span />
+                    <i />
+                  </span>
+                </span>
+                <span className="mission-hana-label">
+                  {copy("Hana sẵn sàng", "Hana is ready")}
+                </span>
               </span>
               <span className="mission-reward-signal">
                 <Trophy size={14} aria-hidden="true" />
                 {mode === "test"
                   ? copy("Chế độ kiểm tra", "Test mode")
-                  : `${copy("Tiến độ", "Progress")} ${Math.min(100, Math.floor(sessionPoints / 10))}/100`}
+                  : `${copy("Mốc huy hiệu", "Badge milestones")} ${sessionThemeBadges.length}/${THEME_BADGES.length}`}
               </span>
             </div>
             {testComplete ? (
@@ -4253,7 +4258,7 @@ export default function GameCanvas() {
                               "Find the missing number to complete the equation."
                             )
                           : copy(
-                              "Chọn đáp án đúng để nhận điểm thưởng.",
+                              "Chọn đáp án đúng để nhận điểm.",
                               "Choose the correct answer to earn points."
                             )}
                       </p>
@@ -4312,8 +4317,8 @@ export default function GameCanvas() {
                             <Check size={18} />
                             <span>
                               {language === "en"
-                                ? `Correct, ${displayName}! +10 points. ${nextReward ? `${pointsUntilReward} points until ${rewardLabel(nextReward)}.` : "You have unlocked every reward!"}`
-                                : `Đúng rồi, ${displayName}! +10 điểm. ${nextReward ? `Còn ${pointsUntilReward} điểm để nhận ${rewardLabel(nextReward)}.` : "Bạn đã mở đủ phần thưởng!"}`}
+                                ? `Correct, ${displayName}! +10 points.`
+                                : `Đúng rồi, ${displayName}! +10 điểm.`}
                             </span>
                           </div>
                         ) : (
@@ -4505,14 +4510,14 @@ export default function GameCanvas() {
                 <div>
                   <strong>
                     {copy(
-                      "Tích điểm, mở 100 phần thưởng",
-                      "Collect points, unlock 100 rewards"
+                      "Tính điểm rõ ràng",
+                      "Simple, clear scoring"
                     )}
                   </strong>
                   <p>
                     {copy(
-                      "Mỗi câu đúng được +10 điểm. Nếu chưa đúng, bạn trừ 2 điểm nhưng tổng điểm không bao giờ âm. Mỗi 10 điểm mở một cấp phần thưởng; Cấp 100 là 1.000 điểm.",
-                      "Each correct answer earns +10 points. A wrong answer subtracts 2 points, but your total never goes below zero. Every 10 points unlocks one reward level; Level 100 is 1,000 points."
+                      "Mỗi câu đúng được +10 điểm. Nếu chưa đúng, bạn bị trừ 2 điểm nhưng tổng điểm không bao giờ âm. Bấm Điểm hiện tại để xem điểm, số câu đúng, số câu sai và thời gian học.",
+                      "Each correct answer earns +10 points. A wrong answer subtracts 2 points, but your total never goes below zero. Tap Current points to view your score, correct answers, incorrect answers and learning time."
                     )}
                   </p>
                 </div>
@@ -4525,7 +4530,7 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                      "Bốn huy hiệu đặc biệt chờ bạn ở Cấp 20, 60, 80 và 100 — tương ứng 200, 600, 800 và 1.000 điểm. Khi chạm mốc mới, Hana mở khóa một Hành Tinh Phép Tính.",
+                      "Bốn huy hiệu đặc biệt chờ bạn ở Cấp 20, 60, 80 và 100 — tương ứng 200, 600, 800 và 1.000 điểm. Khi chạm một mốc mới, Hana mở khóa một Hành Tinh Phép Tính.",
                       "Four special badges wait at Levels 20, 60, 80 and 100 — 200, 600, 800 and 1,000 points. When you reach a new milestone, Hana unlocks a Math Operation Planet."
                     )}
                   </p>
@@ -4542,8 +4547,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                      "Nếu chọn chưa đúng, Hana sẽ hướng dẫn từng bước để bạn thử lại. Bấm Điểm hiện tại để xem tiến độ, Đổi nhiệm vụ để giữ điểm, hoặc Kết thúc lượt để xem tổng kết và lưu ảnh kỷ niệm.",
-                      "If an answer is not right yet, Hana gives step-by-step help so you can try again. Tap Current points to view progress, Change mission to keep your points, or End session to see your summary and save a souvenir image."
+                      "Nếu chọn chưa đúng, Hana sẽ hướng dẫn từng bước để bạn thử lại. Bấm Điểm hiện tại để xem điểm và mốc huy hiệu tiếp theo, Đổi nhiệm vụ để giữ điểm, hoặc Kết thúc lượt để xem tổng kết và lưu ảnh kỷ niệm.",
+                      "If an answer is not right yet, Hana gives step-by-step help so you can try again. Tap Current points to view your score and next badge milestone, Change mission to keep your points, or End session to see your summary and save a souvenir image."
                     )}
                   </p>
                 </div>
@@ -4551,8 +4556,8 @@ export default function GameCanvas() {
             </ol>
             <p className="guide-note">
               {copy(
-                "Mỗi lượt học là hành trình của riêng bạn. Hãy bình tĩnh suy nghĩ, thử lại khi cần và cùng Hana tiến đến Cấp 100 nhé.",
-                "Each session is your own journey. Think calmly, try again when needed and travel with Hana toward Level 100."
+                "Mỗi lượt học là hành trình của riêng bạn. Hãy bình tĩnh suy nghĩ, thử lại khi cần và cùng Hana chinh phục các mốc huy hiệu nhé.",
+                "Each session is your own journey. Think calmly, try again when needed and travel with Hana toward each badge milestone."
               )}
             </p>
             <button
@@ -4572,8 +4577,8 @@ export default function GameCanvas() {
           role="dialog"
           aria-modal="true"
           aria-label={copy(
-            "Điểm hiện tại và tiến độ phần thưởng",
-            "Current points and reward progress"
+            "Điểm hiện tại và tiến độ huy hiệu",
+            "Current points and badge progress"
           )}
         >
           <section className="score-card" data-i18n-direct>
@@ -4587,7 +4592,7 @@ export default function GameCanvas() {
             </button>
             <div className="score-card-heading">
               <span className="score-card-symbol">
-                {nextReward?.symbol ?? "♛"}
+                {nextThemeBadge?.symbol ?? "♛"}
               </span>
               <div>
                 <p className="eyebrow">
@@ -4596,13 +4601,13 @@ export default function GameCanvas() {
                 </p>
                 <h2>{copy("Điểm hiện tại", "Current points")}</h2>
                 <p>
-                  {nextReward
+                  {nextThemeBadge
                     ? language === "en"
-                      ? `${pointsUntilReward} points to unlock ${rewardLabel(nextReward)}.`
-                      : `Còn ${pointsUntilReward} điểm để mở ${rewardLabel(nextReward)}.`
+                      ? `${pointsUntilNextBadge} points until ${nextThemeBadge.en.label}.`
+                      : `Còn ${pointsUntilNextBadge} điểm để đạt ${nextThemeBadge.vi.label}.`
                     : copy(
-                        "Bạn đã mở trọn bộ 100 phần thưởng rồi!",
-                        "You have unlocked all 100 rewards!"
+                        "Bạn đã sưu tập đủ 4 huy hiệu đặc biệt rồi!",
+                        "You have collected all 4 special badges!"
                       )}
                 </p>
               </div>
@@ -4628,35 +4633,30 @@ export default function GameCanvas() {
               </div>
             </div>
             <section
-              className="score-reward-board"
-              aria-label="Phần thưởng đã mở"
+              className="score-badge-board"
+              aria-label={copy("Tiến độ huy hiệu", "Badge progress")}
             >
               <div>
-                <span>PHẦN THƯỞNG GẦN NHẤT</span>
+                <span>{copy("TIẾN ĐỘ HUY HIỆU", "BADGE PROGRESS")}</span>
                 <strong>
-                  {earnedRewards.length}/{sessionRewards.length}
+                  {sessionThemeBadges.length}/{THEME_BADGES.length}
                 </strong>
               </div>
-              {earnedRewards.length ? (
-                <div className="score-reward-list">
-                  {earnedRewards.slice(-6).map(reward => (
-                    <span key={reward.id}>
-                      <b>{reward.symbol}</b>
-                      <em>
-                        {copy("Cấp", "Level")} {reward.level}
-                      </em>
-                      <small>{rewardLabel(reward)}</small>
+              <div className="score-badge-list">
+                {THEME_BADGES.map(badge => {
+                  const badgeCopy = language === "en" ? badge.en : badge.vi;
+                  const isEarned = sessionThemeBadges.some(
+                    earnedBadge => earnedBadge.id === badge.id
+                  );
+                  return (
+                    <span className={isEarned ? "is-earned" : ""} key={badge.id}>
+                      <b>{badge.symbol}</b>
+                      <em>{copy("Cấp", "Level")} {badge.threshold / 10}</em>
+                      <small>{badgeCopy.label}</small>
                     </span>
-                  ))}
-                </div>
-              ) : (
-                <p>
-                  {copy(
-                    "Hãy trả lời đúng để mở phần thưởng đầu tiên nhé.",
-                    "Answer correctly to unlock your first reward!"
-                  )}
-                </p>
-              )}
+                  );
+                })}
+              </div>
             </section>
             <button
               type="button"

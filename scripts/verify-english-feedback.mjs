@@ -11,21 +11,30 @@ const pending = new Map();
 socket.addEventListener("message", ({ data }) => { const message = JSON.parse(data); const request = pending.get(message.id); if (!request) return; pending.delete(message.id); message.error ? request.reject(new Error(message.error.message)) : request.resolve(message.result); });
 const command = (method, params = {}) => new Promise((resolve, reject) => { const id = ++commandId; pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
 const evaluate = async (expression) => (await command("Runtime.evaluate", { expression, returnByValue: true })).result?.value;
+const waitFor = async (selector, label = selector) => {
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    if (await evaluate(`Boolean(document.querySelector(${JSON.stringify(selector)}))`)) return;
+    await sleep(100);
+  }
+  throw new Error(`Không tìm thấy ${label}.`);
+};
 
 try {
   await command("Page.enable");
+  await evaluate(`localStorage.removeItem("hana-active-session-v1")`);
   await command("Page.navigate", { url: previewUrl });
-  await sleep(800);
+  await waitFor(".welcome-primary", "nút Start");
   await evaluate(`document.querySelector(".welcome-primary")?.click()`);
-  await sleep(180);
+  await waitFor(".profile-name-field input", "ô nhập tên");
   await evaluate(`(() => { const input = document.querySelector(".profile-name-field input"); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; setter.call(input, "Linh"); input.dispatchEvent(new Event("input", { bubbles: true })); })()`);
-  await sleep(100);
   await evaluate(`document.querySelector(".profile-continue")?.click()`);
-  await sleep(240);
+  await waitFor(".start-mode-card.is-practice", "lựa chọn Practice");
+  await evaluate(`document.querySelector(".start-mode-card.is-practice")?.click()`);
+  await waitFor(".activity-card", "menu hoạt động");
   await evaluate(`Array.from(document.querySelectorAll(".activity-card")).find((card) => card.textContent.includes("Addition"))?.click()`);
-  await sleep(220);
+  await waitFor(".format-option", "chọn dạng bài");
   await evaluate(`document.querySelector(".format-option")?.click()`);
-  await sleep(260);
+  await waitFor(".math-expression", "câu hỏi English");
   const result = await evaluate(`(() => {
     const expression = document.querySelector(".math-expression")?.textContent ?? "";
     const [left] = expression.split("=");

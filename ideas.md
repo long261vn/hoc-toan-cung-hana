@@ -21,13 +21,13 @@
 
 ### Design Movement
 
-**Illustrated edutainment kết hợp buồng lái phiêu lưu 3D nhẹ.** Thiết kế lấy cảm hứng từ các trò chơi khám phá dành cho thiếu nhi, nhưng thể hiện như một quyển vở bài tập sống động: mỗi hành tinh tương ứng với một mạch phép tính và mỗi lần trả lời đúng sẽ tích điểm để mở phần thưởng trong lượt học.
+**Illustrated edutainment kết hợp buồng lái phiêu lưu 3D nhẹ.** Thiết kế lấy cảm hứng từ các trò chơi khám phá dành cho thiếu nhi, nhưng thể hiện như một quyển vở bài tập sống động: mỗi hành tinh tương ứng với một mạch phép tính, câu trả lời đúng tích điểm và các mốc điểm cao mở huy hiệu chủ đề trong lượt học.
 
 ### Core Principles
 
 1. **Học là hành trình:** Học sinh luôn nhìn thấy mình đang ở đâu trên bản đồ bốn hành tinh và biết bước tiếp theo.
 2. **Rõ ràng trước, vui vẻ sau:** Phép tính, lựa chọn đáp án và phản hồi luôn có độ tương phản cao, chữ lớn, câu lệnh ngắn.
-3. **Khen đúng lúc:** Điểm lượt, phần thưởng và lời động viên xuất hiện sau hành động có ý nghĩa thay vì liên tục gây nhiễu.
+3. **Khen đúng lúc:** Điểm lượt cập nhật rõ ràng sau mỗi đáp án; lời chúc mừng và hiệu ứng mở khóa chỉ xuất hiện khi đạt mốc huy hiệu có ý nghĩa.
 4. **Không phạt lỗi sai:** Trả lời chưa đúng kích hoạt một gợi ý nhỏ và cho phép thử lại hoặc chuyển sang câu mới.
 
 ### Color Philosophy
@@ -50,7 +50,7 @@ Mỗi thao tác phải giống việc điều khiển một chuyến bay nhỏ: 
 
 ### Animation
 
-Sao nền trôi rất chậm, hành tinh xoay nhẹ và đường quỹ đạo phát sáng khi hành tinh được chọn. Nút đáp án nảy xuống rất nhẹ khi bấm; đáp án đúng tạo một điểm sáng về thẻ tiến độ phần thưởng trong khoảng 300–450 ms. Chuyển động không thiết yếu sẽ tắt theo `prefers-reduced-motion`; không dùng hiệu ứng rung hoặc đếm giờ căng thẳng.
+Sao nền trôi rất chậm, hành tinh xoay nhẹ và đường quỹ đạo phát sáng khi hành tinh được chọn. Nút đáp án nảy xuống rất nhẹ khi bấm; đáp án đúng chỉ xác nhận điểm số, còn hiệu ứng mở khóa hành tinh dành riêng cho mốc huy hiệu. Chuyển động không thiết yếu sẽ tắt theo `prefers-reduced-motion`; không dùng hiệu ứng rung hoặc đếm giờ căng thẳng.
 
 ### Typography System
 
@@ -95,10 +95,10 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Menu sáu hoạt động không dùng lại Bản đồ hành trình; thay vào đó, mỗi thẻ có màu và ký hiệu phép tính riêng để giữ cảm giác phiêu lưu mà vẫn rõ ràng cho học sinh lớp 3.
 - Các màn chính dùng quỹ đạo chấm sáng, hành tinh màu theo phép tính và lời dẫn của Hana như tín hiệu hành trình trang trí; không đưa lại Bản đồ hành trình hoặc lộ trình bắt buộc vì không phù hợp yêu cầu sản phẩm.
 - Màn chơi luôn có quỹ đạo và các điểm mốc hành tinh theo phép tính hiện tại, để vùng vũ trụ là sân khấu của nhiệm vụ thay vì chỉ là nền trống.
-- Hệ phần thưởng chỉ dùng điểm lượt, Nhãn dán Sao Nhỏ, Huy hiệu Nhà Thám Hiểm và Cúp Phi Công Nhí; không sử dụng lại thuật ngữ, biểu tượng hoặc cơ chế Tinh thể–năng lượng cũ.
+- Hệ thành tích dùng điểm lượt cùng bốn huy hiệu mốc Cấp 20/60/80/100; không dùng lại thuật ngữ, biểu tượng hoặc cơ chế Tinh thể–năng lượng cũ, cũng không chúc mừng phần thưởng sau từng câu đúng.
 - Màn chào mừng và tổng kết luôn dùng quỹ đạo chấm với đủ bốn điểm mốc Cộng, Trừ, Nhân, Chia như một phần của bố cục chính; đó là dấu hiệu cho biết đây là hành trình của Hana, không chỉ là một giao diện có nền không gian.
 - “Phi Hành Tinh Phép Tính” là wordmark riêng và giữ nguyên khi đổi giao diện English; nội dung hỗ trợ vẫn chuyển ngữ đầy đủ, nhưng tên thương hiệu không bị thay bằng một nhãn chung chung.
-- 100 cấp thưởng vẫn được giữ theo yêu cầu học tập; khi xem English, nhãn thưởng hiển thị theo ba họ vật phẩm nhất quán — Little Star Sticker, Explorer Badge và Junior Pilot Trophy — với Hana Captain's Trophy là đích cấp 100.
+- Hành trình 100 cấp vẫn được giữ trong tổng kết như một cách ghi nhận mốc hành trình cao nhất; trong lúc học, giao diện chỉ ưu tiên điểm hiện tại và bốn huy hiệu mốc để không làm phân tán sự tập trung.
 - Màn chào mừng trình bày quỹ đạo bốn hành tinh như sân khấu nhiệm vụ chính. Các hành tinh lớn luôn có màu và ký hiệu phép tính: cam cộng, tím trừ, xanh ngọc nhân, vàng chia.
 - Wordmark **Phi Hành Tinh Phép Tính** là neo nhận diện ở cả thanh đầu và vùng hero; Hana là người hướng dẫn của thương hiệu, không thay thế tên game bằng một khẩu hiệu chung chung.
 
@@ -111,3 +111,4 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Huy hiệu chủ đề chỉ xuất hiện như phần thưởng cho điểm số đạt được; mỗi thẻ dùng màu mốc riêng, mô tả ngắn và không cạnh tranh với nút hành động chính màu Cam Sao Băng.
 - Nhận diện hiển thị chính thức ở mọi màn là **Học Toán Cùng Hana** / **Learn Math with Hana** theo yêu cầu sản phẩm. Tên “Phi Hành Tinh Phép Tính” chỉ mô tả hướng phong cách nội bộ, không thay thế tên ứng dụng đã chốt.
 - Màn hồ sơ, Hướng dẫn, làm bài và tổng kết đều phải có logo phi thuyền cùng một dải quỹ đạo bốn phép tính. Trên màn làm bài, hành tinh phép tính hiện tại, Hana, điểm/phần thưởng và câu hỏi được gom thành cụm buồng lái rõ ràng.
+- Mọi lớp phủ và cửa sổ xác nhận phải tôn trọng vùng an toàn phía trên của logo/Cài đặt; nội dung dài cuộn bên trong thẻ, không che thanh nhận diện cố định trên điện thoại.

@@ -30,6 +30,8 @@
   --border: oklch(0.8 0.05 80 / 0.4);
   --ring: oklch(0.69 0.18 32);
   --radius: 1rem;
+  --app-top-safe-zone: max(4.8rem, calc(env(safe-area-inset-top) + 4rem));
+  --app-overlay-edge: 1rem;
 }
 
 * {
@@ -1514,17 +1516,20 @@ button:focus-visible {
 .guide-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 10;
+  z-index: 60;
   display: grid;
   place-items: center;
-  padding: 20px;
+  padding: var(--app-top-safe-zone) var(--app-overlay-edge) var(--app-overlay-edge);
   background: rgba(5, 8, 30, 0.71);
   backdrop-filter: blur(8px);
 }
 .guide-card {
   position: relative;
   width: min(620px, 100%);
+  max-height: calc(100dvh - var(--app-top-safe-zone) - var(--app-overlay-edge));
   padding: 25px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   color: #293069;
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 26px;
@@ -1843,9 +1848,8 @@ button:focus-visible {
     overflow-x: auto;
   }
   .guide-card {
-    max-height: calc(100dvh - 32px);
+    max-height: calc(100dvh - var(--app-top-safe-zone) - var(--app-overlay-edge));
     padding: 21px;
-    overflow-y: auto;
   }
   .guide-heading {
     grid-template-columns: 82px 1fr;
@@ -3461,13 +3465,13 @@ button:focus-visible {
   background: rgba(168, 55, 69, 0.88);
 }
 .score-backdrop {
-  z-index: 14;
+  z-index: 60;
 }
 .score-card {
   position: relative;
   display: grid;
   width: min(610px, 100%);
-  max-height: calc(100dvh - 38px);
+  max-height: calc(100dvh - var(--app-top-safe-zone) - var(--app-overlay-edge));
   gap: 14px;
   overflow-y: auto;
   padding: 25px;
@@ -3540,7 +3544,7 @@ button:focus-visible {
   font-size: 27px;
   line-height: 1;
 }
-.score-reward-board {
+.score-badge-board {
   display: grid;
   gap: 9px;
   padding: 13px;
@@ -3548,7 +3552,7 @@ button:focus-visible {
   border-radius: 18px;
   background: linear-gradient(145deg, #fff9d9, #ffebad);
 }
-.score-reward-board > div:first-child {
+.score-badge-board > div:first-child {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3557,32 +3561,19 @@ button:focus-visible {
   font-weight: 800;
   letter-spacing: 0.09em;
 }
-.score-reward-board > div:first-child strong {
+.score-badge-board > div:first-child strong {
   color: #bd6538;
   font-family: "Baloo 2", cursive;
   font-size: 18px;
   letter-spacing: 0;
 }
-.score-reward-board > p {
-  margin: 0;
-  padding: 12px;
-  color: #796f8d;
-  border: 1px dashed #dfc877;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.45);
-  font-size: 10px;
-  font-weight: 700;
-  text-align: center;
-}
-.score-reward-list {
+.score-badge-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-height: 184px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 7px;
-  overflow-y: auto;
   padding: 2px;
 }
-.score-reward-list > span {
+.score-badge-list > span {
   display: grid;
   grid-template-columns: 24px 1fr;
   align-items: center;
@@ -3594,7 +3585,16 @@ button:focus-visible {
   background: rgba(255, 255, 255, 0.65);
   box-shadow: 0 2px 0 #e0ad4b;
 }
-.score-reward-list b {
+.score-badge-list > span:not(.is-earned) {
+  opacity: 0.56;
+  filter: saturate(0.7);
+}
+.score-badge-list > span.is-earned {
+  border-color: #df9d34;
+  background: linear-gradient(145deg, #fff8c8, #ffe19b);
+  box-shadow: 0 3px 0 #cb8e2f;
+}
+.score-badge-list b {
   display: grid;
   grid-row: span 2;
   width: 23px;
@@ -3605,13 +3605,13 @@ button:focus-visible {
   background: #fff7c3;
   font-size: 14px;
 }
-.score-reward-list em {
+.score-badge-list em {
   color: #a86836;
   font-size: 8px;
   font-style: normal;
   font-weight: 800;
 }
-.score-reward-list small {
+.score-badge-list small {
   overflow: hidden;
   color: #343b72;
   font-size: 9px;
@@ -3643,7 +3643,7 @@ button:focus-visible {
     font-size: 12px;
   }
   .score-card {
-    max-height: calc(100dvh - 26px);
+    max-height: calc(100dvh - var(--app-top-safe-zone) - var(--app-overlay-edge));
     gap: 11px;
     padding: 21px;
   }
@@ -3669,11 +3669,7 @@ button:focus-visible {
   .score-stats strong {
     font-size: 23px;
   }
-  .score-reward-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    max-height: 205px;
-  }
-  .score-reward-list > span {
+  .score-badge-list > span {
     min-height: 44px;
   }
   .score-continue {
@@ -3886,13 +3882,10 @@ button:focus-visible {
     border-color: rgba(255, 165, 132, 0.7);
     background: rgba(161, 57, 69, 0.9);
   }
-  .score-reward-list {
-    max-height: 215px;
-  }
-  .score-reward-list > span {
+  .score-badge-list > span {
     min-height: 54px;
   }
-  .score-reward-list small {
+  .score-badge-list small {
     overflow: visible;
     white-space: normal;
     font-size: 8px;
@@ -4880,7 +4873,7 @@ button:focus-visible {
 .table-panel-heading span,
 .table-picker-head,
 .reward-board-heading,
-.score-reward-board > div:first-child {
+.score-badge-board > div:first-child {
   font-size: 10px;
   letter-spacing: 0.1em;
 }
@@ -4914,7 +4907,7 @@ button:focus-visible {
   .table-panel-heading span,
   .table-picker-head,
   .reward-board-heading,
-  .score-reward-board > div:first-child {
+  .score-badge-board > div:first-child {
     font-size: 9px;
   }
   .math-helper,

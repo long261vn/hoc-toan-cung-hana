@@ -1,5 +1,12 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Vùng an toàn cửa sổ và hệ điểm–huy hiệu
+
+- [x] Thiết lập vùng an toàn chung phía trên cho Hướng dẫn, bảng điểm, xác nhận kết thúc, xác nhận về trang đầu và lớp mở khóa hành tinh; không cửa sổ nào được che logo hoặc Cài đặt.
+- [x] Loại bỏ thông báo/phần thưởng xuất hiện sau từng câu đúng; giữ điểm cơ bản +10/−2, thanh điểm và các mốc huy hiệu Cấp 20/60/80/100.
+- [x] Rà soát và viết lại Hướng dẫn, bảng điểm, tổng kết cùng các thông điệp liên quan để phản ánh logic điểm–huy hiệu mới nhất quán.
+- [x] Kiểm thử mobile/desktop, luồng làm đúng–sai, mở huy hiệu, TypeScript, production build và lưu checkpoint.
+
 ## Chọn dạng bài và quà thưởng mới
 
 - [ ] Rà soát luồng vào bốn phép tính và xác định tất cả nhãn, biến, hiệu ứng Tinh thể cũ.
