@@ -76,8 +76,6 @@ const openPractice = async () => {
   );
   await waitFor(".activity-card");
   await evaluate(`document.querySelector(".activity-card")?.click()`);
-  await waitFor(".format-option");
-  await evaluate(`document.querySelector(".format-option")?.click()`);
   await waitFor(".mission-control");
 };
 const inspectConfirm = async () => {

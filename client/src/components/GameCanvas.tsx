@@ -208,6 +208,16 @@ const THEME_BADGES: ThemeBadge[] = [
   { id: "level-80-math-comet", symbol: "☄", threshold: 800, accent: "mint", vi: { label: "Sao Chổi Toán Học", detail: "Chinh phục Cấp 80 thật xuất sắc." }, en: { label: "Math Comet", detail: "Reach Level 80 with skill." } },
   { id: "level-100-hana-legend", symbol: "♛", threshold: 1000, accent: "gold", vi: { label: "Huyền Thoại Hana", detail: "Hoàn thành trọn vẹn Cấp 100 huy hoàng." }, en: { label: "Hana Legend", detail: "Complete the triumphant Level 100." } },
 ];
+const JOURNEY_LEVEL_MAX = 100;
+const JOURNEY_LEVEL_POINTS = 10;
+
+function journeyLevelForPoints(points: number) {
+  return Math.min(
+    JOURNEY_LEVEL_MAX,
+    Math.floor(Math.max(0, points) / JOURNEY_LEVEL_POINTS)
+  );
+}
+
 const UNLOCKED_PLANET_NAMES: Record<Operation, { vi: string; en: string }> = {
   add: { vi: "Hành Tinh Phép Cộng", en: "Addition Planet" },
   subtract: { vi: "Hành Tinh Phép Trừ", en: "Subtraction Planet" },
@@ -1873,6 +1883,151 @@ function pickTestOperation() {
   return operations[Math.floor(Math.random() * operations.length)];
 }
 
+function hanaWorkedExample(operation: Operation, kind: QuizQuestion["kind"], language: Language) {
+  if (kind === "missing") {
+    const examples: Record<Operation, string> = {
+      add: "? + 5 = 12  →  12 − 5 = 7",
+      subtract: "? − 4 = 9  →  9 + 4 = 13",
+      multiply: "? × 4 = 20  →  20 ÷ 4 = 5",
+      divide: "20 ÷ ? = 5  →  20 ÷ 5 = 4",
+    };
+    return examples[operation];
+  }
+  const examples: Record<Operation, string> = {
+    add: language === "en" ? "14 + 3 = 17 · Count on 3 from 14." : "14 + 3 = 17 · Đếm thêm 3 bước từ 14.",
+    subtract: language === "en" ? "18 − 4 = 14 · Count back 4 from 18." : "18 − 4 = 14 · Đếm lùi 4 bước từ 18.",
+    multiply: language === "en" ? "3 × 4 = 12 · 3 equal groups of 4." : "3 × 4 = 12 · Có 3 nhóm bằng nhau, mỗi nhóm 4.",
+    divide: language === "en" ? "12 ÷ 3 = 4 · Share 12 equally into 3 groups." : "12 ÷ 3 = 4 · Chia đều 12 vào 3 nhóm.",
+  };
+  return examples[operation];
+}
+
+function HanaLearningDialog({
+  question,
+  chosenAnswer,
+  language,
+  playerName,
+  step,
+  isTimedTest,
+  onPrevious,
+  onNext,
+  onRetry,
+}: {
+  question: QuizQuestion;
+  chosenAnswer: number | null;
+  language: Language;
+  playerName: string;
+  step: number;
+  isTimedTest: boolean;
+  onPrevious: () => void;
+  onNext: () => void;
+  onRetry: () => void;
+}) {
+  const instructionPages = question.hintSteps.map(text =>
+    translateLearningText(text, language)
+  );
+  const isExample = step === instructionPages.length;
+  const pageText = isExample
+    ? hanaWorkedExample(question.operation, question.kind, language)
+    : instructionPages[step] ?? translateLearningText(question.hint, language);
+  const totalPages = instructionPages.length + 1;
+  const visualLabel =
+    question.operation === "add"
+      ? language === "en"
+        ? "Count forward"
+        : "Đếm tiến"
+      : question.operation === "subtract"
+        ? language === "en"
+          ? "Count backward"
+          : "Đếm lùi"
+        : question.operation === "multiply"
+          ? language === "en"
+            ? "Equal groups"
+            : "Nhóm bằng nhau"
+          : language === "en"
+            ? "Share equally"
+            : "Chia đều";
+
+  return (
+    <div
+      className="hana-learning-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label={
+        language === "en"
+          ? "Hana's step-by-step maths guide"
+          : "Hana hướng dẫn Toán từng bước"
+      }
+    >
+      <section className="hana-learning-card" data-i18n-direct>
+        <div className="hana-learning-heading">
+          <div className="hana-learning-robot" aria-hidden="true">
+            <div className="robot-fallback"><span /><span /><i /></div>
+          </div>
+          <div>
+            <p>{language === "en" ? "ROBOT HANA HELPS" : "ROBOT HANA CÙNG BẠN"}</p>
+            <h2>
+              {language === "en"
+                ? `Let’s work it out, ${playerName}!`
+                : `${playerName}, mình cùng làm lại nhé!`}
+            </h2>
+          </div>
+          {isTimedTest && (
+            <span className="hana-timer-paused">
+              {language === "en" ? "Timer paused" : "Đồng hồ tạm dừng"}
+            </span>
+          )}
+        </div>
+        <div className="hana-learning-context">
+          <strong>{question.expression}</strong>
+          <span>
+            {language === "en"
+              ? `You chose ${chosenAnswer ?? "?"}`
+              : `Bạn đã chọn ${chosenAnswer ?? "?"}`}
+          </span>
+        </div>
+        <div className={`hana-math-visual operation-${question.operation}`} aria-label={visualLabel}>
+          <span className="hana-visual-label">{visualLabel}</span>
+          <div className="hana-visual-dots" aria-hidden="true">
+            {Array.from({ length: question.operation === "multiply" || question.operation === "divide" ? 12 : 10 }).map((_, index) => (
+              <i key={index} />
+            ))}
+          </div>
+        </div>
+        <div className="hana-learning-step" aria-live="polite">
+          <span>{language === "en" ? `Step ${step + 1} of ${totalPages}` : `Bước ${step + 1}/${totalPages}`}</span>
+          <strong>
+            {isExample
+              ? language === "en"
+                ? "A similar example"
+                : "Bài mẫu tương tự"
+              : language === "en"
+                ? "Follow Hana’s clue"
+                : "Làm theo gợi ý của Hana"}
+          </strong>
+          <p>{pageText}</p>
+        </div>
+        <div className="hana-learning-actions">
+          {step > 0 ? (
+            <button type="button" className="hana-secondary-action" onClick={onPrevious}>
+              {language === "en" ? "Back" : "Quay lại"}
+            </button>
+          ) : <span />}
+          {isExample ? (
+            <button type="button" className="hana-primary-action" onClick={onRetry}>
+              {language === "en" ? "Try this question again" : "Thử lại câu này"} <ChevronRight size={17} />
+            </button>
+          ) : (
+            <button type="button" className="hana-primary-action" onClick={onNext}>
+              {language === "en" ? "Next step" : "Bước tiếp"} <ChevronRight size={17} />
+            </button>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const startedRef = useRef(false);
@@ -1889,6 +2044,7 @@ export default function GameCanvas() {
   const isProfileDemo = demoParams.has("profile");
   const isScoreDemo = demoParams.has("score");
   const isGuideDemo = demoParams.has("guide");
+  const isHanaGuideDemo = demoParams.has("hanaguide");
   const isSoundSettingsDemo = demoParams.has("soundsettings");
   const isTestSetupDemo = demoParams.has("testsetup");
   const isEndSessionConfirmDemo = demoParams.has("endconfirm");
@@ -1940,6 +2096,7 @@ export default function GameCanvas() {
             ? "testsetup"
             : isScoreDemo ||
                 isDemo ||
+                isHanaGuideDemo ||
                 isTableDemo ||
                 isMissingDemo ||
                 isEndSessionConfirmDemo
@@ -1967,6 +2124,7 @@ export default function GameCanvas() {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [practiceFormat, setPracticeFormat] =
     useState<PracticeFormat>("standard");
+  const [showPracticeFormatMenu, setShowPracticeFormatMenu] = useState(false);
   const [operation, setOperation] = useState<Operation>(initialOperation);
   const [question, setQuestion] = useState<QuizQuestion>(() =>
     isTableDemo
@@ -1982,9 +2140,13 @@ export default function GameCanvas() {
   const [selectedTables, setSelectedTables] = useState<number[]>(
     isTableDemo ? [2, 4, 6] : []
   );
-  const [answered, setAnswered] = useState<number | null>(null);
+  const [answered, setAnswered] = useState<number | null>(() =>
+    isHanaGuideDemo
+      ? question.options.find(option => option !== question.answer) ?? null
+      : null
+  );
   const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">(
-    "idle"
+    isHanaGuideDemo ? "wrong" : "idle"
   );
   const [testStep, setTestStep] = useState(0);
   const [testCorrect, setTestCorrect] = useState(0);
@@ -1993,6 +2155,9 @@ export default function GameCanvas() {
     useState<TestDurationSeconds>(120);
   const [testSecondsRemaining, setTestSecondsRemaining] = useState(120);
   const [testTimedOut, setTestTimedOut] = useState(false);
+  const [showHanaLearningGuide, setShowHanaLearningGuide] =
+    useState(isHanaGuideDemo);
+  const [hanaLearningStep, setHanaLearningStep] = useState(0);
   const [showGuide, setShowGuide] = useState(isGuideDemo);
   const [showScorePanel, setShowScorePanel] = useState(isScoreDemo);
   const [showEndSessionConfirm, setShowEndSessionConfirm] = useState(
@@ -2024,6 +2189,8 @@ export default function GameCanvas() {
   );
   const previousSessionPointsRef = useRef(sessionPoints);
   const unlockedBadgeIdsThisSessionRef = useRef<Set<string>>(new Set());
+  const penalizedQuestionIdRef = useRef<string | null>(null);
+  const pausedTimedTestAtRef = useRef<number | null>(null);
   const [correctCount, setCorrectCount] = useState(
     isMaxRewardDemo ? 100 : isSummaryDemo || isScoreDemo ? 10 : 0
   );
@@ -2444,8 +2611,16 @@ export default function GameCanvas() {
       setOperation(nextActivity);
       setMode("practice");
       setPracticeFormat("standard");
+      setQuestion(
+        freshQuestion(() =>
+          generatePracticeQuestion(nextActivity, difficulty, "standard")
+        )
+      );
+      setAnswered(null);
+      setFeedback("idle");
+      if (sessionStartedAt === null) startFreshSession();
       handleRef.current?.setActivePlanet(nextActivity);
-      setScreen("format");
+      setScreen("game");
       return;
     }
     setAnswered(null);
@@ -2482,6 +2657,20 @@ export default function GameCanvas() {
     );
     handleRef.current?.setActivePlanet(operation);
     setScreen("game");
+  };
+
+  const changePracticeFormatInGame = (nextFormat: PracticeFormat) => {
+    if (mode !== "practice") return;
+    playSound("tap");
+    setPracticeFormat(nextFormat);
+    setQuestion(
+      freshQuestion(() =>
+        generatePracticeQuestion(operation, difficulty, nextFormat)
+      )
+    );
+    setAnswered(null);
+    setFeedback("idle");
+    setShowPracticeFormatMenu(false);
   };
 
   const beginTimedTest = () => {
@@ -2553,19 +2742,45 @@ export default function GameCanvas() {
       } else {
         playSound("wrong");
         setFeedback("wrong");
-        setWrongCount(current => current + 1);
-        setSessionPoints(current => Math.max(0, current - 2));
+        if (penalizedQuestionIdRef.current !== question.id) {
+          penalizedQuestionIdRef.current = question.id;
+          setWrongCount(current => current + 1);
+          setSessionPoints(current => Math.max(0, current - 2));
+        }
+        setHanaLearningStep(0);
+        setShowHanaLearningGuide(true);
+        if (mode === "test" && pausedTimedTestAtRef.current === null)
+          pausedTimedTestAtRef.current = Date.now();
       }
     },
     [
       answered,
       mode,
       playSound,
-      question.answer,
+      question,
       selectedTables.length,
       testComplete,
     ]
   );
+
+  const retryQuestionAfterHanaGuide = () => {
+    if (
+      mode === "test" &&
+      pausedTimedTestAtRef.current !== null &&
+      testEndsAtRef.current !== null
+    ) {
+      testEndsAtRef.current += Date.now() - pausedTimedTestAtRef.current;
+      pausedTimedTestAtRef.current = null;
+    }
+    setShowHanaLearningGuide(false);
+    setHanaLearningStep(0);
+    setAnswered(null);
+    setFeedback("idle");
+  };
+
+  useEffect(() => {
+    penalizedQuestionIdRef.current = null;
+  }, [question.id]);
 
   const continueMission = () => {
     if (mode === "tables" && selectedTables.length === 0) return;
@@ -2585,7 +2800,13 @@ export default function GameCanvas() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (screen !== "game" || showScorePanel || showEndSessionConfirm) return;
+      if (
+        screen !== "game" ||
+        showScorePanel ||
+        showEndSessionConfirm ||
+        showHanaLearningGuide
+      )
+        return;
       const numeric = Number(event.key);
       if (numeric >= 1 && numeric <= 4) {
         const option = question.options[numeric - 1];
@@ -2601,6 +2822,7 @@ export default function GameCanvas() {
     question.options,
     screen,
     showEndSessionConfirm,
+    showHanaLearningGuide,
     showScorePanel,
   ]);
 
@@ -2625,6 +2847,7 @@ export default function GameCanvas() {
       mode !== "test" ||
       screen !== "game" ||
       testComplete ||
+      showHanaLearningGuide ||
       testEndsAtRef.current === null
     )
       return;
@@ -2648,13 +2871,15 @@ export default function GameCanvas() {
     syncTestClock();
     const timer = window.setInterval(syncTestClock, 250);
     return () => window.clearInterval(timer);
-  }, [mode, playSound, screen, testComplete]);
+  }, [mode, playSound, screen, showHanaLearningGuide, testComplete]);
 
   useEffect(() => {
     if (sessionStartedAt === null) return;
     const syncClock = () => {
       const isLearningActive =
-        screen === "game" && document.visibilityState === "visible";
+        screen === "game" &&
+        document.visibilityState === "visible" &&
+        !showHanaLearningGuide;
       if (isLearningActive && pausedStartedAtRef.current !== null) {
         pausedDurationRef.current += Date.now() - pausedStartedAtRef.current;
         pausedStartedAtRef.current = null;
@@ -2670,7 +2895,7 @@ export default function GameCanvas() {
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", syncClock);
     };
-  }, [screen, sessionStartedAt]);
+  }, [screen, sessionStartedAt, showHanaLearningGuide]);
 
   useEffect(() => {
     const persistedScreen: SessionDraft["screen"] | null =
@@ -2862,11 +3087,15 @@ export default function GameCanvas() {
   const earnedRewards = rewardsForPoints(sessionPoints);
   const hasSessionPoints = sessionPoints > 0;
   const highestReward = earnedRewards.at(-1);
+  const journeyLevel = journeyLevelForPoints(sessionPoints);
   const nextThemeBadge = THEME_BADGES.find(
     badge => sessionPoints < badge.threshold
   );
   const pointsUntilNextBadge = nextThemeBadge
     ? nextThemeBadge.threshold - sessionPoints
+    : 0;
+  const levelsUntilNextBadge = nextThemeBadge
+    ? Math.max(0, nextThemeBadge.threshold / JOURNEY_LEVEL_POINTS - journeyLevel)
     : 0;
   const selectedAvatar =
     AVATAR_OPTIONS.find(avatar => avatar.id === avatarId) ?? AVATAR_OPTIONS[0];
@@ -3296,7 +3525,11 @@ export default function GameCanvas() {
       context.fillStyle = "#a66f2d";
       context.font = "800 18px Be Vietnam Pro, sans-serif";
       context.textAlign = "left";
-      context.fillText(copy("PHẦN THƯỞNG CAO NHẤT", "HIGHEST REWARD"), 138, 838);
+      context.fillText(
+        copy("CẤP HÀNH TRÌNH CAO NHẤT", "HIGHEST JOURNEY LEVEL"),
+        138,
+        838
+      );
       const badgeFill = context.createRadialGradient(188, 896, 8, 188, 896, 58);
       badgeFill.addColorStop(0, "#fffbe0");
       badgeFill.addColorStop(0.64, "#ffd66d");
@@ -3316,7 +3549,7 @@ export default function GameCanvas() {
         context,
         highestReward
           ? `${language === "en" ? "Level" : "Cấp"} ${highestReward.level} · ${rewardLabel(highestReward)}`
-          : copy("Phần thưởng đầu tiên đang chờ bạn!", "Your first reward is waiting!"),
+          : copy("Cấp hành trình đầu tiên đang chờ bạn!", "Your first Journey Level is waiting!"),
         286,
         886,
         620,
@@ -3329,8 +3562,8 @@ export default function GameCanvas() {
         highestReward
           ? rewardDetail(highestReward)
           : copy(
-              "Hãy làm thêm vài phép tính để mở phần thưởng nhé!",
-              "Solve a few more questions to unlock a reward!"
+              "Hãy làm thêm vài phép tính để tăng Cấp hành trình nhé!",
+              "Solve a few more questions to raise your Journey Level!"
             ),
         286,
         940,
@@ -3462,6 +3695,7 @@ export default function GameCanvas() {
       </button>
       {screen !== "summary" &&
         !showGuide &&
+        !showHanaLearningGuide &&
         !showScorePanel &&
         !showEndSessionConfirm &&
         !showHomeConfirm &&
@@ -3805,7 +4039,9 @@ export default function GameCanvas() {
               <strong>
                 {earnedRewards.length
                   ? `${copy("Cấp", "Level")} ${highestReward?.level}/${sessionRewards.length}`
-                  : copy("Chưa có điểm", "No points yet")}
+                  : hasSessionPoints
+                    ? `${copy("Cấp", "Level")} 0/${sessionRewards.length}`
+                    : copy("Chưa có điểm", "No points yet")}
               </strong>
             </div>
             {highestReward ? (
@@ -3824,9 +4060,13 @@ export default function GameCanvas() {
               </div>
             ) : (
               <p className="reward-empty">
-                {language === "en"
-                  ? `${displayName}, solve a few questions to begin your journey.`
-                  : `${displayName}, hãy làm vài phép tính để bắt đầu hành trình nhé.`}
+                {hasSessionPoints
+                  ? language === "en"
+                    ? `${displayName}, you have ${sessionPoints}/10 points toward Journey Level 1. Keep going!`
+                    : `${displayName}, bạn đã có ${sessionPoints}/10 điểm để đạt Cấp hành trình 1. Cố lên!`
+                  : language === "en"
+                    ? `${displayName}, solve a few questions to begin your journey.`
+                    : `${displayName}, hãy làm vài phép tính để bắt đầu hành trình nhé.`}
               </p>
             )}
           </section>
@@ -4007,8 +4247,44 @@ export default function GameCanvas() {
                     ? tableSubtitle(tableKind)
                     : mode === "test"
                       ? copy("Bài kiểm tra tính giờ", "Timed test")
-                      : practiceFormatName(practiceFormat, language)}
+                      : copy("Luyện tập", "Practice")}
                 </p>
+                {!isTableMode && mode === "practice" && (
+                  <div className="in-game-format-switch">
+                    <button
+                      type="button"
+                      className="in-game-format-trigger"
+                      aria-haspopup="menu"
+                      aria-expanded={showPracticeFormatMenu}
+                      onClick={() => {
+                        playSound("tap");
+                        setShowPracticeFormatMenu(open => !open);
+                      }}
+                    >
+                      {practiceFormatName(practiceFormat, language)} <span>▾</span>
+                    </button>
+                    {showPracticeFormatMenu && (
+                      <div className="in-game-format-menu" role="menu">
+                        {(Object.keys(practiceFormatMeta) as PracticeFormat[]).map(
+                          format => (
+                            <button
+                              key={format}
+                              type="button"
+                              role="menuitemradio"
+                              aria-checked={practiceFormat === format}
+                              className={
+                                practiceFormat === format ? "is-active" : ""
+                              }
+                              onClick={() => changePracticeFormatInGame(format)}
+                            >
+                              {practiceFormatName(format, language)}
+                            </button>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
                 <h3 data-dynamic-text>
                   {testComplete
                     ? copy("Hết giờ rồi!", "Time is up!")
@@ -4034,8 +4310,8 @@ export default function GameCanvas() {
                 type="button"
                 onClick={() => setShowScorePanel(true)}
                 aria-label={copy(
-                  "Xem điểm hiện tại và tiến độ phần thưởng",
-                  "View current points and reward progress"
+                  "Xem điểm hiện tại, Cấp hành trình và tiến độ huy hiệu",
+                  "View current points, journey level and badge progress"
                 )}
               >
                 <span data-dynamic-text>
@@ -4082,9 +4358,24 @@ export default function GameCanvas() {
               <span className="mission-reward-signal">
                 <Trophy size={14} aria-hidden="true" />
                 <span className="mission-badge-label">
-                  {mode === "test"
-                    ? copy("Chế độ kiểm tra", "Test mode")
-                    : `${copy("Mốc huy hiệu", "Badge milestones")} ${sessionThemeBadges.length}/${THEME_BADGES.length}`}
+                  <span className="mission-badge-full">
+                    {mode === "test"
+                      ? copy("Chế độ kiểm tra", "Test mode")
+                      : nextThemeBadge
+                        ? language === "en"
+                          ? `L${journeyLevel}/100 → Badge L${nextThemeBadge.threshold / JOURNEY_LEVEL_POINTS}`
+                          : `Cấp ${journeyLevel}/100 → Huy hiệu ${nextThemeBadge.threshold / JOURNEY_LEVEL_POINTS}`
+                        : language === "en"
+                          ? "L100/100 → 4 badges"
+                          : "Cấp 100/100 → Đủ 4 huy hiệu"}
+                  </span>
+                  <span className="mission-badge-compact">
+                    {mode === "test"
+                      ? copy("KT", "Test")
+                      : language === "en"
+                        ? `L${journeyLevel}`
+                        : `Cấp ${journeyLevel}`}
+                  </span>
                 </span>
               </span>
             </div>
@@ -4314,66 +4605,26 @@ export default function GameCanvas() {
                         );
                       })}
                     </div>
-                    {feedback !== "idle" && (
+                    {feedback === "correct" && (
                       <div
-                        className={
-                          feedback === "correct"
-                            ? "feedback-banner is-correct"
-                            : "feedback-banner is-wrong"
-                        }
+                        className="feedback-banner is-correct"
                       >
-                        {feedback === "correct" ? (
-                          <div>
-                            <Check size={18} />
-                            <span>
-                              {language === "en"
-                                ? `Correct, ${displayName}! +10 points.`
-                                : `Đúng rồi, ${displayName}! +10 điểm.`}
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="hana-hint">
-                            <div
-                              className="hana-hint-robot"
-                              aria-label="Robot Hana đang gợi ý"
-                            >
-                              <span />
-                              <span />
-                              <i />
-                            </div>
-                            <div className="hana-hint-copy">
-                              <strong>
-                                {language === "en"
-                                  ? `Robot Hana's hint for ${displayName}:`
-                                  : `Robot Hana gợi ý cho ${displayName}:`}
-                              </strong>
-                              <span>
-                                {language === "en"
-                                  ? `That is okay. This try loses 2 points. ${translateLearningText(question.hint, language)}`
-                                  : `Chưa sao đâu, lượt này giảm 2 điểm. ${translateLearningText(question.hint, language)}`}
-                              </span>
-                              <ol>
-                                {question.hintSteps.map(step => (
-                                  <li key={step}>
-                                    {translateLearningText(step, language)}
-                                  </li>
-                                ))}
-                              </ol>
-                            </div>
-                          </div>
-                        )}
+                        <div>
+                          <Check size={18} />
+                          <span>
+                            {language === "en"
+                              ? `Correct, ${displayName}! +10 points.`
+                              : `Đúng rồi, ${displayName}! +10 điểm.`}
+                          </span>
+                        </div>
                         <button
                           type="button"
-                          className={`feedback-action ${feedback === "correct" ? "is-next" : "is-retry"}`}
+                          className="feedback-action is-next"
                           onClick={continueMission}
                         >
-                          {feedback === "correct"
-                            ? mode === "test"
-                              ? copy("Câu tiếp", "Next question")
-                              : copy("Nhiệm vụ tiếp", "Next mission")
-                            : mode === "test"
-                              ? copy("Câu tiếp", "Next question")
-                              : copy("Thử lại", "Try again")}
+                          {mode === "test"
+                            ? copy("Câu tiếp", "Next question")
+                            : copy("Nhiệm vụ tiếp", "Next mission")}
                           <ChevronRight size={17} />
                         </button>
                       </div>
@@ -4453,6 +4704,24 @@ export default function GameCanvas() {
         </>
       )}
 
+      {showHanaLearningGuide && (
+        <HanaLearningDialog
+          question={question}
+          chosenAnswer={answered}
+          language={language}
+          playerName={displayName}
+          step={hanaLearningStep}
+          isTimedTest={mode === "test"}
+          onPrevious={() => setHanaLearningStep(current => Math.max(0, current - 1))}
+          onNext={() =>
+            setHanaLearningStep(current =>
+              Math.min(question.hintSteps.length, current + 1)
+            )
+          }
+          onRetry={retryQuestionAfterHanaGuide}
+        />
+      )}
+
       {showGuide && (
         <div
           className="guide-backdrop"
@@ -4509,8 +4778,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                        "Ở Luyện tập, bạn chọn Cộng, Trừ, Học Bảng Nhân và Bảng Chia, Nhân hoặc Chia. Với bốn phép tính, chọn Bài bình thường, Tìm thành phần hoặc Cả hai. Ở Bài kiểm tra, chọn cấp độ và 2, 5 hoặc 10 phút.",
-                        "In Practice, choose Addition, Subtraction, Multiplication and Division Tables, Multiplication or Division. For the four operations, choose Standard, Missing Part or Both. In Test, choose a level and 2, 5 or 10 minutes."
+                        "Ở Luyện tập, chạm Cộng, Trừ, Nhân hoặc Chia để vào ngay Bài bình thường. Bạn có thể đổi sang Tìm thành phần hoặc Cả hai ngay trong lúc học. Với Bảng Nhân và Bảng Chia, hãy chọn bảng trước. Ở Bài kiểm tra, chọn cấp độ và 2, 5 hoặc 10 phút.",
+                        "In Practice, tap Addition, Subtraction, Multiplication or Division to begin Standard practice straight away. You can switch to Find the Missing Number or Both while learning. For Multiplication and Division Tables, choose your tables first. In Test, choose a level and 2, 5 or 10 minutes."
                     )}
                   </p>
                 </div>
@@ -4540,8 +4809,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                      "Bốn huy hiệu đặc biệt chờ bạn ở Cấp 20, 60, 80 và 100 — tương ứng 200, 600, 800 và 1.000 điểm. Khi chạm một mốc mới, Hana mở khóa một Hành Tinh Phép Tính.",
-                      "Four special badges wait at Levels 20, 60, 80 and 100 — 200, 600, 800 and 1,000 points. When you reach a new milestone, Hana unlocks a Math Operation Planet."
+                      "Mỗi 10 điểm giúp bạn tăng 1 Cấp hành trình. Bốn huy hiệu đặc biệt mở ở Cấp 20, 60, 80 và 100 — tương ứng 200, 600, 800 và 1.000 điểm. Khi chạm một mốc mới, Hana mở khóa một Hành Tinh Phép Tính.",
+                      "Every 10 points move you forward by 1 Journey Level. Four special badges unlock at Levels 20, 60, 80 and 100 — 200, 600, 800 and 1,000 points. When you reach a new milestone, Hana unlocks a Math Operation Planet."
                     )}
                   </p>
                 </div>
@@ -4557,8 +4826,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                      "Nếu chọn chưa đúng, Hana sẽ hướng dẫn từng bước để bạn thử lại. Bấm Điểm hiện tại để xem điểm và mốc huy hiệu tiếp theo, Đổi nhiệm vụ để giữ điểm, hoặc Kết thúc lượt để xem tổng kết và lưu ảnh kỷ niệm.",
-                      "If an answer is not right yet, Hana gives step-by-step help so you can try again. Tap Current points to view your score and next badge milestone, Change mission to keep your points, or End session to see your summary and save a souvenir image."
+                      "Nếu chọn chưa đúng, cửa sổ Hana sẽ hiện từng bước làm, hình minh họa và bài mẫu trước khi bạn thử lại. Bấm Điểm hiện tại để xem Cấp hành trình và huy hiệu tiếp theo, Đổi nhiệm vụ để giữ điểm, hoặc Kết thúc lượt để xem tổng kết và lưu ảnh kỷ niệm.",
+                      "If an answer is not right yet, Hana opens a guide with steps, a picture and a worked example before you try again. Tap Current points to view your Journey Level and next badge, Change mission to keep your points, or End session to see your summary and save a souvenir image."
                     )}
                   </p>
                 </div>
@@ -4613,11 +4882,11 @@ export default function GameCanvas() {
                 <p>
                   {nextThemeBadge
                     ? language === "en"
-                      ? `${pointsUntilNextBadge} points until ${nextThemeBadge.en.label}.`
-                      : `Còn ${pointsUntilNextBadge} điểm để đạt ${nextThemeBadge.vi.label}.`
+                      ? `Journey Level ${journeyLevel}/100 · ${levelsUntilNextBadge} levels until ${nextThemeBadge.en.label}.`
+                      : `Cấp hành trình ${journeyLevel}/100 · còn ${levelsUntilNextBadge} cấp để đạt ${nextThemeBadge.vi.label}.`
                     : copy(
-                        "Bạn đã sưu tập đủ 4 huy hiệu đặc biệt rồi!",
-                        "You have collected all 4 special badges!"
+                        "Cấp hành trình 100/100 · bạn đã sưu tập đủ 4 huy hiệu đặc biệt!",
+                        "Journey Level 100/100 · you have collected all 4 special badges!"
                       )}
                 </p>
               </div>
@@ -4652,6 +4921,11 @@ export default function GameCanvas() {
                   {sessionThemeBadges.length}/{THEME_BADGES.length}
                 </strong>
               </div>
+              <p className="score-journey-note">
+                {language === "en"
+                  ? `Every 10 points move you forward by 1 Journey Level. ${pointsUntilNextBadge} points remain until the next badge.`
+                  : `Mỗi 10 điểm giúp bạn tăng 1 Cấp hành trình. Còn ${pointsUntilNextBadge} điểm để mở huy hiệu tiếp theo.`}
+              </p>
               <div className="score-badge-list">
                 {THEME_BADGES.map(badge => {
                   const badgeCopy = language === "en" ? badge.en : badge.vi;

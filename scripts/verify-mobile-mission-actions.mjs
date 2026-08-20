@@ -18,8 +18,7 @@ const openPractice = async () => {
   await evaluate(`(() => { const input = document.querySelector(".profile-name-field input"); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; setter.call(input, "Minh"); input.dispatchEvent(new Event("input", { bubbles: true })); })()`);
   await evaluate(`document.querySelector(".profile-continue")?.click()`); await waitFor(".start-mode-card.is-practice");
   await evaluate(`document.querySelector(".start-mode-card.is-practice")?.click()`); await waitFor(".activity-card");
-  await evaluate(`document.querySelector(".activity-card")?.click()`); await waitFor(".format-option");
-  await evaluate(`document.querySelector(".format-option")?.click()`); await waitFor(".session-bottom-actions");
+  await evaluate(`document.querySelector(".activity-card")?.click()`); await waitFor(".session-bottom-actions");
 };
 try {
   await openPractice();

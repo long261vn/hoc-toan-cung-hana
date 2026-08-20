@@ -22,10 +22,10 @@ try {
   await waitFor(".profile-name-field input");
   await evaluate(`(() => { const input = document.querySelector(".profile-name-field input"); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; setter.call(input, "Linh"); input.dispatchEvent(new Event("input", { bubbles: true })); })()`);
   await evaluate(`document.querySelector(".profile-continue")?.click()`);
+  await waitFor(".start-mode-card.is-practice");
+  await evaluate(`document.querySelector(".start-mode-card.is-practice")?.click()`);
   await waitFor(".activity-card");
   await evaluate(`Array.from(document.querySelectorAll(".activity-card")).find((card) => card.textContent.includes("Addition"))?.click()`);
-  await waitFor(".format-option");
-  await evaluate(`document.querySelector(".format-option")?.click()`);
   await waitFor(".math-expression");
   const correctAnswer = await getAnswer();
   await evaluate(`Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) === ${correctAnswer})?.click()`);
@@ -36,8 +36,8 @@ try {
   await waitFor(".math-expression");
   const nextAnswer = await getAnswer();
   await evaluate(`Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) !== ${nextAnswer})?.click()`);
-  await waitFor(".feedback-action.is-retry");
-  const retry = await actionInfo();
-  if (retry.height < 40 || retry.minHeight < 40 || !retry.background.includes("gradient")) throw new Error(`Nút Thử lại chưa đủ nổi bật: ${JSON.stringify(retry)}`);
+  await waitFor(".hana-primary-action");
+  const retry = await evaluate(`(() => { const button = document.querySelector(".hana-primary-action"); const style = button ? getComputedStyle(button) : null; const rect = button?.getBoundingClientRect(); return { label: button?.textContent?.trim() ?? "", height: rect?.height ?? 0, minHeight: style ? Number.parseFloat(style.minHeight) : 0, background: style?.backgroundImage ?? style?.backgroundColor ?? "" }; })()`);
+  if (retry.height < 40 || retry.minHeight < 40 || !retry.label.includes("Next step")) throw new Error(`Nút hướng dẫn Hana chưa đủ nổi bật: ${JSON.stringify(retry)}`);
   console.log(JSON.stringify({ next, retry, status: "feedback action buttons valid" }));
 } finally { socket.close(); }

@@ -223,8 +223,6 @@ try {
   );
   await waitFor(".activity-card");
   await evaluate(`document.querySelector(".activity-card")?.click()`);
-  await waitFor(".format-option");
-  await evaluate(`document.querySelector(".format-option")?.click()`);
   await waitFor(".math-expression");
   const wrongAnswer = await evaluate(
     `(() => { const [left] = (document.querySelector(".math-expression")?.textContent ?? "").split("="); const answer = Function('"use strict"; return (' + left.replace("×", "*").replace("÷", "/").replace("−", "-") + ");")(); return Array.from(document.querySelectorAll(".answer-button")).map((button) => Number(button.querySelector("strong")?.textContent)).find((value) => value !== answer); })()`
@@ -232,13 +230,13 @@ try {
   await evaluate(
     `Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) === ${wrongAnswer})?.click()`
   );
-  await waitFor(".hana-hint-copy");
+  await waitFor(".hana-learning-card");
   const hint = await evaluate(
-    `document.querySelector(".hana-hint-copy")?.textContent?.replace(/\\s+/g, " ").trim()`
+    `document.querySelector(".hana-learning-card")?.textContent?.replace(/\\s+/g, " ").trim()`
   );
-  noVietnamese(hint, "Gợi ý Robot Hana");
-  if (!hint.includes("Robot Hana's hint for Alex"))
-    throw new Error(`Gợi ý Hana English chưa đúng: ${hint}`);
+  noVietnamese(hint, "Cửa sổ hướng dẫn Robot Hana");
+  if (!hint.includes("Let’s work it out, Alex!") || !hint.includes("Step 1 of"))
+    throw new Error(`Cửa sổ Hana English chưa đúng: ${hint}`);
   console.log(
     JSON.stringify({
       welcome,

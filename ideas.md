@@ -112,3 +112,6 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Nhận diện hiển thị chính thức ở mọi màn là **Học Toán Cùng Hana** / **Learn Math with Hana** theo yêu cầu sản phẩm. Tên “Phi Hành Tinh Phép Tính” chỉ mô tả hướng phong cách nội bộ, không thay thế tên ứng dụng đã chốt.
 - Màn hồ sơ, Hướng dẫn, làm bài và tổng kết đều phải có logo phi thuyền cùng một dải quỹ đạo bốn phép tính. Trên màn làm bài, hành tinh phép tính hiện tại, Hana, điểm/phần thưởng và câu hỏi được gom thành cụm buồng lái rõ ràng.
 - Mọi lớp phủ và cửa sổ xác nhận phải tôn trọng vùng an toàn phía trên của logo/Cài đặt; nội dung dài cuộn bên trong thẻ, không che thanh nhận diện cố định trên điện thoại.
+- Wordmark **Học Toán Cùng Hana** cùng biểu tượng tên lửa–quỹ đạo luôn là neo nhận diện cố định trên các màn chính; nhãn nhiệm vụ chỉ là thông tin phụ của buồng lái.
+- Trên màn học, dải hành tinh hiện tại, Hana, điểm, Cấp hành trình và huy hiệu tiếp theo cùng tạo thành một cụm buồng lái ngắn trước câu hỏi; nhãn phụ được rút gọn ở chiều rộng cực hẹp thay vì chồng lấn.
+- Khi trả lời chưa đúng, phản hồi không dùng thẻ lỗi đỏ nội tuyến. Hana mở một cửa sổ kem dịu gồm gợi ý từng bước, minh họa, bài mẫu và thao tác “Thử lại câu này”; màu Cam Sao Băng chỉ dẫn đường đi tiếp, không biểu thị phạt lỗi.

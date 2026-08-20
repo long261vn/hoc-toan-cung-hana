@@ -70,8 +70,6 @@ try {
   );
   await waitFor(".activity-card");
   await evaluate(`document.querySelector(".activity-card")?.click()`);
-  await waitFor(".format-option");
-  await evaluate(`document.querySelector(".format-option")?.click()`);
   await waitFor(".math-expression");
   const before = await evaluate(
     `(() => { const expression = document.querySelector(".math-expression")?.textContent?.trim(); const [left] = expression.split("="); const answer = Function('"use strict"; return (' + left.replace("×", "*").replace("÷", "/").replace("−", "-") + ");")(); return { expression, answer }; })()`

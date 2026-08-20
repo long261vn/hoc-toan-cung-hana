@@ -70,10 +70,13 @@ const startToMenu = async () => {
 };
 const chooseActivity = async (index, formatIndex = null) => {
   await evaluate(`document.querySelectorAll(".activity-card")[${index}]?.click()`);
-  if (formatIndex !== null) {
-    await waitFor(".format-option", "màn chọn dạng bài");
-    await evaluate(`document.querySelectorAll(".format-option")[${formatIndex}]?.click()`);
+  if (formatIndex !== null && formatIndex > 0) {
     await waitFor(".math-expression", "câu hỏi phép tính");
+    await evaluate(`document.querySelector(".in-game-format-trigger")?.click()`);
+    await waitFor(".in-game-format-menu", "bộ đổi dạng bài");
+    await evaluate(`document.querySelectorAll(".in-game-format-menu button")[${formatIndex}]?.click()`);
+    await sleep(80);
+    await waitFor(".math-expression", "câu hỏi theo dạng mới");
   } else {
     await waitFor(".table-practice-panel, .math-expression", "màn luyện bảng hoặc kiểm tra");
   }

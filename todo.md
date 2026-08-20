@@ -1,5 +1,26 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Triển khai cải tiến hành trình, luồng học và gợi ý Hana
+
+- [x] Chuẩn hóa nhãn và tiến độ Cấp hành trình 1–100 với bốn huy hiệu Cấp 20/60/80/100 trên dải nhiệm vụ, bảng điểm, tổng kết và Hướng dẫn.
+- [x] Rút ngắn lối vào Cộng/Trừ/Nhân/Chia bằng bài bình thường mặc định; thêm bộ đổi dạng bài ngay trong màn học.
+- [x] Tạo cửa sổ Hana ba bước sau đáp án sai, có minh họa trực quan, bài mẫu, thử lại câu gốc và cơ chế tạm dừng bài kiểm tra công bằng.
+- [x] Kiểm thử sâu câu hỏi–đáp án, điểm, mốc huy hiệu, bảng nhân–chia, timed test, lưu phiên, VIE/ENG, điện thoại/desktop và ảnh kỷ niệm.
+- [x] Chạy TypeScript, production build, hồi quy tự động và lưu checkpoint.
+
+## Kế hoạch cải tiến ưu tiên
+
+- [x] Lập phương án làm rõ Cấp hành trình 1–100 và bốn huy hiệu chủ đề, tránh nhầm lẫn cho học sinh.
+- [x] Lập phương án rút ngắn đường vào bài học mà vẫn giữ lựa chọn dạng bài khi cần.
+- [x] Thiết kế luồng cửa sổ Hana hướng dẫn trực quan sau đáp án sai, gồm bước làm và ví dụ/hình minh họa theo phép tính.
+- [x] Xác định tiêu chí bắt buộc không chồng lấn, không cuộn tìm thao tác chính trên màn hình điện thoại.
+
+## Đánh giá trải nghiệm theo ba góc nhìn
+
+- [x] Trải nghiệm các luồng chính với góc nhìn học sinh mới dùng, học sinh đã quen làm bài và phụ huynh quan sát.
+- [x] Chấm điểm nội dung, đồ họa và độ hấp dẫn theo thang 10; nêu rõ bằng chứng quan sát cho từng điểm số.
+- [x] Tổng hợp khuyết điểm và đề xuất cải thiện theo ưu tiên tác động tới trải nghiệm học sinh.
+
 ## Âm thanh đầu phiên và bảng nhân–chia trên điện thoại
 
 - [x] Kiểm tra khởi tạo nhạc nền, trạng thái âm lượng và thao tác đầu tiên để học sinh nhận biết âm thanh đã sẵn sàng.

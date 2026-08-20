@@ -153,7 +153,11 @@ try {
     if ((await evaluate(`document.documentElement.lang`)) === "vi") break;
     await sleep(100);
   }
-  await evaluate(`document.querySelector(".answer-button")?.click()`);
+  await evaluate(`(() => {
+    const expression = document.querySelector(".math-expression")?.textContent ?? "";
+    const answer = Function('"use strict"; return (' + expression.split("=")[0].replace("×", "*").replace("÷", "/").replace("−", "-") + ')')();
+    Array.from(document.querySelectorAll(".answer-button")).find(button => Number(button.querySelector("strong")?.textContent) === answer)?.click();
+  })()`);
   await waitFor(".feedback-banner");
   await evaluate(`document.querySelector(".feedback-action")?.click()`);
   for (let attempt = 0; attempt < 30; attempt += 1) {
@@ -172,6 +176,24 @@ try {
     throw new Error(
       `Bài kiểm tra chưa tạo câu mới sau đáp án: ${firstExpression}`
     );
+  await evaluate(`(() => {
+    const expression = document.querySelector(".math-expression")?.textContent ?? "";
+    const answer = Function('"use strict"; return (' + expression.split("=")[0].replace("×", "*").replace("÷", "/").replace("−", "-") + ')')();
+    Array.from(document.querySelectorAll(".answer-button")).find(button => Number(button.querySelector("strong")?.textContent) !== answer)?.click();
+  })()`);
+  await waitFor(".hana-learning-card");
+  const pausedTimer = await evaluate(`document.querySelector(".mission-counter strong")?.textContent`);
+  await sleep(1200);
+  const pausedTimerLater = await evaluate(`document.querySelector(".mission-counter strong")?.textContent`);
+  if (pausedTimer !== pausedTimerLater)
+    throw new Error(`Đồng hồ vẫn chạy khi Hana hướng dẫn: ${pausedTimer} → ${pausedTimerLater}`);
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const nextStep = await evaluate(`document.querySelector(".hana-primary-action")?.textContent?.includes("Bước tiếp")`);
+    if (!nextStep) break;
+    await evaluate(`document.querySelector(".hana-primary-action")?.click()`);
+  }
+  await evaluate(`document.querySelector(".hana-primary-action")?.click()`);
+  await waitFor(".answer-button");
   const virtualEnd = Date.now() + 125_000;
   await evaluate(`Date.now = () => ${virtualEnd}`);
   await waitFor(".summary-screen");
