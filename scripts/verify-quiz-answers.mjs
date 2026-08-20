@@ -43,6 +43,23 @@ const validate = (question) => {
   } else if (calculate(question.expression) !== question.answer) {
     throw new Error(`Phép tính sai: ${question.expression} → ${question.answer}`);
   }
+  if (question.hintSteps.length !== 3 || question.hintSteps.some(step => !step.trim())) {
+    throw new Error(`Gợi ý Hana cần đúng ba bước có nội dung: ${question.expression}`);
+  }
+  if (question.hintSteps.some(step => /bài mẫu|worked example/i.test(step))) {
+    throw new Error(`Gợi ý Hana không được có bài mẫu lộ đáp án: ${question.expression}`);
+  }
+  if (question.kind === "missing") {
+    const requiredPhrase = {
+      add: "Muốn tìm số hạng",
+      subtract: question.expression.startsWith("?") ? "Muốn tìm số bị trừ" : "Muốn tìm số trừ",
+      multiply: "Muốn tìm thừa số",
+      divide: question.expression.startsWith("?") ? "Muốn tìm số bị chia" : "Muốn tìm số chia",
+    }[question.operation];
+    if (!question.hintSteps.some(step => step.includes(requiredPhrase))) {
+      throw new Error(`Gợi ý tìm thành phần chưa nêu đúng quan hệ phép tính: ${question.expression}`);
+    }
+  }
 };
 
 let checks = 0;

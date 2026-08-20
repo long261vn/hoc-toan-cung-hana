@@ -1,5 +1,11 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Wordmark bảng bài tập và chuẩn gợi ý Hana
+
+- [x] Bỏ wordmark Học Toán Cùng Hana dư trong bảng bài tập, giữ logo cố định làm nhận diện chính.
+- [x] Rà soát toàn bộ gợi ý Cộng, Trừ, Nhân, Chia, tìm thành phần và bảng nhân/chia theo phương pháp phù hợp Toán lớp 3 GDPT 2018.
+- [x] Chỉnh các gợi ý chưa phù hợp, bổ sung kiểm thử nội dung VIE/ENG, TypeScript, production build và lưu checkpoint.
+
 ## Nút điểm và gợi ý Hana không minh họa
 
 - [x] Làm Điểm hiện tại thành nút dễ nhận biết và rõ thao tác bấm mở tiến độ.

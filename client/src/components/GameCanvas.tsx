@@ -900,6 +900,12 @@ function translateLearningText(text: string, language: Language) {
       "Line up the numbers and add from the ones place.",
     "Bạn hãy cộng từng hàng và nhớ nếu cần.":
       "Add each place value and regroup when needed.",
+    "Đặt các chữ số cùng hàng thẳng cột.":
+      "Line up digits with the same place value.",
+    "Cộng lần lượt từ phải sang trái.":
+      "Add one place at a time from right to left.",
+    "Trừ từ phải sang trái.":
+      "Subtract one place at a time from right to left.",
     "Bạn hãy đếm lùi từ số đầu tiên.": "Count backwards from the first number.",
     "Bạn hãy đặt tính thẳng cột rồi trừ từ hàng đơn vị.":
       "Line up the numbers and subtract from the ones place.",
@@ -911,6 +917,8 @@ function translateLearningText(text: string, language: Language) {
       "Multiply the ones place, then the tens place.",
     "Bạn hãy đổi phép chia thành phép nhân để kiểm tra đáp án.":
       "Turn division into multiplication to check your answer.",
+    "Bạn hãy dùng phép nhân để tìm thương rồi kiểm tra lại.":
+      "Use multiplication to find the quotient, then check it.",
     "Số còn thiếu chính là kết quả phép chia.":
       "The missing number is the division answer.",
     "Số điền vào dấu hỏi là thương của phép chia.":
@@ -1023,6 +1031,38 @@ function translateLearningText(text: string, language: Language) {
     .replace(
       /^Trừ từ hàng đơn vị, rồi đến hàng chục và hàng trăm\.$/,
       "Subtract the ones, then the tens and hundreds places."
+    )
+    .replace(
+      /^Nếu hàng đơn vị không đủ để trừ, mượn 1 chục ở hàng chục; sau đó tiếp tục trừ\.$/,
+      "If there are not enough ones to subtract, regroup one ten into the ones place, then continue."
+    )
+    .replace(
+      /^Nếu một hàng không đủ để trừ, mượn 1 ở hàng bên trái; đổi 1 chục thành 10 đơn vị hoặc 1 trăm thành 10 chục rồi tiếp tục\.$/,
+      "If a place does not have enough to subtract, regroup 1 from the place to its left: 1 ten becomes 10 ones or 1 hundred becomes 10 tens."
+    )
+    .replace(
+      /^Dùng bảng nhân (\d+) hoặc nhân nhẩm để tìm số còn thiếu\.$/,
+      "Use the $1 times table or mental multiplication to find the missing number."
+    )
+    .replace(
+      /^Kiểm tra: lấy số vừa tìm được nhân (\d+); nếu được (\d+) thì đó là thương\.$/,
+      "Check: multiply the number you found by $1. If the result is $2, it is the quotient."
+    )
+    .replace(
+      /^Nếu một hàng được từ 10 trở lên, viết hàng đơn vị và nhớ 1 sang hàng bên trái\.$/,
+      "If a column totals 10 or more, write the ones digit and carry 1 to the place on the left."
+    )
+    .replace(
+      /^Đặt tính (\d+) × (\d+)\.$/,
+      "Set up $1 × $2 in columns."
+    )
+    .replace(
+      /^Nhân (\d+) lần lượt với từng hàng của (\d+), từ phải sang trái\.$/,
+      "Multiply $1 by each place in $2, from right to left."
+    )
+    .replace(
+      /^Nếu tích ở một hàng từ 10 trở lên, viết hàng đơn vị và nhớ sang hàng tiếp theo\.$/,
+      "If a place-value product is 10 or more, write the ones digit and regroup to the next place."
     );
   return /[À-ỹ]/.test(translated)
     ? "Follow Hana's step-by-step clue, then choose your answer."
@@ -4365,26 +4405,6 @@ export default function GameCanvas() {
           >
             <div className="console-topline">
               <div className="console-title">
-                <div className="mission-brand-anchor" data-i18n-direct>
-                  <span className="mission-brand-rocket" aria-hidden="true">
-                    <Rocket size={13} fill="currentColor" />
-                  </span>
-                  <span className="mission-brand-title">
-                    {copy("Học Toán Cùng Hana", "Learn Math with Hana")}
-                  </span>
-                  <span
-                    className={`mission-operation-glyph operation-${operation}`}
-                    aria-label={operationLabel(operation)}
-                  >
-                    {operation === "add"
-                      ? "+"
-                      : operation === "subtract"
-                        ? "−"
-                        : operation === "multiply"
-                          ? "×"
-                          : "÷"}
-                  </span>
-                </div>
                 <p data-dynamic-text>
                   {isTableMode
                     ? copy(

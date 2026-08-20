@@ -74,6 +74,18 @@
 .mission-control.operation-subtract { --mission-tone: #b4a5f0; --mission-tone-soft: #f1efff; --mission-tone-ink: #58468c; border-top-color: #b4a5f0; }
 .mission-control.operation-multiply { --mission-tone: #65d3bc; --mission-tone-soft: #e8fbf5; --mission-tone-ink: #247969; border-top-color: #65d3bc; }
 .mission-control.operation-divide { --mission-tone: #f2cf67; --mission-tone-soft: #fff8dc; --mission-tone-ink: #8d6821; border-top-color: #f2cf67; }
+.mission-control::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 17%, color-mix(in srgb, var(--mission-tone) 24%, transparent) 0 2px, transparent 2.5px),
+    radial-gradient(circle at 87% 31%, color-mix(in srgb, var(--mission-tone) 18%, transparent) 0 2px, transparent 2.5px),
+    radial-gradient(ellipse at 57% 8%, transparent 0 44%, color-mix(in srgb, var(--mission-tone) 17%, transparent) 44.5% 45.2%, transparent 45.7%);
+  opacity: 0.8;
+}
 .mission-control::after {
   content: "";
   position: absolute;
@@ -87,44 +99,8 @@
   pointer-events: none;
 }
 .mission-control > * { position: relative; z-index: 1; }
-.mission-brand-anchor {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.26rem;
-  margin-bottom: 0.12rem;
-  color: #3a4a81;
-  font-family: "Baloo 2", cursive;
-  font-size: 0.67rem;
-  font-weight: 900;
-  letter-spacing: 0.01em;
-  line-height: 1;
-}
-.mission-brand-rocket {
-  display: grid;
-  width: 1.18rem;
-  height: 1.18rem;
-  place-items: center;
-  color: #fffdf3;
-  border: 1px solid color-mix(in srgb, var(--mission-tone) 58%, white);
-  border-radius: 50%;
-  background: linear-gradient(145deg, var(--mission-tone), color-mix(in srgb, var(--mission-tone) 58%, #786fe1));
-  box-shadow: 0 2px 0 color-mix(in srgb, var(--mission-tone) 54%, #5c4b86);
-}
-.mission-brand-title { white-space: nowrap; }
-.mission-operation-glyph {
-  display: grid;
-  width: 1.16rem;
-  height: 1.16rem;
-  margin-left: 0.06rem;
-  place-items: center;
-  color: var(--mission-tone-ink);
-  border: 1px solid color-mix(in srgb, var(--mission-tone) 72%, white);
-  border-radius: 50%;
-  background: var(--mission-tone-soft);
-  box-shadow: 0 2px 0 color-mix(in srgb, var(--mission-tone) 44%, #fff);
-  font-size: 0.94rem;
-}
 .mission-flight-rail {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.45rem;
@@ -141,6 +117,20 @@
   font-size: 0.69rem;
   font-weight: 800;
 }
+.mission-flight-rail::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: 0.58rem;
+  bottom: 0.16rem;
+  width: 38%;
+  height: 0.5rem;
+  border-top: 1px dashed color-mix(in srgb, var(--mission-tone) 48%, transparent);
+  border-radius: 50%;
+  opacity: 0.65;
+  pointer-events: none;
+}
+.mission-flight-rail > * { position: relative; z-index: 1; }
 .mission-planet-chip,
 .mission-hana-signal,
 .mission-reward-signal,
@@ -185,14 +175,14 @@
 .mission-hana-avatar {
   position: relative;
   display: inline-block;
-  width: 1.65rem;
-  height: 1.4rem;
+  width: 1.94rem;
+  height: 1.62rem;
   flex: 0 0 auto;
 }
 .mission-hana-avatar .robot-fallback {
   top: 0;
   left: 0;
-  transform: scale(0.43);
+  transform: scale(0.52);
   transform-origin: top left;
 }
 .mission-hana-label {
@@ -236,14 +226,13 @@
   .test-setup-panel::before { top: 9px; right: 12px; font-size: 18px; letter-spacing: 3px; }
   .mission-control::after { top: 9px; right: 12px; transform: scale(0.82); transform-origin: top right; }
   .mission-control { border-top-width: 5px; }
-  .mission-brand-anchor { font-size: 0.6rem; }
-  .mission-brand-rocket,
-  .mission-operation-glyph { width: 1.04rem; height: 1.04rem; }
   .mission-flight-rail { gap: 0.3rem; padding: 0.38rem 0.46rem; font-size: 0.61rem; }
   .mission-planet-chip { max-width: 44%; }
   .mission-planet-chip b { width: 1.35rem; height: 1.35rem; font-size: 0.98rem; }
   .mission-hana-signal { display: inline-flex; }
   .mission-hana-label { display: grid; }
+  .mission-hana-avatar { width: 1.74rem; height: 1.48rem; }
+  .mission-hana-avatar .robot-fallback { transform: scale(0.47); }
   .mission-hana-label strong { font-size: 0.58rem; }
   .mission-hana-label small { font-size: 0.46rem; }
   .mission-journey-signal { font-size: 0.59rem; }

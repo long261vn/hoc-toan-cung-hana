@@ -294,7 +294,7 @@ export function generateQuestion(
       hintSteps = [
         `Viết ${a} và ${b} thẳng cột theo từng hàng.`,
         "Trừ từ hàng đơn vị, rồi đến hàng chục và hàng trăm.",
-        "Nếu không đủ để trừ ở một hàng, bạn đổi 1 chục của hàng liền trước.",
+        "Nếu hàng đơn vị không đủ để trừ, mượn 1 chục ở hàng chục; sau đó tiếp tục trừ.",
       ];
       mission = "Tìm số còn lại sau phép trừ.";
       span = 35;
@@ -305,7 +305,7 @@ export function generateQuestion(
       hintSteps = [
         "Đặt các chữ số cùng hàng thẳng cột.",
         "Trừ từ phải sang trái.",
-        "Nếu không đủ để trừ, đổi 1 chục hoặc 1 trăm từ hàng bên trái rồi tiếp tục tính.",
+        "Nếu một hàng không đủ để trừ, mượn 1 ở hàng bên trái; đổi 1 chục thành 10 đơn vị hoặc 1 trăm thành 10 chục rồi tiếp tục.",
       ];
       mission = "Mở lối đi qua vành đai thiên thạch.";
       span = 45;
@@ -382,11 +382,11 @@ export function generateQuestion(
       b = rand(2, 9);
       answer = rand(12, 36);
       a = b * answer;
-      hint = "Bạn hãy đổi phép chia thành phép nhân để kiểm tra đáp án.";
+      hint = "Bạn hãy dùng phép nhân để tìm thương rồi kiểm tra lại.";
       hintSteps = [
         `Tìm thương bằng cách nghĩ ${b} × ? = ${a}.`,
-        `Dùng bảng nhân ${b} để tìm số còn thiếu.`,
-        "Lấy thương nhân với số chia để kiểm tra lại số bị chia.",
+        `Dùng bảng nhân ${b} hoặc nhân nhẩm để tìm số còn thiếu.`,
+        `Kiểm tra: lấy số vừa tìm được nhân ${b}; nếu được ${a} thì đó là thương.`,
       ];
       mission = "Tìm thương của phép chia.";
       span = 10;

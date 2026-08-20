@@ -121,3 +121,8 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Trên màn học, wordmark **Học Toán Cùng Hana** cùng tên lửa–quỹ đạo là neo nhận diện của cụm buồng lái; nhãn hoạt động chỉ là thông tin nhiệm vụ phụ.
 - Hành tinh đang học được lặp lại bằng chip pastel có ký hiệu lớn: cam cộng, tím trừ, xanh ngọc nhân và vàng chia; màu này dẫn dắt dải nhiệm vụ và trạng thái chọn.
 - Robot Hana hiện diện như người bạn dẫn đường cạnh nhiệm vụ, có lời hứa gợi ý từng bước; sau đáp án sai, cửa sổ chỉ còn ba gợi ý chữ và thao tác tự thử lại, không có hình minh họa hoặc bài mẫu.
+
+### Quyết định sau phản hồi giao diện
+
+- Logo cố định ở góc trên là **wordmark Học Toán Cùng Hana duy nhất** trong màn làm bài. Không lặp lại tên ứng dụng trong bảng bài tập, để ưu tiên câu hỏi và tránh dư dòng chữ.
+- Dải hành trình mang các điểm sao và nét quỹ đạo rất nhẹ vào bề mặt buồng lái; Hana lớn hơn trong vai trò người dẫn đường, nhưng không cạnh tranh với biểu thức toán và các đáp án.
