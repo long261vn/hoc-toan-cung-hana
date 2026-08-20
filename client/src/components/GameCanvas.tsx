@@ -1306,7 +1306,7 @@ function PlayerProfileScreen({
                 aria-label={`${language === "en" ? "Player avatar" : "Avatar người chơi"} ${index + 1}`}
               >
                 <PlayerAvatar avatarId={avatar.id} decorative />
-                {selected && <Check size={15} aria-hidden="true" />}
+                {selected && <Check className="avatar-selected-check" size={15} aria-hidden="true" />}
               </button>
             );
           })}

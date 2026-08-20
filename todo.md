@@ -368,3 +368,9 @@
 - [x] Thực hiện rà soát QA toàn app: liệt kê lỗi, nội dung không nhất quán, thao tác dư thừa, trạng thái biên và mã/CSS mồ côi; sửa các mục có ảnh hưởng thực tế.
 - [x] Thực hiện rà soát thiết kế đồ họa toàn app: liệt kê vấn đề về phân cấp, căn chỉnh, tỷ lệ, màu, khoảng trắng, độ tương phản và trạng thái responsive; áp dụng một lượt đổi mới giao diện tổng thể.
 - [x] Kiểm thử lại toàn bộ luồng VIE/ENG, desktop/mobile, lưu ảnh PNG, TypeScript, build và lưu checkpoint.
+
+## Tinh chỉnh bố cục avatar và huy hiệu
+
+- [x] Bỏ nền thẻ chữ nhật bao quanh từng avatar; bố trí bốn avatar tròn cân đối, vùng chạm rõ và trạng thái chọn tinh tế.
+- [x] Căn lề trái nhất quán các nhãn, tên và mô tả huy hiệu trên màn tổng kết; giảm chi tiết dư thừa để hàng huy hiệu gọn, dễ quét.
+- [x] Kiểm thử desktop/mobile, TypeScript, production build và lưu checkpoint.

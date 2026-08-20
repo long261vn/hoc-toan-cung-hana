@@ -2,23 +2,18 @@
    Baloo 2 playfulness and calm deep-space contrast for Grade-3 learners. */
 
 .profile-avatar-chooser {
-  width: min(100%, 34rem);
-  margin: 1.15rem auto 1rem;
-  padding: 1rem;
-  border: 1px solid rgba(202, 220, 255, 0.42);
-  border-radius: 1.35rem;
-  background:
-    radial-gradient(circle at 14% 0%, rgba(132, 244, 215, 0.15), transparent 38%),
-    rgba(12, 28, 71, 0.82);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0.8rem 1.8rem rgba(3, 9, 35, 0.16);
+  width: min(100%, 31rem);
+  margin: 1.05rem auto 1.15rem;
+  padding: 0;
 }
 
 .avatar-chooser-heading {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.8rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.26rem;
+  margin-bottom: 0.76rem;
+  text-align: center;
 }
 
 .avatar-chooser-heading span,
@@ -80,31 +75,34 @@
 
 .avatar-option-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  gap: clamp(0.48rem, 1.7vw, 0.9rem);
+  padding: 0.16rem 0.18rem 0.4rem;
 }
 
 .avatar-option-grid button {
   position: relative;
-  display: flex;
-  min-height: 6.4rem;
-  align-items: center;
-  justify-content: center;
-  padding: 0.6rem;
-  overflow: hidden;
+  display: grid;
+  width: 100%;
+  max-width: 5.9rem;
+  min-height: 0;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 0.18rem;
   color: #eff8ff;
-  text-align: left;
-  border: 2px solid rgba(187, 215, 255, 0.24);
-  border-radius: 1.05rem;
-  background: rgba(30, 61, 120, 0.56);
-  box-shadow: 0 0.38rem 0 rgba(4, 16, 52, 0.36);
+  border: 3px solid rgba(187, 215, 255, 0.34);
+  border-radius: 50%;
+  background: rgba(10, 28, 77, 0.38);
+  box-shadow: 0 0.3rem 0 rgba(4, 16, 52, 0.28);
   transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), border-color 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 160ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .avatar-option-grid button:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.03);
   border-color: rgba(255, 248, 205, 0.8);
-  background: rgba(50, 86, 153, 0.76);
+  background: rgba(46, 80, 147, 0.62);
 }
 
 .avatar-option-grid button:active {
@@ -120,8 +118,8 @@
 
 .avatar-option-grid button.is-selected {
   border-color: #ffe580;
-  background: linear-gradient(135deg, rgba(244, 134, 111, 0.88), rgba(79, 76, 177, 0.92));
-  box-shadow: 0 0.42rem 0 #3b315f, 0 0 0 3px rgba(255, 218, 114, 0.12);
+  background: rgba(255, 229, 128, 0.13);
+  box-shadow: 0 0.34rem 0 #3b315f, 0 0 0 4px rgba(255, 218, 114, 0.18), 0 0 1.1rem rgba(255, 213, 104, 0.25);
 }
 
 .player-avatar {
@@ -130,15 +128,16 @@
 }
 
 .avatar-option-grid .player-avatar {
-  width: 5.05rem;
-  height: 5.05rem;
+  position: static;
+  width: 92%;
+  height: 92%;
   filter: drop-shadow(0 0.28rem 0.32rem rgba(5, 12, 46, 0.26));
 }
 
-.avatar-option-grid svg {
+.avatar-option-grid .avatar-selected-check {
   position: absolute;
-  right: 0.46rem;
-  top: 0.46rem;
+  right: -0.08rem;
+  top: -0.08rem;
   padding: 0.18rem;
   color: #152662;
   border-radius: 50%;
@@ -210,8 +209,8 @@
 
 .theme-badge-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 0.58rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.62rem;
 }
 
 .theme-badge-item {
@@ -220,6 +219,7 @@
   gap: 0.62rem;
   min-height: 4.25rem;
   padding: 0.55rem;
+  text-align: left;
   border: 1px solid rgba(231, 243, 255, 0.22);
   border-radius: 0.95rem;
   background: rgba(7, 22, 62, 0.48);
@@ -250,7 +250,10 @@
 .theme-badge-item span,
 .planet-unlock-badge span {
   display: grid;
+  min-width: 0;
   gap: 0.04rem;
+  justify-items: start;
+  text-align: left;
 }
 
 .theme-badge-item strong,
@@ -263,6 +266,7 @@
 
 .theme-badge-item small,
 .planet-unlock-badge small {
+  display: block;
   color: #c6dafb;
   font-size: 0.7rem;
   line-height: 1.28;
@@ -425,8 +429,9 @@
 }
 
 @media (max-width: 31rem) {
-  .avatar-option-grid button { min-height: 5.35rem; padding: 0.45rem; }
-  .avatar-option-grid .player-avatar { width: 4.2rem; height: 4.2rem; }
+  .avatar-option-grid { gap: 0.42rem; padding-inline: 0.04rem; }
+  .avatar-option-grid button { width: 100%; min-height: 0; padding: 0.15rem; }
+  .avatar-option-grid .player-avatar { width: 92%; height: 92%; }
   .theme-badge-row { grid-template-columns: 1fr; }
   .planet-unlock-card { padding: 1.4rem 1rem 1.2rem; }
   .planet-unlock-dismiss { right: 50%; bottom: 0.7rem; transform: translateX(50%); }
