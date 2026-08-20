@@ -1,4 +1,6 @@
 /* Design philosophy: every choice is a friendly flight decision on Hana's four-planet map. */
+/* Phi Hành Tinh Phép Tính: wordmark, hành tinh đang học và Robot Hana
+   cùng tạo thành một cụm buồng lái rõ ràng; bài toán vẫn là tâm điểm đọc. */
 .activity-card,
 .start-mode-card,
 .format-option,
@@ -68,10 +70,10 @@
   border-top: 6px solid #7ddcca;
   box-shadow: 0 14px 0 rgba(12, 29, 76, 0.18), 0 24px 42px rgba(0, 0, 35, 0.3);
 }
-.mission-control.operation-add { border-top-color: #ff926f; }
-.mission-control.operation-subtract { border-top-color: #b4a5f0; }
-.mission-control.operation-multiply { border-top-color: #65d3bc; }
-.mission-control.operation-divide { border-top-color: #f2cf67; }
+.mission-control.operation-add { --mission-tone: #ff926f; --mission-tone-soft: #fff0ea; --mission-tone-ink: #9e422c; border-top-color: #ff926f; }
+.mission-control.operation-subtract { --mission-tone: #b4a5f0; --mission-tone-soft: #f1efff; --mission-tone-ink: #58468c; border-top-color: #b4a5f0; }
+.mission-control.operation-multiply { --mission-tone: #65d3bc; --mission-tone-soft: #e8fbf5; --mission-tone-ink: #247969; border-top-color: #65d3bc; }
+.mission-control.operation-divide { --mission-tone: #f2cf67; --mission-tone-soft: #fff8dc; --mission-tone-ink: #8d6821; border-top-color: #f2cf67; }
 .mission-control::after {
   content: "";
   position: absolute;
@@ -85,6 +87,43 @@
   pointer-events: none;
 }
 .mission-control > * { position: relative; z-index: 1; }
+.mission-brand-anchor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.26rem;
+  margin-bottom: 0.12rem;
+  color: #3a4a81;
+  font-family: "Baloo 2", cursive;
+  font-size: 0.67rem;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+.mission-brand-rocket {
+  display: grid;
+  width: 1.18rem;
+  height: 1.18rem;
+  place-items: center;
+  color: #fffdf3;
+  border: 1px solid color-mix(in srgb, var(--mission-tone) 58%, white);
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--mission-tone), color-mix(in srgb, var(--mission-tone) 58%, #786fe1));
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--mission-tone) 54%, #5c4b86);
+}
+.mission-brand-title { white-space: nowrap; }
+.mission-operation-glyph {
+  display: grid;
+  width: 1.16rem;
+  height: 1.16rem;
+  margin-left: 0.06rem;
+  place-items: center;
+  color: var(--mission-tone-ink);
+  border: 1px solid color-mix(in srgb, var(--mission-tone) 72%, white);
+  border-radius: 50%;
+  background: var(--mission-tone-soft);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--mission-tone) 44%, #fff);
+  font-size: 0.94rem;
+}
 .mission-flight-rail {
   display: flex;
   align-items: center;
@@ -93,9 +132,12 @@
   padding: 0.42rem 0.55rem;
   overflow: hidden;
   color: #4e618d;
-  border: 1px solid #dbe6ec;
+  border: 1.5px solid color-mix(in srgb, var(--mission-tone) 38%, #dbe6ec);
   border-radius: 0.95rem;
-  background: linear-gradient(90deg, #f5fbff, #fffaf0);
+  background:
+    radial-gradient(circle at 18% 50%, color-mix(in srgb, var(--mission-tone) 20%, transparent), transparent 25%),
+    linear-gradient(90deg, #f5fbff, #fffaf0);
+  box-shadow: inset 0 1px 0 #fff, 0 3px 0 color-mix(in srgb, var(--mission-tone) 17%, #dae6ec);
   font-size: 0.69rem;
   font-weight: 800;
 }
@@ -111,25 +153,35 @@
 }
 .mission-planet-chip {
   max-width: 46%;
-  padding-right: 0.38rem;
-  color: #273568;
-  border-right: 1px dashed #ccd8e2;
+  padding: 0.16rem 0.42rem 0.16rem 0.16rem;
+  color: var(--mission-tone-ink);
+  border: 1px solid color-mix(in srgb, var(--mission-tone) 42%, white);
+  border-radius: 0.72rem;
+  background: var(--mission-tone-soft);
 }
 .mission-planet-chip b {
   display: grid;
-  width: 1.45rem;
-  height: 1.45rem;
+  width: 1.58rem;
+  height: 1.58rem;
   flex: 0 0 auto;
   place-items: center;
   border-radius: 50%;
   font-family: "Baloo 2", cursive;
-  font-size: 1rem;
+  font-size: 1.12rem;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--mission-tone) 54%, #fff);
 }
 .mission-planet-chip.operation-add b { background: #ffad9a; }
 .mission-planet-chip.operation-subtract b { background: #c9baff; }
 .mission-planet-chip.operation-multiply b { background: #9de9d0; }
 .mission-planet-chip.operation-divide b { background: #ffda70; }
-.mission-hana-signal { color: #21766d; }
+.mission-hana-signal {
+  padding: 0.12rem 0.32rem 0.12rem 0.12rem;
+  color: #21766d;
+  border: 1px solid #bde9df;
+  border-radius: 0.72rem;
+  background: #effcf7;
+  box-shadow: 0 2px 0 rgba(67, 165, 141, 0.14);
+}
 .mission-hana-avatar {
   position: relative;
   display: inline-block;
@@ -140,9 +192,16 @@
 .mission-hana-avatar .robot-fallback {
   top: 0;
   left: 0;
-  transform: scale(0.35);
+  transform: scale(0.43);
   transform-origin: top left;
 }
+.mission-hana-label {
+  display: grid;
+  gap: 0.02rem;
+  line-height: 1;
+}
+.mission-hana-label strong { font-size: 0.67rem; }
+.mission-hana-label small { color: #4d897e; font-size: 0.51rem; font-weight: 800; }
 .mission-reward-signal {
   margin-left: auto;
   color: #936626;
@@ -177,18 +236,24 @@
   .test-setup-panel::before { top: 9px; right: 12px; font-size: 18px; letter-spacing: 3px; }
   .mission-control::after { top: 9px; right: 12px; transform: scale(0.82); transform-origin: top right; }
   .mission-control { border-top-width: 5px; }
+  .mission-brand-anchor { font-size: 0.6rem; }
+  .mission-brand-rocket,
+  .mission-operation-glyph { width: 1.04rem; height: 1.04rem; }
   .mission-flight-rail { gap: 0.3rem; padding: 0.38rem 0.46rem; font-size: 0.61rem; }
   .mission-planet-chip { max-width: 44%; }
-  .mission-planet-chip b { width: 1.25rem; height: 1.25rem; font-size: 0.88rem; }
+  .mission-planet-chip b { width: 1.35rem; height: 1.35rem; font-size: 0.98rem; }
   .mission-hana-signal { display: inline-flex; }
-  .mission-hana-label { display: none; }
+  .mission-hana-label { display: grid; }
+  .mission-hana-label strong { font-size: 0.58rem; }
+  .mission-hana-label small { font-size: 0.46rem; }
   .mission-journey-signal { font-size: 0.59rem; }
 }
 @media (max-width: 360px) {
   .mission-flight-rail { gap: 0.38rem; }
   .mission-planet-chip { max-width: none; padding-right: 0; border-right: 0; }
   .mission-planet-label,
-  .mission-badge-full { display: none; }
+  .mission-badge-full,
+  .mission-hana-label small { display: none; }
   .mission-journey-signal { font-size: 0.57rem; }
   .mission-badge-compact { display: inline; }
 }

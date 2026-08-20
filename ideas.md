@@ -115,3 +115,9 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Wordmark **Học Toán Cùng Hana** cùng biểu tượng tên lửa–quỹ đạo luôn là neo nhận diện cố định trên các màn chính; nhãn nhiệm vụ chỉ là thông tin phụ của buồng lái.
 - Trên màn học, dải hành tinh hiện tại, Hana, điểm, Cấp hành trình và huy hiệu tiếp theo cùng tạo thành một cụm buồng lái ngắn trước câu hỏi; nhãn phụ được rút gọn ở chiều rộng cực hẹp thay vì chồng lấn.
 - Khi trả lời chưa đúng, phản hồi không dùng thẻ lỗi đỏ nội tuyến. Hana mở một cửa sổ kem dịu gồm gợi ý từng bước, minh họa, bài mẫu và thao tác “Thử lại câu này”; màu Cam Sao Băng chỉ dẫn đường đi tiếp, không biểu thị phạt lỗi.
+
+### Bổ sung sau kiểm tra trực quan
+
+- Trên màn học, wordmark **Học Toán Cùng Hana** cùng tên lửa–quỹ đạo là neo nhận diện của cụm buồng lái; nhãn hoạt động chỉ là thông tin nhiệm vụ phụ.
+- Hành tinh đang học được lặp lại bằng chip pastel có ký hiệu lớn: cam cộng, tím trừ, xanh ngọc nhân và vàng chia; màu này dẫn dắt dải nhiệm vụ và trạng thái chọn.
+- Robot Hana hiện diện như người bạn dẫn đường cạnh nhiệm vụ, có lời hứa gợi ý từng bước; sau đáp án sai, cửa sổ chỉ còn ba gợi ý chữ và thao tác tự thử lại, không có hình minh họa hoặc bài mẫu.

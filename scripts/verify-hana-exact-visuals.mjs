@@ -31,38 +31,32 @@ const waitFor = async selector => {
   }
   throw new Error(`Không tìm thấy ${selector}`);
 };
-const parseEquation = (expression, answer) => {
-  const match = expression.match(/^\s*(\?|\d+)\s*([+−×÷])\s*(\?|\d+)\s*=\s*(\?|\d+)\s*$/);
-  if (!match) throw new Error(`Không tách được phép tính: ${expression}`);
-  const resolve = token => token === "?" ? answer : Number(token);
-  return { first: resolve(match[1]), operator: match[2], second: resolve(match[3]), result: resolve(match[4]), missing: match[1] === "?" ? "first" : match[3] === "?" ? "second" : "result" };
-};
-
 try {
   const reports = [];
   for (const operation of ["add", "subtract", "multiply", "divide"]) {
     await command("Page.navigate", { url: `http://localhost:3000/?hanaguide&missing=${operation}&lang=vi&nowebgl` });
     await waitFor(".hana-learning-card");
-    const details = await evaluate(`(() => ({ expression: document.querySelector(".hana-learning-context strong")?.textContent?.trim(), answer: Number((document.querySelector(".hana-learning-context span")?.textContent?.match(/(\\d+)$/) ?? [])[1]) }))()`);
-    const equation = parseEquation(details.expression, details.answer);
-    for (let step = 0; step < 3; step += 1) {
+    const initial = await evaluate(`(() => ({ label: document.querySelector(".hana-learning-step > span")?.textContent?.trim(), action: document.querySelector(".hana-primary-action")?.textContent?.replace(/\\s+/g, " ").trim(), hasVisual: Boolean(document.querySelector(".hana-math-visual")), text: document.querySelector(".hana-learning-card")?.textContent?.replace(/\\s+/g, " ").trim() }))()`);
+    if (initial.hasVisual || initial.text?.includes("Bài mẫu")) {
+      throw new Error(`Cửa sổ Hana ${operation} vẫn chứa hình minh họa hoặc bài mẫu: ${JSON.stringify(initial)}`);
+    }
+    if (initial.label !== "Bước 1/3" || !initial.action?.includes("Bước tiếp")) {
+      throw new Error(`Cửa sổ Hana ${operation} không bắt đầu đúng tại Bước 1/3: ${JSON.stringify(initial)}`);
+    }
+    for (let step = 0; step < 2; step += 1) {
       await evaluate(`document.querySelector(".hana-primary-action")?.click()`);
       await sleep(55);
     }
-    const visual = await evaluate(`(() => ({ text: document.querySelector(".hana-math-visual")?.textContent?.replace(/\\s+/g, " ").trim(), groupCount: document.querySelectorAll(".hana-equal-groups .hana-group").length, hidden: document.querySelectorAll(".hana-quantity.is-hidden").length }))()`);
-    if (visual.hidden !== 0) throw new Error(`Minh họa ${operation} vẫn che số sau bài mẫu: ${JSON.stringify(visual)}`);
-    const numbers = operation === "add"
-      ? [equation.result, equation.answer].filter(Number.isFinite)
-      : operation === "subtract"
-        ? [equation.first, equation.second, equation.result].filter(Number.isFinite)
-        : [equation.first, equation.second, equation.result].filter(Number.isFinite);
-    if (!numbers.some(number => visual.text.includes(String(number)))) throw new Error(`Minh họa ${operation} không chứa số của câu: ${JSON.stringify({ equation, visual })}`);
-    if (operation === "multiply" && visual.groupCount !== (equation.missing === "first" ? equation.second : equation.first)) {
-      throw new Error(`Số nhóm nhân không khớp câu ${details.expression}: ${JSON.stringify({ equation, visual })}`);
+    const finalStep = await evaluate(`(() => ({ label: document.querySelector(".hana-learning-step > span")?.textContent?.trim(), action: document.querySelector(".hana-primary-action")?.textContent?.replace(/\\s+/g, " ").trim(), hasVisual: Boolean(document.querySelector(".hana-math-visual")), text: document.querySelector(".hana-learning-card")?.textContent?.replace(/\\s+/g, " ").trim() }))()`);
+    if (finalStep.hasVisual || finalStep.text?.includes("Bài mẫu")) {
+      throw new Error(`Cửa sổ Hana ${operation} lại hiển thị hình minh họa hoặc bài mẫu ở bước cuối: ${JSON.stringify(finalStep)}`);
     }
-    reports.push({ operation, expression: details.expression, visual: visual.text, groupCount: visual.groupCount });
+    if (finalStep.label !== "Bước 3/3" || !finalStep.action?.includes("Thử lại câu này")) {
+      throw new Error(`Cửa sổ Hana ${operation} chưa dừng ở Bước 3/3 để học sinh tự thử lại: ${JSON.stringify(finalStep)}`);
+    }
+    reports.push({ operation, initialStep: initial.label, finalStep: finalStep.label });
   }
-  console.log(JSON.stringify({ reports, status: "Hana visuals match each missing-component question" }));
+  console.log(JSON.stringify({ reports, status: "Hana guides use three written steps without visuals or answer-revealing examples" }));
 } finally {
   socket.close();
 }

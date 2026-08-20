@@ -2088,11 +2088,10 @@ function HanaLearningDialog({
   const instructionPages = question.hintSteps.map(text =>
     translateLearningText(text, language)
   );
-  const isExample = step === instructionPages.length;
-  const pageText = isExample
-    ? hanaWorkedExample(question, language)
-    : instructionPages[step] ?? translateLearningText(question.hint, language);
-  const totalPages = instructionPages.length + 1;
+  const isLastStep = step === instructionPages.length - 1;
+  const pageText =
+    instructionPages[step] ?? translateLearningText(question.hint, language);
+  const totalPages = instructionPages.length;
   return (
     <div
       className="hana-learning-backdrop"
@@ -2131,21 +2130,12 @@ function HanaLearningDialog({
               : `Bạn đã chọn ${chosenAnswer ?? "?"}`}
           </span>
         </div>
-        <HanaMathVisual
-          question={question}
-          language={language}
-          revealUnknown={isExample}
-        />
         <div className="hana-learning-step" aria-live="polite">
           <span>{language === "en" ? `Step ${step + 1} of ${totalPages}` : `Bước ${step + 1}/${totalPages}`}</span>
           <strong>
-            {isExample
-              ? language === "en"
-                ? "A similar example"
-                : "Bài mẫu tương tự"
-              : language === "en"
-                ? "Follow Hana’s clue"
-                : "Làm theo gợi ý của Hana"}
+            {language === "en"
+              ? "Follow Hana’s clue"
+              : "Làm theo gợi ý của Hana"}
           </strong>
           <p>{pageText}</p>
         </div>
@@ -2155,7 +2145,7 @@ function HanaLearningDialog({
               {language === "en" ? "Back" : "Quay lại"}
             </button>
           ) : <span />}
-          {isExample ? (
+          {isLastStep ? (
             <button type="button" className="hana-primary-action" onClick={onRetry}>
               {language === "en" ? "Try this question again" : "Thử lại câu này"} <ChevronRight size={17} />
             </button>
@@ -4375,6 +4365,26 @@ export default function GameCanvas() {
           >
             <div className="console-topline">
               <div className="console-title">
+                <div className="mission-brand-anchor" data-i18n-direct>
+                  <span className="mission-brand-rocket" aria-hidden="true">
+                    <Rocket size={13} fill="currentColor" />
+                  </span>
+                  <span className="mission-brand-title">
+                    {copy("Học Toán Cùng Hana", "Learn Math with Hana")}
+                  </span>
+                  <span
+                    className={`mission-operation-glyph operation-${operation}`}
+                    aria-label={operationLabel(operation)}
+                  >
+                    {operation === "add"
+                      ? "+"
+                      : operation === "subtract"
+                        ? "−"
+                        : operation === "multiply"
+                          ? "×"
+                          : "÷"}
+                  </span>
+                </div>
                 <p data-dynamic-text>
                   {isTableMode
                     ? copy(
@@ -4428,6 +4438,9 @@ export default function GameCanvas() {
                     ? formatDuration(testSecondsRemaining)
                     : sessionPoints}
                 </strong>
+                <small data-dynamic-text>
+                  {copy("Chạm để xem", "Tap to view")} <ChevronRight size={13} aria-hidden="true" />
+                </small>
               </button>
             </div>
             <div className="mission-flight-rail" data-i18n-direct>
@@ -4456,7 +4469,8 @@ export default function GameCanvas() {
                   </span>
                 </span>
                 <span className="mission-hana-label">
-                  {copy("Hana sẵn sàng", "Hana is ready")}
+                  <strong>{copy("Hana đồng hành", "Hana is with you")}</strong>
+                  <small>{copy("Gợi ý từng bước", "Step-by-step hints")}</small>
                 </span>
               </span>
               {!isTableMode && mode !== "test" && (
@@ -4824,7 +4838,7 @@ export default function GameCanvas() {
           onPrevious={() => setHanaLearningStep(current => Math.max(0, current - 1))}
           onNext={() =>
             setHanaLearningStep(current =>
-              Math.min(question.hintSteps.length, current + 1)
+              Math.min(question.hintSteps.length - 1, current + 1)
             )
           }
           onRetry={retryQuestionAfterHanaGuide}
@@ -4935,8 +4949,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                      "Nếu chọn chưa đúng, cửa sổ Hana sẽ hiện từng bước làm, hình minh họa và bài mẫu trước khi bạn thử lại. Bấm Điểm hiện tại để xem Cấp hành trình và huy hiệu tiếp theo, Đổi nhiệm vụ để giữ điểm, hoặc Kết thúc lượt để xem tổng kết và lưu ảnh kỷ niệm.",
-                      "If an answer is not right yet, Hana opens a guide with steps, a picture and a worked example before you try again. Tap Current points to view your Journey Level and next badge, Change mission to keep your points, or End session to see your summary and save a souvenir image."
+                      "Nếu chọn chưa đúng, Hana sẽ đưa tối đa ba bước gợi ý để bạn tự suy nghĩ. Sau bước cuối, bạn tự thử lại câu đó. Bấm Điểm hiện tại để xem Cấp hành trình và huy hiệu tiếp theo, Đổi nhiệm vụ để giữ điểm, hoặc Kết thúc lượt để xem tổng kết và lưu ảnh kỷ niệm.",
+                      "If an answer is not right yet, Hana gives up to three written clues so you can think it through. After the final step, you try that question yourself. Tap Current points to view your Journey Level and next badge, Change mission to keep your points, or End session to see your summary and save a souvenir image."
                     )}
                   </p>
                 </div>

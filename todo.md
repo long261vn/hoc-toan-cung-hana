@@ -1,5 +1,12 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Nút điểm và gợi ý Hana không minh họa
+
+- [x] Làm Điểm hiện tại thành nút dễ nhận biết và rõ thao tác bấm mở tiến độ.
+- [x] Khi chọn sai, bỏ hoàn toàn hình minh họa khỏi cửa sổ Hana; chỉ giữ ba bước gợi ý bằng chữ, không bài mẫu và không lộ đáp án.
+- [x] Củng cố cụm nhiệm vụ bằng wordmark, Robot Hana và màu/ký hiệu phép tính nhất quán mà không làm che bài toán.
+- [x] Kiểm thử VIE/ENG, bốn phép tính, màn hình điện thoại, TypeScript, production build và lưu checkpoint.
+
 ## Hành trình gọn và minh họa Hana theo câu
 
 - [x] Di chuyển Loại bài tập và Mức độ khó xuống dưới dải Hành trình trong màn Cộng, Trừ, Nhân và Chia.
