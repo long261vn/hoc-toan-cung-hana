@@ -4722,12 +4722,12 @@ button:focus-visible {
 /* The exercise console is the focus of the scene: centered horizontally and raised above the lower edge. */
 @media (min-width: 761px) {
   .mission-control {
-    top: clamp(150px, 20vh, 184px);
+    top: clamp(112px, 15vh, 148px);
     right: auto;
     bottom: auto;
     left: 50%;
     width: min(590px, 55vw);
-    max-height: calc(100dvh - 174px);
+    max-height: calc(100dvh - 148px);
     transform: translateX(-50%);
   }
 }
@@ -4737,72 +4737,6 @@ button:focus-visible {
     bottom: 102px;
     left: max(34px, calc(50% - 480px));
   }
-}
-@media (max-width: 760px) {
-  .mission-copy {
-    margin-top: 14px;
-  }
-  .mission-control {
-    margin-top: -2px;
-  }
-}
-
-/* The learning console is the visual priority: one compact rail above, one intentional control bar below. */
-.mission-header {
-  min-height: 58px;
-  padding: 12px 22px 0;
-}
-.compact-mission-brand {
-  min-width: auto;
-  gap: 7px;
-}
-.compact-mission-brand .mission-brand-rocket {
-  width: 39px;
-  height: 39px;
-  flex: 0 0 39px;
-  border-radius: 13px;
-  box-shadow:
-    0 4px 11px rgba(1, 6, 35, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-}
-.compact-mission-brand .brand-emblem {
-  width: 42px;
-  height: 42px;
-  flex-basis: 42px;
-  border-radius: 14px;
-}
-.compact-mission-brand .brand-mark {
-  width: 38px;
-  height: 38px;
-}
-.compact-mission-brand .emblem-orbit {
-  top: 10px;
-  left: 3px;
-  width: 35px;
-  height: 17px;
-}
-.compact-mission-brand .emblem-rocket {
-  top: 10px;
-  left: 12px;
-  width: 19px;
-  height: 19px;
-}
-.compact-mission-brand .emblem-plus {
-  right: 3px;
-  bottom: 2px;
-  width: 14px;
-  height: 14px;
-  font-size: 14px;
-}
-.compact-mission-brand .eyebrow {
-  margin: 0;
-  color: #f6f2dd;
-  font-family: "Baloo 2", cursive;
-  font-size: 12px;
-  letter-spacing: 0.03em;
-}
-.compact-mission-brand .eyebrow span {
-  color: #ffae87;
 }
 .mission-copy,
 .robot-guide {
@@ -4911,43 +4845,8 @@ button:focus-visible {
   font-size: 13px;
   line-height: 1;
 }
-@media (min-width: 761px) {
-  .mission-control {
-    top: clamp(76px, 11vh, 98px);
-    max-height: calc(100dvh - 116px);
-  }
-  .mission-control.is-menu-collapsed {
-    top: clamp(54px, 8vh, 72px);
-    max-height: calc(100dvh - 92px);
-  }
-}
 @media (max-width: 760px) {
-  .mission-header {
-    min-height: 52px;
-    padding: 10px 12px 0;
-  }
-  .compact-mission-brand .eyebrow {
-    font-size: 0;
-  }
-  .compact-mission-brand .mission-brand-rocket {
-    width: 34px;
-    height: 34px;
-    flex-basis: 34px;
-    border-radius: 11px;
-  }
-  .compact-mission-brand .eyebrow::after {
-    content: "Học Toán Cùng Hana";
-    color: #f6f2dd;
-    font-family: "Baloo 2", cursive;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.01em;
-    text-shadow: 0 2px 6px rgba(4, 10, 43, 0.8);
-  }
-  .mission-control,
-  .mission-control.is-menu-collapsed {
-    margin-top: 4px;
-  }
+  .mission-control { margin-top: 86px; }
   .session-bottom-actions {
     gap: 7px;
     margin-top: 11px;

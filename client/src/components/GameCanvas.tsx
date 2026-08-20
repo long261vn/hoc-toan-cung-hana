@@ -94,7 +94,7 @@ type ActivityId =
   | "test";
 type Language = "vi" | "en";
 type TestDurationSeconds = 120 | 300 | 600;
-type AvatarId = "sao-mai" | "sao-bang" | "ngan-ha" | "hanh-tinh";
+type AvatarId = "earth-astronaut" | "mars" | "jupiter" | "saturn";
 
 type ThemeBadge = {
   id: string;
@@ -130,16 +130,22 @@ const DRAFT_DIFFICULTIES = ["easy", "medium", "challenge"] as const;
 const DRAFT_PRACTICE_FORMATS = ["standard", "missing", "mixed"] as const;
 const DRAFT_TABLE_KINDS = ["multiply", "divide", "mixed"] as const;
 const DRAFT_TEST_DURATIONS = [120, 300, 600] as const;
+const LEGACY_AVATAR_IDS: Record<string, AvatarId> = {
+  "sao-mai": "earth-astronaut",
+  "sao-bang": "mars",
+  "ngan-ha": "jupiter",
+  "hanh-tinh": "saturn",
+};
 const AVATAR_OPTIONS: Array<{
   id: AvatarId;
   image: string;
   vi: string;
   en: string;
 }> = [
-  { id: "sao-mai", image: "/manus-storage/avatar-sao-mai_e29a2612.png", vi: "Phi hành gia Sao Mai", en: "Morning Star astronaut" },
-  { id: "sao-bang", image: "/manus-storage/avatar-sao-bang_192f0fea.png", vi: "Phi hành gia Sao Băng", en: "Comet astronaut" },
-  { id: "ngan-ha", image: "/manus-storage/avatar-ngan-ha_8f207f95.png", vi: "Phi hành gia Ngân Hà", en: "Galaxy astronaut" },
-  { id: "hanh-tinh", image: "/manus-storage/avatar-hanh-tinh_ad084bcf.png", vi: "Phi hành gia Hành Tinh", en: "Planet astronaut" },
+  { id: "earth-astronaut", image: "/manus-storage/avatar-phi-hanh-gia-trai-dat_543e9d43.png", vi: "Phi hành gia Trái Đất", en: "Earth astronaut" },
+  { id: "mars", image: "/manus-storage/avatar-sao-hoa_5aa71fd0.png", vi: "Sao Hỏa", en: "Mars" },
+  { id: "jupiter", image: "/manus-storage/avatar-sao-moc_21395ea2.png", vi: "Sao Mộc", en: "Jupiter" },
+  { id: "saturn", image: "/manus-storage/avatar-sao-tho_6dfbd101.png", vi: "Sao Thổ", en: "Saturn" },
 ];
 const THEME_BADGES: ThemeBadge[] = [
   { id: "star-spark", symbol: "✦", threshold: 30, accent: "coral", vi: { label: "Sao Khởi Động", detail: "Đạt 30 điểm trong một lượt." }, en: { label: "Starter Star", detail: "Earn 30 points in one session." } },
@@ -197,16 +203,24 @@ function isOneOf<T extends readonly string[]>(
   return typeof value === "string" && options.includes(value as T[number]);
 }
 
+function normalizeAvatarId(value: unknown): AvatarId | null {
+  if (typeof value !== "string") return null;
+  if (AVATAR_OPTIONS.some(avatar => avatar.id === value)) {
+    return value as AvatarId;
+  }
+  return LEGACY_AVATAR_IDS[value] ?? null;
+}
+
 function isAvatarId(value: unknown): value is AvatarId {
-  return AVATAR_OPTIONS.some(avatar => avatar.id === value);
+  return normalizeAvatarId(value) !== null;
 }
 
 function readAvatarPreference(): AvatarId {
   try {
     const stored = window.localStorage.getItem(AVATAR_STORAGE_KEY);
-    return isAvatarId(stored) ? stored : "sao-mai";
+    return normalizeAvatarId(stored) ?? "earth-astronaut";
   } catch {
-    return "sao-mai";
+    return "earth-astronaut";
   }
 }
 
@@ -289,7 +303,13 @@ function readSessionDraft(): SessionDraft | null {
     if (!raw) return null;
     const draft = JSON.parse(raw) as Partial<SessionDraft>;
     if (!isValidSessionDraft(draft)) return null;
-    return draft as SessionDraft;
+    return {
+      ...draft,
+      avatarId:
+        draft.avatarId === undefined
+          ? undefined
+          : normalizeAvatarId(draft.avatarId) ?? "earth-astronaut",
+    } as SessionDraft;
   } catch {
     return null;
   }
@@ -718,7 +738,7 @@ const englishText: Record<string, string> = {
   "Thử sức và nhận sao.": "Try the challenge and earn stars.",
   "Robot Hana sẽ đồng hành cùng bạn trong mọi chuyến bay.":
     "Robot Hana will join you on every flight.",
-  "Học Bảng Nhân và Chia": "Learn Multiplication & Division Tables",
+  "Học Bảng Nhân và Bảng Chia": "Learn Multiplication and Division Tables",
   "Bài kiểm tra": "Test",
   "CHỌN NHIỆM VỤ": "CHOOSE A MISSION",
   "Hãy chọn dạng bài phù hợp để Hana bắt đầu lượt học nhé.":
@@ -970,7 +990,7 @@ const activityMeta: Record<
     description: "Chia đều các nhóm số theo nhiệm vụ.",
   },
   tables: {
-    label: "Học Bảng Nhân và Chia",
+    label: "Học Bảng Nhân và Bảng Chia",
     kicker: "BẢNG NHÂN VÀ CHIA",
     description: "Chọn bảng nhân, bảng chia hoặc cả nhân và chia.",
   },
@@ -1009,7 +1029,7 @@ function activityName(activity: ActivityId | Operation, language: Language) {
       subtract: "Subtraction",
       multiply: "Multiplication",
       divide: "Division",
-      tables: "Learn Multiplication & Division Tables",
+      tables: "Learn Multiplication and Division Tables",
       test: "Test",
     } as const
   )[activity];
@@ -1198,15 +1218,21 @@ function PlayerProfileScreen({
       <section
         className="profile-avatar-chooser"
         aria-label={
-          language === "en" ? "Choose an astronaut avatar" : "Chọn avatar phi hành gia"
+          language === "en"
+            ? "Choose a Solar System avatar"
+            : "Chọn avatar Hệ Mặt Trời"
         }
       >
         <div className="avatar-chooser-heading">
-          <span>{language === "en" ? "CHOOSE YOUR AVATAR" : "CHỌN AVATAR"}</span>
+          <span>
+            {language === "en"
+              ? "CHOOSE YOUR SPACE COMPANION"
+              : "CHỌN BẠN ĐỒNG HÀNH"}
+          </span>
           <small>
             {language === "en"
-              ? "Pick your flight companion"
-              : "Chọn bạn đồng hành của bạn"}
+              ? "Meet a friend from the Solar System"
+              : "Gặp một người bạn từ Hệ Mặt Trời"}
           </small>
         </div>
         <div className="collectible-operation-route" aria-hidden="true">
@@ -1455,7 +1481,7 @@ function StartModeScreen({
           <small>
             {language === "en"
               ? "Choose Addition, Subtraction, Multiplication, Division or Times Tables."
-              : "Chọn Cộng, Trừ, Nhân, Chia hoặc Học Bảng Nhân và Chia."}
+              : "Chọn Cộng, Trừ, Nhân, Chia hoặc Học Bảng Nhân và Bảng Chia."}
           </small>
           <em>
             {language === "en" ? "Explore missions" : "Khám phá nhiệm vụ"}{" "}
@@ -1787,7 +1813,6 @@ function pickTestOperation() {
 
 export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const summaryRef = useRef<HTMLElement>(null);
   const startedRef = useRef(false);
   const handleRef = useRef<GameHandle | null>(null);
   const demoParams = useMemo(
@@ -2930,8 +2955,8 @@ export default function GameCanvas() {
     };
 
     const canvas = document.createElement("canvas");
-    canvas.width = 1200;
-    canvas.height = 790;
+    canvas.width = 1080;
+    canvas.height = 1350;
     const context = canvas.getContext("2d");
     if (!context) {
       setImageSaveStatus(
@@ -2945,43 +2970,16 @@ export default function GameCanvas() {
     }
 
     try {
-      if (summaryRef.current) {
-        try {
-          const { default: html2canvas } = await import("html2canvas");
-          const summaryImage = await html2canvas(summaryRef.current, {
-            allowTaint: false,
-            backgroundColor: null,
-            logging: false,
-            scale: Math.min(window.devicePixelRatio || 1, 2),
-            useCORS: true,
-            windowHeight: window.innerHeight,
-            windowWidth: window.innerWidth,
-          });
-          const summaryBlob = await new Promise<Blob>((resolve, reject) => {
-            summaryImage.toBlob(
-              imageBlob =>
-                imageBlob
-                  ? resolve(imageBlob)
-                  : reject(new Error("Không thể tạo ảnh màn tổng kết")),
-              "image/png"
-            );
-          });
-          await downloadSouvenirBlob(summaryBlob);
-          return;
-        } catch (captureError) {
-          console.warn(
-            "Không thể chụp toàn bộ màn tổng kết, chuyển sang thẻ dự phòng",
-            captureError
-          );
-          setImageSaveStatus(
-            copy(
-              "Hana đang dùng thẻ kỷ niệm dự phòng...",
-              "Hana is preparing a backup souvenir card..."
-            )
-          );
-        }
-      }
       await document.fonts?.ready;
+      const loadCanvasImage = (source: string) =>
+        new Promise<HTMLImageElement | null>(resolve => {
+          const image = new Image();
+          image.crossOrigin = "anonymous";
+          image.onload = () => resolve(image);
+          image.onerror = () => resolve(null);
+          image.src = source;
+        });
+      const avatarImage = await loadCanvasImage(selectedAvatar.image);
       const drawOrbit = (
         x: number,
         y: number,
@@ -3099,103 +3097,218 @@ export default function GameCanvas() {
         context.fill();
         context.restore();
       };
-      const background = context.createLinearGradient(0, 0, 1200, 790);
-      background.addColorStop(0, "#101b62");
-      background.addColorStop(1, "#2b175e");
+      const background = context.createLinearGradient(0, 0, 1080, 1350);
+      background.addColorStop(0, "#172b78");
+      background.addColorStop(0.58, "#101c5d");
+      background.addColorStop(1, "#281557");
       context.fillStyle = background;
       context.fillRect(0, 0, canvas.width, canvas.height);
-      context.fillStyle = "rgba(255,255,255,0.26)";
-      for (let index = 0; index < 44; index += 1) {
+
+      context.fillStyle = "rgba(255,255,255,0.34)";
+      for (let index = 0; index < 72; index += 1) {
         context.beginPath();
         context.arc(
-          ((index * 89) % 1180) + 12,
-          ((index * 53) % 760) + 18,
-          index % 3 === 0 ? 4 : 2,
+          ((index * 137) % 1050) + 16,
+          ((index * 71) % 1320) + 14,
+          index % 5 === 0 ? 3 : 1.5,
           0,
           Math.PI * 2
         );
         context.fill();
       }
-      drawOrbit(600, 164, 485, 160, -0.09, "rgba(150, 220, 255, .38)");
-      drawOrbit(616, 185, 360, 118, 0.18, "rgba(124, 238, 210, .31)");
-      drawPlanet(141, 146, 67, "#ffd2a6", "#ea7d72", true);
-      drawPlanet(1060, 142, 49, "#e6ddff", "#ac9ce4", false);
-      drawPlanet(1045, 660, 74, "#d6fff1", "#57c9b0", true);
-      drawHana(600, 130);
+      drawOrbit(540, 230, 472, 148, -0.1, "rgba(160, 221, 255, .34)");
+      drawOrbit(510, 245, 350, 105, 0.2, "rgba(122, 238, 209, .27)");
+      drawPlanet(86, 236, 60, "#ffd7ac", "#ed8778", true);
+      drawPlanet(984, 170, 48, "#e7ddff", "#a99be5", false);
+      drawPlanet(954, 1110, 66, "#d7fff2", "#5bcbb3", true);
+      context.save();
+      context.translate(850, 152);
+      context.scale(0.82, 0.82);
+      drawHana(0, 0);
+      context.restore();
+
+      context.fillStyle = "#d8fff2";
+      context.font = "800 20px Be Vietnam Pro, Trebuchet MS, sans-serif";
+      context.textAlign = "left";
+      context.fillText(
+        copy("THẺ KỶ NIỆM CHUYẾN BAY", "FLIGHT SOUVENIR CARD"),
+        70,
+        104
+      );
       context.fillStyle = "#fff9e3";
-      context.font = "800 48px Baloo 2, Trebuchet MS, sans-serif";
-      context.textAlign = "center";
-      context.fillText(
-        copy("Học Toán Cùng Hana", "Learn Math with Hana"),
-        600,
-        250
-      );
-      context.fillStyle = "#7de4d1";
-      context.font = "800 21px Be Vietnam Pro, Trebuchet MS, sans-serif";
-      context.fillText(
-        `KỶ NIỆM LƯỢT HỌC CỦA ${displayName.toUpperCase()} CÙNG ROBOT HANA`,
-        600,
-        286
-      );
-      context.fillStyle = "#fff8df";
-      drawRoundedRectangle(context, 72, 324, 1056, 196, 32);
+      context.font = "800 54px Baloo 2, Trebuchet MS, sans-serif";
+      context.fillText(copy("Học Toán Cùng Hana", "Learn Math with Hana"), 70, 166);
+
+      context.shadowColor = "rgba(1, 8, 49, .34)";
+      context.shadowBlur = 28;
+      context.shadowOffsetY = 14;
+      context.fillStyle = "#fffaf0";
+      drawRoundedRectangle(context, 48, 308, 984, 916, 42);
       context.fill();
+      context.shadowColor = "transparent";
+
+      context.fillStyle = "#dff9f4";
+      drawRoundedRectangle(context, 78, 340, 924, 204, 30);
+      context.fill();
+      context.save();
+      context.beginPath();
+      context.arc(182, 442, 82, 0, Math.PI * 2);
+      context.clip();
+      if (avatarImage) {
+        context.drawImage(avatarImage, 92, 352, 180, 180);
+      } else {
+        const avatarFill = context.createRadialGradient(148, 402, 12, 182, 442, 100);
+        avatarFill.addColorStop(0, "#eafffa");
+        avatarFill.addColorStop(1, "#78d8c7");
+        context.fillStyle = avatarFill;
+        context.fillRect(92, 352, 180, 180);
+      }
+      context.restore();
+      context.lineWidth = 7;
+      context.strokeStyle = "#ffffff";
+      context.beginPath();
+      context.arc(182, 442, 85, 0, Math.PI * 2);
+      context.stroke();
+      context.fillStyle = "#1a2b67";
+      context.font = "800 42px Baloo 2, sans-serif";
+      context.textAlign = "left";
+      context.fillText(displayName, 298, 418);
+      context.fillStyle = "#267b72";
+      context.font = "800 18px Be Vietnam Pro, sans-serif";
+      context.fillText(
+        language === "en" ? selectedAvatar.en.toUpperCase() : selectedAvatar.vi.toUpperCase(),
+        300,
+        454
+      );
+      context.fillStyle = "#63759a";
+      context.font = "700 20px Be Vietnam Pro, sans-serif";
+      drawWrappedText(
+        context,
+        isTimedTestSummary
+          ? copy(
+              "Bạn đã hoàn thành Bài kiểm tra tính giờ.",
+              "You completed the timed test."
+            )
+          : copy(
+              "Bạn đã hoàn thành một chuyến học thật chăm chỉ cùng Hana!",
+              "You completed a thoughtful learning mission with Hana!"
+            ),
+        300,
+        492,
+        620,
+        28
+      );
+
       const stats = [
-        ["Điểm", `${sessionPoints}`],
-        ["Đúng", `${correctCount}`],
-        ["Sai", `${wrongCount}`],
-        ["Thời gian", formatDuration(currentDuration())],
+        [copy("Điểm", "Points"), `${sessionPoints}`],
+        [copy("Đúng", "Correct"), `${correctCount}`],
+        [copy("Sai", "Incorrect"), `${wrongCount}`],
+        [copy("Thời gian", "Time"), formatDuration(currentDuration())],
       ];
       stats.forEach(([label, value], index) => {
-        const x = 118 + index * 254;
-        context.fillStyle = "#766f94";
-        context.font = "700 23px Be Vietnam Pro, sans-serif";
-        context.textAlign = "left";
-        context.fillText(label, x, 388);
-        context.fillStyle = "#292963";
-        context.font = "800 64px Baloo 2, sans-serif";
-        context.fillText(value, x, 466);
+        const x = 78 + index * 231;
+        context.fillStyle = index === 0 ? "#fff1c8" : "#eef5ff";
+        drawRoundedRectangle(context, x, 582, 207, 150, 24);
+        context.fill();
+        context.fillStyle = index === 0 ? "#a0692f" : "#5e709b";
+        context.font = "800 18px Be Vietnam Pro, sans-serif";
+        context.textAlign = "center";
+        context.fillText(label, x + 103, 624);
+        context.fillStyle = "#27316d";
+        context.font = "800 47px Baloo 2, sans-serif";
+        context.fillText(value, x + 103, 687);
       });
-      context.fillStyle = "#f3eee0";
-      drawRoundedRectangle(context, 72, 558, 1056, 170, 26);
+
+      context.fillStyle = "#fff4cf";
+      drawRoundedRectangle(context, 78, 770, 924, 190, 30);
       context.fill();
-      context.fillStyle = "#5f5d89";
-      context.font = "700 21px Be Vietnam Pro, sans-serif";
-      context.fillText("PHẦN THƯỞNG CAO NHẤT", 220, 610);
-      const badgeFill = context.createRadialGradient(150, 655, 8, 150, 655, 58);
+      context.fillStyle = "#a66f2d";
+      context.font = "800 18px Be Vietnam Pro, sans-serif";
+      context.textAlign = "left";
+      context.fillText(copy("PHẦN THƯỞNG CAO NHẤT", "HIGHEST REWARD"), 116, 816);
+      const badgeFill = context.createRadialGradient(164, 875, 8, 164, 875, 58);
       badgeFill.addColorStop(0, "#fffbe0");
       badgeFill.addColorStop(0.64, "#ffd66d");
       badgeFill.addColorStop(1, "#ec9a48");
       context.fillStyle = badgeFill;
       context.beginPath();
-      context.arc(150, 657, 54, 0, Math.PI * 2);
+      context.arc(164, 874, 58, 0, Math.PI * 2);
       context.fill();
       context.fillStyle = "#8a4211";
-      context.font = "800 43px Baloo 2, sans-serif";
+      context.font = "800 45px Baloo 2, sans-serif";
       context.textAlign = "center";
-      context.fillText(highestReward?.symbol ?? "✦", 150, 672);
-      context.fillStyle = "#2b2e69";
-      context.font = "800 30px Baloo 2, sans-serif";
-      const rewardText = highestReward
-        ? `${highestReward.symbol} ${language === "en" ? "Level" : "Cấp"} ${highestReward.level}: ${rewardLabel(highestReward)}`
-        : language === "en"
-          ? "Answer correctly to unlock your first reward!"
-          : "Hãy trả lời đúng để nhận quà đầu tiên nhé!";
+      context.fillText(highestReward?.symbol ?? "✦", 164, 890);
+      context.fillStyle = "#29316c";
+      context.font = "800 31px Baloo 2, sans-serif";
       context.textAlign = "left";
-      drawWrappedText(context, rewardText, 220, 656, 840, 38);
+      drawWrappedText(
+        context,
+        highestReward
+          ? `${language === "en" ? "Level" : "Cấp"} ${highestReward.level} · ${rewardLabel(highestReward)}`
+          : copy("Phần thưởng đầu tiên đang chờ bạn!", "Your first reward is waiting!"),
+        254,
+        862,
+        690,
+        38
+      );
       context.fillStyle = "#756d8d";
       context.font = "700 18px Be Vietnam Pro, sans-serif";
       drawWrappedText(
         context,
         highestReward
           ? rewardDetail(highestReward)
-          : language === "en"
-            ? "Solve a few more questions with Hana to unlock your first reward!"
-            : "Cùng Hana làm thêm vài phép tính để mở phần thưởng đầu tiên nhé!",
-        220,
-        704,
-        820,
+          : copy(
+              "Hãy làm thêm vài phép tính để mở phần thưởng nhé!",
+              "Solve a few more questions to unlock a reward!"
+            ),
+        254,
+        916,
+        690,
         27
+      );
+
+      const earnedBadges = sessionThemeBadges;
+      context.fillStyle = "#32417c";
+      context.font = "800 18px Be Vietnam Pro, sans-serif";
+      context.textAlign = "left";
+      context.fillText(
+        copy("HUY HIỆU CỦA LƯỢT HỌC", "SESSION BADGES"),
+        78,
+        1022
+      );
+      const badgeColors: Record<ThemeBadge["accent"], string> = {
+        coral: "#ffae95",
+        lavender: "#cfc3ff",
+        mint: "#a8f1dc",
+        gold: "#ffe27c",
+      };
+      const displayedBadges = earnedBadges.length ? earnedBadges : THEME_BADGES.slice(0, 1);
+      displayedBadges.forEach((badge, index) => {
+        const x = 78 + index * 224;
+        context.fillStyle = earnedBadges.length ? "#eef5ff" : "#f3f0f7";
+        drawRoundedRectangle(context, x, 1052, 202, 102, 22);
+        context.fill();
+        context.fillStyle = badgeColors[badge.accent];
+        context.beginPath();
+        context.arc(x + 42, 1103, 25, 0, Math.PI * 2);
+        context.fill();
+        context.fillStyle = "#29316c";
+        context.font = "800 26px Baloo 2, sans-serif";
+        context.textAlign = "center";
+        context.fillText(badge.symbol, x + 42, 1112);
+        context.fillStyle = "#33416f";
+        context.font = "800 16px Be Vietnam Pro, sans-serif";
+        context.textAlign = "left";
+        const badgeName = language === "en" ? badge.en.label : badge.vi.label;
+        drawWrappedText(context, badgeName, x + 76, 1089, 112, 19);
+      });
+      context.fillStyle = "#b9c8ef";
+      context.font = "700 17px Be Vietnam Pro, sans-serif";
+      context.textAlign = "center";
+      context.fillText(
+        copy("Hana luôn sẵn sàng bay cùng bạn ở chuyến học tiếp theo!", "Hana is ready for your next learning flight!"),
+        540,
+        1282
       );
 
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -3493,7 +3606,6 @@ export default function GameCanvas() {
       )}
       {screen === "summary" && (
         <section
-          ref={summaryRef}
           className="summary-screen"
           data-i18n-direct
           aria-label={copy("Tổng kết lượt chơi", "Learning session summary")}
@@ -3806,8 +3918,8 @@ export default function GameCanvas() {
                 <p data-dynamic-text>
                   {isTableMode
                     ? copy(
-                        "Học Bảng Nhân và Chia",
-                        "Multiplication & Division Tables"
+                        "Học Bảng Nhân và Bảng Chia",
+                        "Multiplication and Division Tables"
                       )
                     : operationLabel(operation)}{" "}
                   <span>•</span>{" "}
@@ -4279,8 +4391,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                      "Bạn chọn Cộng, Trừ, Học Bảng Nhân và Chia, Nhân, Chia hoặc Bài kiểm tra; với bốn phép tính, hãy chọn dạng bài trước khi chơi.",
-                      "Choose Addition, Subtraction, Multiplication & Division Tables, Multiplication, Division or a Test. For the four operations, choose a practice type before playing."
+                        "Bạn chọn Cộng, Trừ, Học Bảng Nhân và Bảng Chia, Nhân, Chia hoặc Bài kiểm tra; với bốn phép tính, hãy chọn dạng bài trước khi chơi.",
+                        "Choose Addition, Subtraction, Multiplication and Division Tables, Multiplication, Division or a Test. For the four operations, choose a practice type before playing."
                     )}
                   </p>
                 </div>

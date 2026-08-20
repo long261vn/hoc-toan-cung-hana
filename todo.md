@@ -341,3 +341,12 @@
 - [x] Giữ lại duy nhất các điều khiển cần thiết cho từng ngữ cảnh; gộp hoặc loại bỏ phần dư thừa mà không ảnh hưởng điểm, đổi nhiệm vụ, kết thúc lượt, cài đặt và điều hướng logo.
 - [x] Xóa mã, CSS, tham số xem trước và kiểm thử không còn được sử dụng sau khi dọn dẹp; cập nhật kiểm thử liên quan.
 - [x] Kiểm thử các luồng học, desktop/mobile, TypeScript, production build và lưu checkpoint.
+
+## Cập nhật avatar Hệ Mặt Trời và ảnh kỷ niệm
+
+- [x] Thay bốn avatar hiện tại bằng các hành tinh gần gũi trong Hệ Mặt Trời, gồm một lựa chọn Phi hành gia Trái Đất rõ ràng.
+- [x] Cập nhật tên, mô tả, tài sản avatar, lưu lựa chọn cũ an toàn và hiển thị nhất quán ở hồ sơ/tổng kết/ảnh kỷ niệm.
+- [x] Đổi mọi nhãn “Học Bảng Nhân và Chia” thành “Học Bảng Nhân và Bảng Chia” cùng bản English tương ứng.
+- [x] Thiết lập vùng an toàn cho bảng làm bài, không chồng lấn logo góc trái hoặc nút Cài đặt góc phải trên desktop/mobile.
+- [x] Thiết kế lại ảnh PNG kỷ niệm để có bố cục giàu hình ảnh, số liệu rõ ràng, avatar, huy hiệu và nền không gian thống nhất với màn tổng kết.
+- [x] Kiểm thử lưu ảnh PNG thực tế, các luồng VIE/ENG, desktop/mobile, TypeScript, build và lưu checkpoint.
