@@ -325,3 +325,11 @@
 - [x] Lập danh sách cải tiến về nhịp bố cục, điểm nhấn màu sắc, độ cân đối, minh họa và trạng thái thao tác cho học sinh lớp 3.
 - [x] Áp dụng một lượt thiết kế tổng thể theo danh sách, giữ hệ nhận diện Hana và không làm giảm khả năng đọc.
 - [x] Kiểm tra trực quan, TypeScript, build và lưu checkpoint giao diện hoàn thiện.
+
+## Avatar, mở khóa hành tinh và huy hiệu chủ đề
+
+- [ ] Thiết kế bộ avatar phi hành gia, bộ huy hiệu chủ đề và các mốc điểm/thành tích phù hợp học sinh lớp 3.
+- [ ] Thêm chọn avatar ở màn điền tên và lưu lựa chọn trong lượt học/ảnh kỷ niệm.
+- [ ] Thêm huy hiệu theo chủ đề nhận sau lượt đạt điểm cao và hiển thị rõ ở tổng kết.
+- [ ] Tạo hiệu ứng mở khóa hành tinh khi đạt thành tích xuất sắc, có hỗ trợ giảm chuyển động.
+- [ ] Kiểm thử desktop/mobile, luồng phần thưởng, TypeScript, build và lưu checkpoint.

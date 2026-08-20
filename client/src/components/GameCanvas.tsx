@@ -15,6 +15,7 @@ import type { Engine } from "@babylonjs/core/Engines/engine";
 import "./english-polish.css";
 import "./test-flow.css";
 import "./graphic-polish.css";
+import "./collectibles.css";
 import {
   Check,
   ChevronRight,
@@ -94,8 +95,21 @@ type ActivityId =
   | "test";
 type Language = "vi" | "en";
 type TestDurationSeconds = 120 | 300 | 600;
+type AvatarId = "sao-mai" | "sao-bang" | "ngan-ha" | "hanh-tinh";
+
+type ThemeBadge = {
+  id: string;
+  symbol: string;
+  threshold: number;
+  accent: "coral" | "lavender" | "mint" | "gold";
+  vi: { label: string; detail: string };
+  en: { label: string; detail: string };
+};
+type PlanetUnlock = { operation: Operation; badge: ThemeBadge };
 
 const SESSION_DRAFT_KEY = "hana-active-session-v1";
+const AVATAR_STORAGE_KEY = "hana-astronaut-avatar-v1";
+const THEME_BADGE_STORAGE_KEY = "hana-theme-badges-v1";
 const DRAFT_SCREENS = [
   "menu",
   "activities",
@@ -117,6 +131,29 @@ const DRAFT_DIFFICULTIES = ["easy", "medium", "challenge"] as const;
 const DRAFT_PRACTICE_FORMATS = ["standard", "missing", "mixed"] as const;
 const DRAFT_TABLE_KINDS = ["multiply", "divide", "mixed"] as const;
 const DRAFT_TEST_DURATIONS = [120, 300, 600] as const;
+const AVATAR_OPTIONS: Array<{
+  id: AvatarId;
+  image: string;
+  vi: string;
+  en: string;
+}> = [
+  { id: "sao-mai", image: "/manus-storage/avatar-sao-mai_e29a2612.png", vi: "Phi hành gia Sao Mai", en: "Morning Star astronaut" },
+  { id: "sao-bang", image: "/manus-storage/avatar-sao-bang_192f0fea.png", vi: "Phi hành gia Sao Băng", en: "Comet astronaut" },
+  { id: "ngan-ha", image: "/manus-storage/avatar-ngan-ha_8f207f95.png", vi: "Phi hành gia Ngân Hà", en: "Galaxy astronaut" },
+  { id: "hanh-tinh", image: "/manus-storage/avatar-hanh-tinh_ad084bcf.png", vi: "Phi hành gia Hành Tinh", en: "Planet astronaut" },
+];
+const THEME_BADGES: ThemeBadge[] = [
+  { id: "star-spark", symbol: "✦", threshold: 30, accent: "coral", vi: { label: "Sao Khởi Động", detail: "Đạt 30 điểm trong một lượt." }, en: { label: "Starter Star", detail: "Earn 30 points in one session." } },
+  { id: "orbit-explorer", symbol: "◌", threshold: 50, accent: "lavender", vi: { label: "Nhà Thám Hiểm Quỹ Đạo", detail: "Đạt 50 điểm thật tập trung." }, en: { label: "Orbit Explorer", detail: "Reach 50 points with focus." } },
+  { id: "math-comet", symbol: "☄", threshold: 80, accent: "mint", vi: { label: "Sao Băng Toán Học", detail: "Đạt 80 điểm trong một lượt." }, en: { label: "Math Comet", detail: "Earn 80 points in one session." } },
+  { id: "hana-pilot", symbol: "♛", threshold: 100, accent: "gold", vi: { label: "Phi Công Nhí Hana", detail: "Đạt 100 điểm xuất sắc." }, en: { label: "Hana Junior Pilot", detail: "Reach an excellent 100 points." } },
+];
+const UNLOCKED_PLANET_NAMES: Record<Operation, { vi: string; en: string }> = {
+  add: { vi: "Hành tinh Cộng", en: "Addition Planet" },
+  subtract: { vi: "Hành tinh Trừ", en: "Subtraction Planet" },
+  multiply: { vi: "Hành tinh Nhân", en: "Multiplication Planet" },
+  divide: { vi: "Hành tinh Chia", en: "Division Planet" },
+};
 
 type SessionDraft = {
   version: 1;
@@ -139,6 +176,7 @@ type SessionDraft = {
   testCorrect: number;
   testDurationSeconds?: TestDurationSeconds;
   testSecondsRemaining?: number;
+  avatarId?: AvatarId;
 };
 
 function isFiniteWholeNumber(
@@ -158,6 +196,42 @@ function isOneOf<T extends readonly string[]>(
   options: T
 ): value is T[number] {
   return typeof value === "string" && options.includes(value as T[number]);
+}
+
+function isAvatarId(value: unknown): value is AvatarId {
+  return AVATAR_OPTIONS.some(avatar => avatar.id === value);
+}
+
+function readAvatarPreference(): AvatarId {
+  try {
+    const stored = window.localStorage.getItem(AVATAR_STORAGE_KEY);
+    return isAvatarId(stored) ? stored : "sao-mai";
+  } catch {
+    return "sao-mai";
+  }
+}
+
+function readThemeBadgeCollection(): string[] {
+  try {
+    const stored = JSON.parse(
+      window.localStorage.getItem(THEME_BADGE_STORAGE_KEY) ?? "[]"
+    ) as unknown;
+    return Array.isArray(stored)
+      ? stored.filter(
+          id =>
+            typeof id === "string" &&
+            THEME_BADGES.some(badge => badge.id === id)
+        )
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function themeBadgesForSession(points: number) {
+  return THEME_BADGES.filter(badge => points >= badge.threshold).map(
+    badge => badge.id
+  );
 }
 
 function isValidSessionDraft(
@@ -204,6 +278,7 @@ function isValidSessionDraft(
     isFiniteWholeNumber(value.testCorrect, 10000) &&
     durationIsValid &&
     remainingIsValid &&
+    (value.avatarId === undefined || isAvatarId(value.avatarId)) &&
     Boolean(value.question) &&
     isQuestionConsistent(value.question as QuizQuestion)
   );
@@ -1107,6 +1182,8 @@ function WelcomeScreen({
 function PlayerProfileScreen({
   name,
   onNameChange,
+  avatarId,
+  onAvatarChange,
   onBack,
   onContinue,
   language,
@@ -1114,6 +1191,8 @@ function PlayerProfileScreen({
 }: {
   name: string;
   onNameChange: (name: string) => void;
+  avatarId: AvatarId;
+  onAvatarChange: (avatarId: AvatarId) => void;
   onBack: () => void;
   onContinue: () => void;
   language: Language;
@@ -1179,6 +1258,43 @@ function PlayerProfileScreen({
           ? "Enter your name so Hana can join each mission and add it to your souvenir card."
           : "Nhập tên của bạn để Hana đồng hành trong mỗi nhiệm vụ và ghi tên bạn lên thẻ kỷ niệm."}
       </p>
+      <section
+        className="profile-avatar-chooser"
+        aria-label={
+          language === "en" ? "Choose an astronaut avatar" : "Chọn avatar phi hành gia"
+        }
+      >
+        <div className="avatar-chooser-heading">
+          <span>{language === "en" ? "CHOOSE YOUR AVATAR" : "CHỌN AVATAR"}</span>
+          <small>
+            {language === "en"
+              ? "Pick your flight companion"
+              : "Chọn bạn đồng hành của bạn"}
+          </small>
+        </div>
+        <div className="collectible-operation-route" aria-hidden="true">
+          <i className="add">+</i><i className="subtract">−</i><i className="multiply">×</i><i className="divide">÷</i>
+        </div>
+        <div className="avatar-option-grid" role="radiogroup">
+          {AVATAR_OPTIONS.map(avatar => {
+            const selected = avatar.id === avatarId;
+            return (
+              <button
+                key={avatar.id}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                className={selected ? "is-selected" : ""}
+                onClick={() => onAvatarChange(avatar.id)}
+              >
+                <img src={avatar.image} alt="" />
+                <span>{language === "en" ? avatar.en : avatar.vi}</span>
+                {selected && <Check size={15} aria-hidden="true" />}
+              </button>
+            );
+          })}
+        </div>
+      </section>
       <label className="profile-name-field">
         <span>{language === "en" ? "ASTRONAUT NAME" : "TÊN PHI HÀNH GIA"}</span>
         <input
@@ -1830,6 +1946,12 @@ export default function GameCanvas() {
   const isHomeConfirmDemo = demoParams.has("homeconfirm");
   const isMaxRewardDemo = demoParams.has("maxrewards");
   const forceCanvasFallback = demoParams.has("nowebgl");
+  const unlockDemoOperation = demoParams.get("unlock");
+  const isUnlockDemo =
+    unlockDemoOperation === "add" ||
+    unlockDemoOperation === "subtract" ||
+    unlockDemoOperation === "multiply" ||
+    unlockDemoOperation === "divide";
   const missingDemoOperation = demoParams.get("missing");
   const formatDemoOperation = demoParams.get("format");
   const isMissingDemo =
@@ -1933,9 +2055,26 @@ export default function GameCanvas() {
       ? "Minh Anh"
       : ""
   );
+  const [avatarId, setAvatarId] = useState<AvatarId>(readAvatarPreference);
+  const [collectedThemeBadgeIds, setCollectedThemeBadgeIds] = useState<string[]>(
+    readThemeBadgeCollection
+  );
+  const [planetUnlock, setPlanetUnlock] = useState<PlanetUnlock | null>(() =>
+    isUnlockDemo
+      ? {
+          operation: unlockDemoOperation,
+          badge: THEME_BADGES[0],
+        }
+      : null
+  );
+  const activePlanetUnlock: PlanetUnlock | null = isUnlockDemo
+    ? { operation: unlockDemoOperation as Operation, badge: THEME_BADGES[0] }
+    : planetUnlock;
   const [sessionPoints, setSessionPoints] = useState(
     isMaxRewardDemo ? 1000 : isSummaryDemo || isScoreDemo ? 100 : 0
   );
+  const previousSessionPointsRef = useRef(sessionPoints);
+  const unlockedBadgeIdsThisSessionRef = useRef<Set<string>>(new Set());
   const [correctCount, setCorrectCount] = useState(
     isMaxRewardDemo ? 100 : isSummaryDemo || isScoreDemo ? 10 : 0
   );
@@ -2069,6 +2208,43 @@ export default function GameCanvas() {
     audio.activate();
     audio.play(effect);
   }, []);
+
+  const collectThemeBadges = useCallback((points: number) => {
+    const unlockedIds = themeBadgesForSession(points);
+    if (unlockedIds.length === 0) return;
+    setCollectedThemeBadgeIds(current =>
+      Array.from(new Set([...current, ...unlockedIds]))
+    );
+  }, []);
+
+  useEffect(() => {
+    const previousPoints = previousSessionPointsRef.current;
+    const newlyUnlocked = THEME_BADGES.find(
+      badge =>
+        previousPoints < badge.threshold &&
+        sessionPoints >= badge.threshold &&
+        !unlockedBadgeIdsThisSessionRef.current.has(badge.id)
+    );
+    previousSessionPointsRef.current = sessionPoints;
+    if (!newlyUnlocked) return;
+    unlockedBadgeIdsThisSessionRef.current.add(newlyUnlocked.id);
+    collectThemeBadges(sessionPoints);
+    setPlanetUnlock({ operation, badge: newlyUnlocked });
+    playSound("reward");
+  }, [collectThemeBadges, operation, playSound, sessionPoints]);
+
+  useEffect(() => {
+    if (!planetUnlock) return;
+    if (isUnlockDemo) return;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    const timer = window.setTimeout(
+      () => setPlanetUnlock(null),
+      reduceMotion ? 4500 : 3000
+    );
+    return () => window.clearTimeout(timer);
+  }, [isUnlockDemo, planetUnlock]);
 
   const toggleSound = () => {
     const nextEnabled = !soundEnabled;
@@ -2579,6 +2755,7 @@ export default function GameCanvas() {
       question,
       recentExpressions: recentQuestionExpressionsRef.current,
       playerName,
+      avatarId,
       sessionPoints,
       correctCount,
       wrongCount,
@@ -2590,6 +2767,7 @@ export default function GameCanvas() {
     };
     window.localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify(draft));
   }, [
+    avatarId,
     correctCount,
     difficulty,
     elapsedSeconds,
@@ -2611,11 +2789,23 @@ export default function GameCanvas() {
     wrongCount,
   ]);
 
+  useEffect(() => {
+    window.localStorage.setItem(AVATAR_STORAGE_KEY, avatarId);
+  }, [avatarId]);
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      THEME_BADGE_STORAGE_KEY,
+      JSON.stringify(collectedThemeBadgeIds)
+    );
+  }, [collectedThemeBadgeIds]);
+
   const finishSession = () => {
     setShowEndSessionConfirm(false);
     testEndsAtRef.current = null;
     clearSessionDraft();
     setResumeDraft(null);
+    collectThemeBadges(sessionPoints);
     playSound("reward");
     setElapsedSeconds(currentDuration());
     setScreen("summary");
@@ -2635,6 +2825,9 @@ export default function GameCanvas() {
     testEndsAtRef.current = null;
     testFinalizedRef.current = false;
     recentQuestionExpressionsRef.current = [];
+    previousSessionPointsRef.current = 0;
+    unlockedBadgeIdsThisSessionRef.current = new Set();
+    setPlanetUnlock(null);
     setSessionPoints(0);
     setCorrectCount(0);
     setWrongCount(0);
@@ -2688,6 +2881,7 @@ export default function GameCanvas() {
         ? `${resumeDraft.tableKind}:${resumeDraft.selectedTables.join(",")}`
         : null;
     setPlayerName(resumeDraft.playerName);
+    setAvatarId(resumeDraft.avatarId ?? readAvatarPreference());
     setSessionPoints(resumeDraft.sessionPoints);
     setCorrectCount(resumeDraft.correctCount);
     setWrongCount(resumeDraft.wrongCount);
@@ -2734,6 +2928,17 @@ export default function GameCanvas() {
   const pointsUntilReward = nextReward
     ? nextReward.threshold - sessionPoints
     : 0;
+  const selectedAvatar =
+    AVATAR_OPTIONS.find(avatar => avatar.id === avatarId) ?? AVATAR_OPTIONS[0];
+  const sessionThemeBadges = THEME_BADGES.filter(badge =>
+    themeBadgesForSession(sessionPoints).includes(badge.id)
+  );
+  const displayedBadgeCollectionIds = Array.from(
+    new Set([
+      ...collectedThemeBadgeIds,
+      ...sessionThemeBadges.map(badge => badge.id),
+    ])
+  );
 
   useLayoutEffect(() => {
     window.localStorage.setItem("hana-language", language);
@@ -3377,6 +3582,8 @@ export default function GameCanvas() {
         <PlayerProfileScreen
           name={playerName}
           onNameChange={setPlayerName}
+          avatarId={avatarId}
+          onAvatarChange={setAvatarId}
           onBack={() => setScreen("welcome")}
           onContinue={() => {
             playSound("launch");
@@ -3524,6 +3731,11 @@ export default function GameCanvas() {
               </>
             )}
           </h2>
+          <div className="summary-player-identity">
+            <img src={selectedAvatar.image} alt="" />
+            <span>{copy("Phi hành gia", "Astronaut")}</span>
+            <strong>{displayName}</strong>
+          </div>
           <p className="summary-intro">
             {isTimedTestSummary
               ? language === "en"
@@ -3614,6 +3826,50 @@ export default function GameCanvas() {
               </p>
             )}
           </section>
+          <section
+            className="theme-badge-section"
+            aria-label={copy(
+              "Huy hiệu theo chủ đề trong lượt này",
+              "Theme badges earned this session"
+            )}
+          >
+            <div className="theme-badge-heading">
+              <span>{copy("BỘ SƯU TẬP HUY HIỆU", "THEME BADGE COLLECTION")}</span>
+              <strong>
+                {displayedBadgeCollectionIds.length}/{THEME_BADGES.length}
+              </strong>
+            </div>
+            <div className="collectible-operation-route is-summary" aria-hidden="true">
+              <i className="add">+</i><i className="subtract">−</i><i className="multiply">×</i><i className="divide">÷</i>
+            </div>
+            {sessionThemeBadges.length ? (
+              <div className="theme-badge-row" role="list">
+                {sessionThemeBadges.map(badge => {
+                  const badgeCopy = language === "en" ? badge.en : badge.vi;
+                  return (
+                    <article
+                      key={badge.id}
+                      className={`theme-badge-item accent-${badge.accent}`}
+                      role="listitem"
+                    >
+                      <b aria-hidden="true">{badge.symbol}</b>
+                      <span>
+                        <strong>{badgeCopy.label}</strong>
+                        <small>{badgeCopy.detail}</small>
+                      </span>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="theme-badge-empty">
+                {copy(
+                  "Đạt 30 điểm để nhận huy hiệu chủ đề đầu tiên nhé!",
+                  "Reach 30 points to earn your first theme badge!"
+                )}
+              </p>
+            )}
+          </section>
           <div className="summary-actions">
             <button
               type="button"
@@ -3645,6 +3901,62 @@ export default function GameCanvas() {
             </p>
           )}
         </section>
+      )}
+
+      {activePlanetUnlock && (
+        <div
+          className="planet-unlock-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={copy("Mở khóa hành tinh", "Planet unlocked")}
+        >
+          <button
+            type="button"
+            className="planet-unlock-dismiss"
+            onClick={() => setPlanetUnlock(null)}
+          >
+            {copy("Chạm để tiếp tục", "Tap to continue")}
+          </button>
+          <div className="planet-unlock-card">
+            <div className="planet-unlock-sparkles" aria-hidden="true">
+              <i>✦</i><i>★</i><i>✦</i><i>·</i><i>★</i>
+            </div>
+            <div
+              className={`planet-unlock-orb operation-${activePlanetUnlock.operation}`}
+              aria-hidden="true"
+            >
+              {activePlanetUnlock.operation === "add"
+                ? "+"
+                : activePlanetUnlock.operation === "subtract"
+                  ? "−"
+                  : activePlanetUnlock.operation === "multiply"
+                    ? "×"
+                    : "÷"}
+            </div>
+            <p>{copy("HANA VỪA MỞ KHÓA", "HANA JUST UNLOCKED")}</p>
+            <h2>
+              {language === "en"
+                ? UNLOCKED_PLANET_NAMES[activePlanetUnlock.operation].en
+                : UNLOCKED_PLANET_NAMES[activePlanetUnlock.operation].vi}
+            </h2>
+            <div className={`planet-unlock-badge accent-${activePlanetUnlock.badge.accent}`}>
+              <b aria-hidden="true">{activePlanetUnlock.badge.symbol}</b>
+              <span>
+                <strong>
+                  {language === "en"
+                    ? activePlanetUnlock.badge.en.label
+                    : activePlanetUnlock.badge.vi.label}
+                </strong>
+                <small>
+                  {copy(
+                    "Huy hiệu chủ đề đã vào bộ sưu tập của bạn!",
+                    "A theme badge has joined your collection!"
+                  )}
+                </small>
+              </span>
+            </div>
+          </div>
+        </div>
       )}
 
       {screen === "game" && (

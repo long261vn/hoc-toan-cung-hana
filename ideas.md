@@ -107,3 +107,5 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Trên mọi màn học, giao diện vận hành như một **buồng lái trên bản đồ quỹ đạo**: nhận diện hành tinh hiện tại, tín hiệu tiến độ/phần thưởng và lời dẫn Hana phải cùng thuộc một cụm thị giác, không rải rác như các thẻ biểu mẫu độc lập.
 - Bốn màu hành tinh là ngôn ngữ điều hướng chính cho thẻ nhiệm vụ, lựa chọn và trạng thái đang chọn; mỗi bề mặt chọn nhiệm vụ cần mang ít nhất một dấu mốc quỹ đạo hoặc ký hiệu phép tính.
 - Cam Sao Băng **#FF6B4A** chỉ dành cho hành động khởi động/tiếp tục quan trọng và điểm nhấn hành tinh Cộng; các mảng nhấn còn lại ưu tiên kem, tím, xanh ngọc và vàng để giao diện cân bằng hơn.
+- Màn hồ sơ và tổng kết lặp lại bốn ký hiệu hành tinh như một vệt quỹ đạo ngắn, để avatar, thành tích và huy hiệu vẫn thuộc cùng một hành trình Cộng–Trừ–Nhân–Chia.
+- Huy hiệu chủ đề chỉ xuất hiện như phần thưởng cho điểm số đạt được; mỗi thẻ dùng màu mốc riêng, mô tả ngắn và không cạnh tranh với nút hành động chính màu Cam Sao Băng.
