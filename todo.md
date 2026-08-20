@@ -333,3 +333,11 @@
 - [ ] Thêm huy hiệu theo chủ đề nhận sau lượt đạt điểm cao và hiển thị rõ ở tổng kết.
 - [ ] Tạo hiệu ứng mở khóa hành tinh khi đạt thành tích xuất sắc, có hỗ trợ giảm chuyển động.
 - [ ] Kiểm thử desktop/mobile, luồng phần thưởng, TypeScript, build và lưu checkpoint.
+
+## Tinh gọn giao diện và loại bỏ điều khiển dư thừa
+
+- [x] Loại bỏ toàn bộ trạng thái, nút, kiểu dáng và xử lý ẩn/hiện thanh menu cũ trong màn làm bài.
+- [x] Rà soát tất cả màn để lập danh sách thành phần, nhãn, hành động hoặc thông tin bị trùng lặp, không còn tác dụng hay làm phân tán học sinh.
+- [x] Giữ lại duy nhất các điều khiển cần thiết cho từng ngữ cảnh; gộp hoặc loại bỏ phần dư thừa mà không ảnh hưởng điểm, đổi nhiệm vụ, kết thúc lượt, cài đặt và điều hướng logo.
+- [x] Xóa mã, CSS, tham số xem trước và kiểm thử không còn được sử dụng sau khi dọn dẹp; cập nhật kiểm thử liên quan.
+- [x] Kiểm thử các luồng học, desktop/mobile, TypeScript, production build và lưu checkpoint.

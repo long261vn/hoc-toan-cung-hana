@@ -24,7 +24,6 @@ import {
   Gem,
   HelpCircle,
   Languages,
-  Menu,
   Rocket,
   Settings,
   Sparkles,
@@ -298,32 +297,6 @@ function readSessionDraft(): SessionDraft | null {
 
 function clearSessionDraft() {
   window.localStorage.removeItem(SESSION_DRAFT_KEY);
-}
-
-function LanguageControl({
-  language,
-  onToggle,
-  className = "",
-}: {
-  language: Language;
-  onToggle: () => void;
-  className?: string;
-}) {
-  const code = language === "vi" ? "VIE" : "ENG";
-  const title = language === "vi" ? "Tiếng Việt" : "English";
-  return (
-    <button
-      className={`language-control ${className}`.trim()}
-      type="button"
-      onClick={onToggle}
-      aria-label={
-        language === "vi" ? "Switch to English" : "Chuyển sang Tiếng Việt"
-      }
-    >
-      <span className="language-code">{code}</span>
-      <small>{title}</small>
-    </button>
-  );
 }
 
 function SoundControl({
@@ -1057,12 +1030,10 @@ function WelcomeScreen({
   onStart,
   onGuide,
   language,
-  onLanguageToggle,
 }: {
   onStart: () => void;
   onGuide: () => void;
   language: Language;
-  onLanguageToggle: () => void;
 }) {
   return (
     <section
@@ -1081,20 +1052,6 @@ function WelcomeScreen({
         <span className="welcome-operation-planet subtract">−</span>
         <span className="welcome-operation-planet multiply">×</span>
         <span className="welcome-operation-planet divide">÷</span>
-      </div>
-      <div className="welcome-topbar">
-        <div className="mini-brand">
-          <span className="mini-brand-rocket">
-            <Rocket size={19} fill="currentColor" />
-          </span>
-          <GameBrand language={language} />
-        </div>
-        <div className="topbar-controls">
-          <button type="button" className="welcome-help" onClick={onGuide}>
-            <HelpCircle size={17} /> {language === "en" ? "Guide" : "Hướng dẫn"}
-          </button>
-          <LanguageControl language={language} onToggle={onLanguageToggle} />
-        </div>
       </div>
       <div className="welcome-content">
         <div className="welcome-robot" aria-hidden="true">
@@ -1187,7 +1144,6 @@ function PlayerProfileScreen({
   onBack,
   onContinue,
   language,
-  onLanguageToggle,
 }: {
   name: string;
   onNameChange: (name: string) => void;
@@ -1196,7 +1152,6 @@ function PlayerProfileScreen({
   onBack: () => void;
   onContinue: () => void;
   language: Language;
-  onLanguageToggle: () => void;
 }) {
   return (
     <section
@@ -1209,24 +1164,6 @@ function PlayerProfileScreen({
       <button type="button" className="format-back" onClick={onBack}>
         ← {language === "en" ? "Back" : "Trở về"}
       </button>
-      <div
-        className="format-brand mini-brand"
-        aria-label={
-          language === "en"
-            ? "Learn Math with Hana"
-            : "Học Toán Cùng Hana"
-        }
-      >
-        <span className="mini-brand-rocket">
-          <Rocket size={17} fill="currentColor" />
-        </span>
-        <GameBrand language={language} />
-      </div>
-      <LanguageControl
-        className="screen-language-control"
-        language={language}
-        onToggle={onLanguageToggle}
-      />
       <div className="profile-orbit" aria-hidden="true" />
       <div className="profile-hana">
         <div className="robot-fallback">
@@ -1323,16 +1260,12 @@ function PlayerProfileScreen({
 
 function ActivityMenu({
   onBack,
-  onGuide,
   onChoose,
   language,
-  onLanguageToggle,
 }: {
   onBack: () => void;
-  onGuide: () => void;
   onChoose: (activity: ActivityId) => void;
   language: Language;
-  onLanguageToggle: () => void;
 }) {
   const activities: Array<{
     id: ActivityId;
@@ -1399,23 +1332,9 @@ function ActivityMenu({
         language === "en" ? "Choose a learning activity" : "Chọn hoạt động học"
       }
     >
-      <div className="activity-topbar">
-        <button type="button" className="menu-back" onClick={onBack}>
-          ← {language === "en" ? "Back" : "Trở về"}
-        </button>
-        <div className="mini-brand">
-          <span className="mini-brand-rocket">
-            <Rocket size={19} fill="currentColor" />
-          </span>
-          <GameBrand language={language} />
-        </div>
-        <div className="topbar-controls">
-          <button type="button" className="welcome-help" onClick={onGuide}>
-            <HelpCircle size={17} /> {language === "en" ? "Guide" : "Hướng dẫn"}
-          </button>
-          <LanguageControl language={language} onToggle={onLanguageToggle} />
-        </div>
-      </div>
+      <button type="button" className="menu-back" onClick={onBack}>
+        ← {language === "en" ? "Back" : "Trở về"}
+      </button>
       <div className="activity-heading">
         <p>{language === "en" ? "CHOOSE A MISSION" : "CHỌN NHIỆM VỤ"}</p>
         <h2>
@@ -1452,11 +1371,6 @@ function ActivityMenu({
           );
         })}
       </div>
-      <p className="activity-footer">
-        {language === "en"
-          ? "Robot Hana will join you on every space mission."
-          : "Robot Hana sẽ đồng hành cùng bạn trong mọi chuyến bay."}
-      </p>
     </section>
   );
 }
@@ -1466,13 +1380,11 @@ function StartModeScreen({
   onPractice,
   onTest,
   language,
-  onLanguageToggle,
 }: {
   onBack: () => void;
   onPractice: () => void;
   onTest: () => void;
   language: Language;
-  onLanguageToggle: () => void;
 }) {
   return (
     <section
@@ -1485,17 +1397,6 @@ function StartModeScreen({
       <button type="button" className="format-back" onClick={onBack}>
         ← {language === "en" ? "Back" : "Trở về"}
       </button>
-      <div className="format-brand mini-brand">
-        <span className="mini-brand-rocket">
-          <Rocket size={17} fill="currentColor" />
-        </span>
-        <GameBrand language={language} />
-      </div>
-      <LanguageControl
-        className="screen-language-control"
-        language={language}
-        onToggle={onLanguageToggle}
-      />
       <div className="start-mode-orbit" aria-hidden="true" />
       <div
         className="start-mode-planet-map"
@@ -1593,7 +1494,6 @@ function TestSetupScreen({
   onBack,
   onStart,
   language,
-  onLanguageToggle,
 }: {
   difficulty: Difficulty;
   durationSeconds: TestDurationSeconds;
@@ -1602,7 +1502,6 @@ function TestSetupScreen({
   onBack: () => void;
   onStart: () => void;
   language: Language;
-  onLanguageToggle: () => void;
 }) {
   const durations: Array<{
     seconds: TestDurationSeconds;
@@ -1655,17 +1554,6 @@ function TestSetupScreen({
       <button type="button" className="format-back" onClick={onBack}>
         ← {language === "en" ? "Back" : "Trở về"}
       </button>
-      <div className="format-brand mini-brand">
-        <span className="mini-brand-rocket">
-          <Rocket size={17} fill="currentColor" />
-        </span>
-        <GameBrand language={language} />
-      </div>
-      <LanguageControl
-        className="screen-language-control"
-        language={language}
-        onToggle={onLanguageToggle}
-      />
       <div className="test-setup-orbit" aria-hidden="true" />
       <div
         className="test-setup-planet-map"
@@ -1769,14 +1657,12 @@ function PracticeFormatScreen({
   onBack,
   onStart,
   language,
-  onLanguageToggle,
 }: {
   operation: Operation;
   playerName: string;
   onBack: () => void;
   onStart: (format: PracticeFormat) => void;
   language: Language;
-  onLanguageToggle: () => void;
 }) {
   const activity = activityName(operation, language);
   const options: Array<{
@@ -1818,24 +1704,6 @@ function PracticeFormatScreen({
       <button type="button" className="format-back" onClick={onBack}>
         ← {language === "en" ? "Back to activities" : "Trở về chọn hoạt động"}
       </button>
-      <div
-        className="format-brand mini-brand"
-        aria-label={
-          language === "en"
-            ? "Learn Math with Hana"
-            : "Học Toán Cùng Hana"
-        }
-      >
-        <span className="mini-brand-rocket">
-          <Rocket size={17} fill="currentColor" />
-        </span>
-        <GameBrand language={language} />
-      </div>
-      <LanguageControl
-        className="screen-language-control"
-        language={language}
-        onToggle={onLanguageToggle}
-      />
       <div className="format-orbit" aria-hidden="true" />
       <div className="format-hana">
         <div className="robot-fallback">
@@ -1881,11 +1749,6 @@ function PracticeFormatScreen({
           </button>
         ))}
       </div>
-      <p className="format-note">
-        {language === "en"
-          ? "Choose a practice type so Hana can begin your learning session."
-          : "Hãy chọn dạng bài phù hợp để Hana bắt đầu lượt học nhé."}
-      </p>
     </section>
   );
 }
@@ -1941,7 +1804,6 @@ export default function GameCanvas() {
   const isGuideDemo = demoParams.has("guide");
   const isSoundSettingsDemo = demoParams.has("soundsettings");
   const isTestSetupDemo = demoParams.has("testsetup");
-  const isMenuCollapsedDemo = demoParams.has("menucollapsed");
   const isEndSessionConfirmDemo = demoParams.has("endconfirm");
   const isHomeConfirmDemo = demoParams.has("homeconfirm");
   const isMaxRewardDemo = demoParams.has("maxrewards");
@@ -2104,7 +1966,6 @@ export default function GameCanvas() {
   const [soundEnabled, setSoundEnabled] = useState(getStoredSoundPreference);
   const [musicVolume, setMusicVolume] = useState(getStoredMusicVolume);
   const [effectsVolume, setEffectsVolume] = useState(getStoredEffectsVolume);
-  const [menuCollapsed, setMenuCollapsed] = useState(isMenuCollapsedDemo);
   const audioRef = useRef<HanaAudio | null>(null);
   const pausedStartedAtRef = useRef<number | null>(null);
   const pausedDurationRef = useRef(0);
@@ -2490,7 +2351,6 @@ export default function GameCanvas() {
 
   const startActivity = (nextActivity: ActivityId) => {
     playSound("launch");
-    setMenuCollapsed(false);
     if (
       nextActivity === "add" ||
       nextActivity === "subtract" ||
@@ -2524,7 +2384,6 @@ export default function GameCanvas() {
 
   const beginPractice = (nextFormat: PracticeFormat) => {
     playSound("launch");
-    setMenuCollapsed(false);
     setAnswered(null);
     setFeedback("idle");
     setTestComplete(false);
@@ -2544,7 +2403,6 @@ export default function GameCanvas() {
 
   const beginTimedTest = () => {
     playSound("launch");
-    setMenuCollapsed(false);
     startFreshSession();
     setSelectedActivity("test");
     setMode("test");
@@ -2602,7 +2460,6 @@ export default function GameCanvas() {
         (mode === "tables" && selectedTables.length === 0)
       )
         return;
-      setMenuCollapsed(true);
       setAnswered(choice);
       if (choice === question.answer) {
         playSound("correct");
@@ -3573,9 +3430,6 @@ export default function GameCanvas() {
             setShowGuide(true);
           }}
           language={language}
-          onLanguageToggle={() =>
-            setLanguage(current => (current === "vi" ? "en" : "vi"))
-          }
         />
       )}
       {screen === "profile" && (
@@ -3590,9 +3444,6 @@ export default function GameCanvas() {
             setScreen("menu");
           }}
           language={language}
-          onLanguageToggle={() =>
-            setLanguage(current => (current === "vi" ? "en" : "vi"))
-          }
         />
       )}
       {screen === "menu" && (
@@ -3611,20 +3462,13 @@ export default function GameCanvas() {
             setScreen("testsetup");
           }}
           language={language}
-          onLanguageToggle={() =>
-            setLanguage(current => (current === "vi" ? "en" : "vi"))
-          }
         />
       )}
       {screen === "activities" && (
         <ActivityMenu
           onBack={() => setScreen("menu")}
-          onGuide={() => setShowGuide(true)}
           onChoose={startActivity}
           language={language}
-          onLanguageToggle={() =>
-            setLanguage(current => (current === "vi" ? "en" : "vi"))
-          }
         />
       )}
       {screen === "format" && (
@@ -3634,9 +3478,6 @@ export default function GameCanvas() {
           onBack={() => setScreen("activities")}
           onStart={beginPractice}
           language={language}
-          onLanguageToggle={() =>
-            setLanguage(current => (current === "vi" ? "en" : "vi"))
-          }
         />
       )}
       {screen === "testsetup" && (
@@ -3648,9 +3489,6 @@ export default function GameCanvas() {
           onBack={() => setScreen("menu")}
           onStart={beginTimedTest}
           language={language}
-          onLanguageToggle={() =>
-            setLanguage(current => (current === "vi" ? "en" : "vi"))
-          }
         />
       )}
       {screen === "summary" && (
@@ -3660,19 +3498,6 @@ export default function GameCanvas() {
           data-i18n-direct
           aria-label={copy("Tổng kết lượt chơi", "Learning session summary")}
         >
-          <div
-            className="summary-brand mini-brand"
-            aria-label={
-              language === "en"
-                ? "Learn Math with Hana"
-                : "Học Toán Cùng Hana"
-            }
-          >
-            <span className="mini-brand-rocket">
-              <Rocket size={17} fill="currentColor" />
-            </span>
-            <GameBrand language={language} />
-          </div>
           <div className="summary-orbit" aria-hidden="true" />
           <div className="summary-journey" aria-hidden="true">
             <i className="add">+</i>
@@ -3744,15 +3569,6 @@ export default function GameCanvas() {
               : language === "en"
                 ? `${displayName}, whether right or wrong, you kept going through a session with Hana.`
                 : `${displayName}, dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.`}
-          </p>
-          <p className="summary-hana-line">
-            {isTimedTestSummary
-              ? language === "en"
-                ? `Hana counted ${correctCount} correct answers and ${wrongCount} incorrect answers.`
-                : `Hana đã ghi nhận ${correctCount} câu đúng và ${wrongCount} câu sai.`
-              : language === "en"
-                ? `Hana has stored ${displayName}'s badges in the spaceship cabin!`
-                : `Hana đã cất các huy hiệu của ${displayName} vào khoang phi thuyền!`}
           </p>
           {isTimedTestSummary && (
             <div
@@ -3961,50 +3777,6 @@ export default function GameCanvas() {
 
       {screen === "game" && (
         <>
-          <header
-            className={`mission-header ${menuCollapsed ? "is-collapsed" : ""}`}
-          >
-            <div className="brand-lockup compact-mission-brand">
-              <span className="mini-brand-rocket mission-brand-rocket" aria-hidden="true">
-                <Rocket size={19} fill="currentColor" />
-              </span>
-              <p className="eyebrow" data-brand-wordmark>
-                {language === "en" ? (
-                  <>
-                    Learn Math <span>with Hana</span>
-                  </>
-                ) : (
-                  <>
-                    Học Toán <span>Cùng Hana</span>
-                  </>
-                )}
-              </p>
-            </div>
-            <div className="mission-actions">
-              <LanguageControl
-                className="mission-language-control"
-                language={language}
-                onToggle={() =>
-                  setLanguage(current => (current === "vi" ? "en" : "vi"))
-                }
-              />
-            </div>
-          </header>
-          {menuCollapsed && (
-            <button
-              type="button"
-              className="mission-menu-reveal"
-              onClick={() => {
-                playSound("tap");
-                setMenuCollapsed(false);
-              }}
-              aria-label={copy("Mở lại thanh menu", "Show menu bar")}
-            >
-              <Menu size={17} />
-              <span>{copy("Menu", "Menu")}</span>
-            </button>
-          )}
-
           <div
             className={`mission-orbit-map operation-${operation}`}
             aria-hidden="true"
@@ -4023,7 +3795,7 @@ export default function GameCanvas() {
           </div>
 
           <section
-            className={`mission-control operation-${operation} ${menuCollapsed ? "is-menu-collapsed" : ""}`}
+            className={`mission-control operation-${operation}`}
             aria-label={copy(
               "Bảng điều khiển bài tập",
               "Exercise control panel"
@@ -4431,7 +4203,6 @@ export default function GameCanvas() {
                   type="button"
                   onClick={() => {
                     playSound("tap");
-                    setMenuCollapsed(false);
                     setScreen(mode === "test" ? "menu" : "activities");
                   }}
                 >

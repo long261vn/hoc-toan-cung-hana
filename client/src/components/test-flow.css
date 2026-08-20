@@ -31,11 +31,6 @@
   transform: rotate(-12deg);
   box-shadow: 0 0 36px rgba(89, 223, 190, 0.15);
 }
-.start-mode-screen .format-brand,
-.test-setup-screen .format-brand {
-  transform: scale(1.13);
-  transform-origin: center;
-}
 .start-mode-planet-map,
 .test-setup-planet-map {
   display: flex;
@@ -372,10 +367,6 @@
     align-content: start;
     overflow-y: auto;
     padding: 75px 14px 24px;
-  }
-  .start-mode-screen .format-brand,
-  .test-setup-screen .format-brand {
-    transform: scale(1.05);
   }
   .start-mode-hana {
     width: 75px;

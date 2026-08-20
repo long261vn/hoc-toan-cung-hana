@@ -183,27 +183,6 @@ button:focus-visible {
     ),
     linear-gradient(180deg, rgba(4, 8, 31, 0.1), rgba(5, 8, 27, 0.4));
 }
-.format-brand,
-.summary-brand {
-  position: absolute;
-  z-index: 2;
-  color: #fff8e7;
-  opacity: 0.95;
-}
-.format-brand {
-  top: 21px;
-  right: 24px;
-}
-.summary-brand {
-  top: 20px;
-  left: 28px;
-}
-.format-brand .mini-brand-rocket,
-.summary-brand .mini-brand-rocket {
-  width: 34px;
-  height: 34px;
-  border-radius: 11px;
-}
 .mission-orbit-map {
   position: absolute;
   z-index: 0;
@@ -297,23 +276,6 @@ button:focus-visible {
   white-space: nowrap;
 }
 @media (max-width: 760px) {
-  .format-brand {
-    top: 15px;
-    right: 15px;
-  }
-  .summary-brand {
-    top: 15px;
-    left: 15px;
-  }
-  .format-brand .mini-brand-rocket,
-  .summary-brand .mini-brand-rocket {
-    width: 30px;
-    height: 30px;
-  }
-  .format-brand,
-  .summary-brand {
-    font-size: 11px;
-  }
   .mission-orbit-map {
     display: none;
   }
@@ -326,13 +288,6 @@ button:focus-visible {
   min-height: 100dvh;
   padding: 22px 30px;
   color: #fff8e7;
-}
-.welcome-topbar,
-.activity-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
 }
 .mini-brand {
   display: flex;
@@ -356,7 +311,6 @@ button:focus-visible {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
   transform: rotate(23deg);
 }
-.welcome-help,
 .menu-back {
   display: inline-flex;
   align-items: center;
@@ -375,7 +329,6 @@ button:focus-visible {
     transform 160ms ease,
     background 160ms ease;
 }
-.welcome-help:hover,
 .menu-back:hover {
   background: rgba(42, 57, 136, 0.82);
   transform: translateY(-2px);
@@ -687,200 +640,11 @@ button:focus-visible {
   position: relative;
   z-index: 1;
 }
-.activity-footer {
-  margin: 20px 0 0;
-  color: #b9c6f3;
-  text-align: center;
-  font-size: 10px;
-  font-weight: 700;
-}
 
-.mission-header {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 22px;
-  padding: 22px 30px 0;
-}
-.brand-lockup {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 238px;
-}
-.brand-emblem {
-  position: relative;
-  width: 56px;
-  height: 56px;
-  flex: 0 0 56px;
-  border: 1px solid rgba(255, 210, 151, 0.35);
-  border-radius: 19px;
-  background: radial-gradient(circle at 30% 30%, #354585, #161d54 70%);
-  box-shadow:
-    0 9px 23px rgba(0, 0, 28, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  overflow: hidden;
-}
-.brand-mark {
-  position: absolute;
-  inset: 2px;
-  z-index: 3;
-  width: 52px;
-  height: 52px;
-  object-fit: contain;
-  mix-blend-mode: screen;
-  filter: drop-shadow(0 4px 9px rgba(255, 107, 74, 0.4));
-}
-.emblem-orbit {
-  position: absolute;
-  z-index: 1;
-  top: 13px;
-  left: 5px;
-  width: 46px;
-  height: 23px;
-  border: 2px solid #68dfc7;
-  border-radius: 50%;
-  transform: rotate(-26deg);
-  opacity: 0.95;
-}
-.emblem-rocket {
-  position: absolute;
-  z-index: 2;
-  top: 15px;
-  left: 18px;
-  color: #ff7958;
-  transform: rotate(35deg);
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
-}
-.emblem-plus {
-  position: absolute;
-  z-index: 2;
-  right: 7px;
-  bottom: 5px;
-  display: grid;
-  width: 16px;
-  height: 16px;
-  place-items: center;
-  border-radius: 50%;
-  color: #22295e;
-  background: #ffe17d;
-  font-family: "Baloo 2", cursive;
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1;
-}
-.eyebrow {
-  margin: 0 0 2px;
-  color: #aeb9f0;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-}
-.brand-lockup h1 {
-  margin: 0;
-  color: #fff8e7;
-  font-family: "Baloo 2", cursive;
-  font-size: 23px;
-  font-weight: 800;
-  line-height: 0.8;
-  letter-spacing: -0.03em;
-}
-.header-middle {
-  display: grid;
-  gap: 6px;
-  justify-items: center;
-}
-.mission-menu-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 11px;
-  color: #dde5ff;
-  border: 1px solid rgba(207, 220, 255, 0.25);
-  border-radius: 14px;
-  background: rgba(20, 28, 81, 0.72);
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    background 160ms ease;
-}
-.mission-menu-button span {
-  color: #ffdf7c;
-  font-size: 15px;
-  line-height: 0.6;
-}
-.mission-menu-button:hover {
-  background: rgba(33, 43, 108, 0.88);
-  transform: translateY(-2px);
-}
-.header-label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #d6dcff;
-  font-size: 11px;
-  font-weight: 700;
-}
-.energy-track {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 25px;
-  padding: 4px 8px;
-  border: 1px solid rgba(212, 222, 255, 0.25);
-  border-radius: 99px;
-  background: rgba(19, 27, 79, 0.66);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-}
-.energy-dot {
-  display: grid;
-  width: 17px;
-  height: 17px;
-  place-items: center;
-  color: #6772ad;
-  transition:
-    transform 220ms cubic-bezier(0.23, 1, 0.32, 1),
-    color 220ms ease;
-}
-.energy-dot.is-filled {
-  color: #ffda65;
-  transform: translateY(-2px) rotate(12deg);
-  filter: drop-shadow(0 0 7px rgba(255, 211, 91, 0.75));
-}
-.star-bank {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 11px;
-  color: #fff6d6;
-  border: 1px solid rgba(255, 230, 148, 0.32);
-  border-radius: 15px;
-  background: rgba(20, 28, 81, 0.72);
-  box-shadow: 0 10px 25px rgba(2, 6, 27, 0.18);
-  backdrop-filter: blur(10px);
-  font-size: 12px;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    background 160ms ease;
-}
-.star-bank:hover {
-  background: rgba(33, 43, 108, 0.88);
-  transform: translateY(-2px);
-}
-.star-bank:active,
 .primary-action:active,
 .answer-button:active,
 .planet-pill:active {
   transform: scale(0.97);
-}
-.star-icon {
-  color: #ffe373;
 }
 
 .mission-copy {
@@ -1982,69 +1746,6 @@ button:focus-visible {
   .activity-copy strong {
     font-size: 19px;
   }
-  .activity-footer {
-    margin-top: 14px;
-  }
-  .mission-header {
-    padding: 15px 15px 0;
-    gap: 8px;
-  }
-  .brand-lockup {
-    min-width: auto;
-  }
-  .brand-emblem {
-    width: 42px;
-    height: 42px;
-    flex-basis: 42px;
-    border-radius: 14px;
-  }
-  .brand-mark {
-    width: 38px;
-    height: 38px;
-  }
-  .emblem-orbit {
-    top: 10px;
-    left: 3px;
-    width: 35px;
-    height: 17px;
-  }
-  .emblem-rocket {
-    top: 10px;
-    left: 12px;
-    width: 19px;
-  }
-  .emblem-plus {
-    right: 3px;
-    bottom: 2px;
-    width: 14px;
-    height: 14px;
-    font-size: 14px;
-  }
-  .brand-lockup h1 {
-    font-size: 18px;
-  }
-  .header-middle {
-    display: none;
-  }
-  .mission-menu-button {
-    padding: 7px 8px;
-  }
-  .star-bank {
-    padding: 7px 9px;
-  }
-  .mission-copy {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: auto;
-    margin: 25px 16px 0;
-  }
-  .mission-copy h2 {
-    font-size: 32px;
-  }
-  .mission-copy p {
-    max-width: 250px;
-  }
   .map-destinations {
     display: none;
   }
@@ -2359,7 +2060,6 @@ button:focus-visible {
 .summary-kicker,
 .summary-screen h2,
 .summary-intro,
-.summary-hana-line,
 .summary-stats,
 .reward-board,
 .summary-actions,
@@ -3118,12 +2818,6 @@ button:focus-visible {
   transform: rotate(-12deg);
   box-shadow: 0 0 26px rgba(94, 218, 196, 0.18);
 }
-.summary-hana-line {
-  margin: -4px 0 0;
-  color: #8be5d4;
-  font-size: 10px;
-  font-weight: 800;
-}
 .save-memory:disabled {
   opacity: 0.7;
   cursor: wait;
@@ -3378,12 +3072,6 @@ button:focus-visible {
   font-weight: 800;
   letter-spacing: 0.06em;
 }
-.format-note {
-  margin: 1px 0 0;
-  color: #b7cdf8;
-  font-size: 10px;
-  font-weight: 700;
-}
 @media (max-width: 760px) {
   .format-screen {
     align-content: start;
@@ -3431,9 +3119,6 @@ button:focus-visible {
   .format-recommend {
     top: 7px;
     right: 9px;
-  }
-  .format-note {
-    margin-bottom: 8px;
   }
 }
 
@@ -3547,13 +3232,6 @@ button:focus-visible {
   background: #fff7c3;
   box-shadow: 0 2px 0 #edc359;
 }
-.summary-hana-line {
-  max-width: 400px;
-  padding: 6px 10px;
-  border: 1px solid rgba(119, 232, 208, 0.34);
-  border-radius: 999px;
-  background: rgba(33, 72, 122, 0.42);
-}
 .mission-counter {
   border-color: #ead58c;
   background: linear-gradient(145deg, #fff8cd, #ffe398);
@@ -3583,19 +3261,6 @@ button:focus-visible {
   }
   .reward-progress small {
     font-size: 6px;
-  }
-  .mission-header {
-    grid-template-columns: minmax(0, 1fr) auto auto;
-  }
-  .mission-menu-button {
-    padding: 7px;
-    font-size: 0;
-  }
-  .mission-menu-button span {
-    font-size: 12px;
-  }
-  .summary-hana-line {
-    font-size: 9px;
   }
 }
 
@@ -4239,154 +3904,7 @@ button:focus-visible {
   }
 }
 
-/* The language switch stays available throughout the learning journey without covering primary controls. */
-.language-toggle {
-  position: fixed;
-  z-index: 40;
-  top: 84px;
-  right: 26px;
-  bottom: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 58px;
-  min-height: 42px;
-  justify-content: center;
-  padding: 8px 10px;
-  color: #fffce8;
-  border: 2px solid rgba(169, 240, 225, 0.76);
-  border-radius: 14px;
-  background: linear-gradient(
-    145deg,
-    rgba(28, 100, 126, 0.96),
-    rgba(25, 54, 121, 0.96)
-  );
-  box-shadow:
-    0 4px 0 #102c69,
-    0 10px 24px rgba(2, 7, 40, 0.32);
-  font-family: "Baloo 2", cursive;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    filter 160ms ease;
-}
-.language-toggle:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-}
-.language-toggle:active {
-  transform: translateY(1px) scale(0.97);
-}
-.language-toggle span {
-  color: #7de4d1;
-  font-size: 17px;
-}
-.language-toggle:focus-visible {
-  outline: 3px solid #fff6ab;
-  outline-offset: 3px;
-}
-@media (max-width: 760px) {
-  .language-toggle {
-    top: 72px;
-    right: 12px;
-    bottom: auto;
-    min-width: 54px;
-    min-height: 40px;
-    border-radius: 13px;
-    font-size: 14px;
-  }
-}
-
-/* The top rail combines help and language into one calm, deliberate command system. */
-.topbar-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.language-control {
-  display: inline-grid;
-  grid-template-columns: 1fr;
-  align-items: center;
-  justify-items: center;
-  row-gap: 2px;
-  min-height: 40px;
-  padding: 6px 10px 5px;
-  color: #eafff9;
-  border: 1px solid rgba(133, 234, 213, 0.48);
-  border-radius: 13px;
-  background: linear-gradient(
-    145deg,
-    rgba(17, 73, 111, 0.88),
-    rgba(20, 40, 99, 0.9)
-  );
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 7px 18px rgba(0, 0, 31, 0.2);
-  font-family: "Baloo 2", cursive;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    filter 160ms ease,
-    background 160ms ease;
-}
-.language-control:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
-}
-.language-control:active {
-  transform: translateY(1px) scale(0.97);
-}
-.language-control:focus-visible {
-  outline: 3px solid #fff3aa;
-  outline-offset: 3px;
-}
-.language-code {
-  color: #faffee;
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1;
-}
-.language-control small {
-  margin-top: 1px;
-  color: #9be9d8;
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  line-height: 1;
-  text-align: center;
-}
-.screen-language-control,
-.summary-language-control {
-  position: absolute;
-  top: 22px;
-  right: 24px;
-  z-index: 4;
-}
-.format-brand {
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
-}
-.summary-language-control {
-  top: 22px;
-}
-.mission-language-control {
-  min-height: 35px;
-  padding: 5px 8px 4px;
-  border-radius: 11px;
-}
-.mission-language-control .language-code {
-  font-size: 12px;
-}
-.mission-language-control small {
-  display: none;
-}
-
-/* The exercise console owns the sole live score display; it remains available even while the top menu is collapsed. */
+/* The exercise console owns the sole live score display. */
 .mission-counter.current-score-button {
   border: 0;
   cursor: pointer;
@@ -4407,55 +3925,6 @@ button:focus-visible {
   outline-offset: 3px;
 }
 
-/* On phones, mission actions live in the learning console so they remain discoverable after the top rail contracts. */
-.mobile-mission-actions {
-  display: none;
-}
-@media (max-width: 760px) {
-  .mission-actions .mission-menu-button {
-    display: none;
-  }
-  .mobile-mission-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 7px;
-    margin-top: 10px;
-  }
-  .mobile-mission-actions button {
-    display: inline-flex;
-    min-height: 38px;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 8px;
-    border: 0;
-    border-radius: 11px;
-    font-family: "Baloo 2", cursive;
-    font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    transition:
-      transform 160ms ease,
-      filter 160ms ease;
-  }
-  .mobile-mission-actions button:active {
-    transform: scale(0.97);
-  }
-  .mobile-change-mission {
-    color: #27336e;
-    background: #dcecff;
-    box-shadow: 0 3px 0 #9db9e8;
-  }
-  .mobile-end-session {
-    color: #fff7e8;
-    background: linear-gradient(135deg, #d95e64, #ee7d60);
-    box-shadow: 0 3px 0 #a94255;
-  }
-  .mobile-mission-actions button:focus-visible {
-    outline: 3px solid #fff0a4;
-    outline-offset: 3px;
-  }
-}
 .sound-control {
   display: inline-grid;
   grid-template-columns: auto 1fr;
@@ -5278,70 +4747,6 @@ button:focus-visible {
   }
 }
 
-/* After the first answer, the top bar contracts to leave the mathematics front and center. */
-.mission-header {
-  transition:
-    height 220ms cubic-bezier(0.23, 1, 0.32, 1),
-    padding 220ms cubic-bezier(0.23, 1, 0.32, 1),
-    opacity 160ms ease;
-}
-.mission-header.is-collapsed {
-  height: 0;
-  min-height: 0;
-  padding-top: 0;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-}
-.mission-menu-reveal {
-  position: absolute;
-  z-index: 8;
-  top: 12px;
-  right: 22px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 10px;
-  color: #fff6d7;
-  border: 1px solid rgba(255, 225, 145, 0.56);
-  border-radius: 12px;
-  background: rgba(27, 39, 97, 0.88);
-  box-shadow: 0 7px 17px rgba(1, 6, 38, 0.22);
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 10px;
-  font-weight: 800;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    filter 160ms ease;
-}
-.mission-menu-reveal:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.12);
-}
-.mission-menu-reveal:active {
-  transform: translateY(1px) scale(0.97);
-}
-.mission-menu-reveal:focus-visible {
-  outline: 3px solid #fff0a4;
-  outline-offset: 3px;
-}
-@media (min-width: 761px) {
-  .mission-control.is-menu-collapsed {
-    top: clamp(98px, 14vh, 126px);
-    max-height: calc(100dvh - 142px);
-  }
-}
-@media (max-width: 760px) {
-  .mission-menu-reveal {
-    top: 10px;
-    right: 12px;
-  }
-  .mission-control.is-menu-collapsed {
-    margin-top: 8px;
-  }
-}
-
 /* The learning console is the visual priority: one compact rail above, one intentional control bar below. */
 .mission-header {
   min-height: 58px;
@@ -5993,12 +5398,6 @@ html[lang="vi"] .console-topline::after {
 }
 
 /* One familiar settings gear replaces scattered help, language and sound controls. */
-.welcome-topbar .topbar-controls,
-.activity-topbar .topbar-controls,
-.screen-language-control,
-.mission-actions {
-  display: none !important;
-}
 .app-settings-dock {
   position: fixed;
   z-index: 70;
@@ -6077,15 +5476,11 @@ html[lang="vi"] .console-topline::after {
 }
 .app-settings-sound-title { color: #ffe7a3; font-size: 14px; }
 .app-settings-sound .sound-master-toggle { border-radius: 12px; }
-.activity-topbar .mini-brand {
-  margin-right: 56px;
-}
 @media (max-width: 760px) {
   .app-settings-dock { top: 15px; right: 15px; }
   .app-settings-trigger { width: 40px; min-height: 40px; justify-content: center; padding: 8px; border-radius: 12px; }
   .app-settings-trigger span { display: none; }
   .app-settings-panel { width: min(316px, calc(100vw - 22px)); }
-  .activity-topbar .mini-brand { margin-right: 49px; }
 }
 
 /* Focus the exercise console on the math, not decorative cockpit chrome. */
@@ -6168,13 +5563,6 @@ html[lang="vi"] .console-topline::after {
 }
 
 /* One fixed home brand owns the upper-left corner; each Back action is centered. */
-.welcome-topbar,
-.format-brand,
-.summary-brand,
-.compact-mission-brand,
-.activity-topbar > .mini-brand {
-  display: none !important;
-}
 .app-home-brand {
   position: fixed;
   z-index: 71;
@@ -6200,17 +5588,14 @@ html[lang="vi"] .console-topline::after {
   left: 50%;
   transform: translateX(-50%);
 }
-.activity-topbar {
-  position: relative;
-  min-height: 42px;
-  justify-content: center;
-}
-.activity-topbar .menu-back {
+.activity-screen > .menu-back {
   position: absolute;
+  z-index: 6;
+  top: 22px;
   left: 50%;
   transform: translateX(-50%);
 }
-.activity-topbar .menu-back:hover { transform: translateX(-50%) translateY(-2px); }
+.activity-screen > .menu-back:hover { transform: translateX(-50%) translateY(-2px); }
 .home-confirm-card {
   max-width: min(430px, calc(100vw - 28px));
   text-align: center;
@@ -6330,7 +5715,7 @@ html[lang="vi"] .console-topline::after {
   .app-home-brand .mini-brand-rocket { width: 34px; height: 34px; }
   .app-home-brand { font-size: 13px; }
   .format-back { top: 15px; left: 50%; }
-  .activity-topbar { min-height: 40px; }
+  .activity-screen > .menu-back { top: 15px; }
   .home-confirm-actions { grid-template-columns: 1fr; }
   .home-confirm-card { padding: 28px 19px 19px; border-radius: 22px; }
   .home-confirm-card [data-slot="alert-dialog-title"] { font-size: 23px; }
