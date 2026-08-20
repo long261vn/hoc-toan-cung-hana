@@ -517,8 +517,7 @@ const englishText: Record<string, string> = {
     "Find the missing number in the equation.",
   "Luyện xen kẽ cả hai dạng bài.": "Alternate between both practice types.",
   "Nhân và chia xen kẽ": "Mix multiplication and division",
-  "Phi Hành Tinh": "Math Planet",
-  "Phép Tính": "Adventure",
+  "Học Toán": "Learn Math",
   "BẢNG CỬU CHƯƠNG": "TIMES TABLES",
   "PHẦN THƯỞNG GẦN NHẤT": "LATEST REWARDS",
   "TIẾN ĐỘ CỦA": "PROGRESS FOR",
@@ -776,15 +775,15 @@ function GameBrand({ language }: { language: Language }) {
     <span data-brand-wordmark data-i18n-direct>
       {language === "en" ? (
         <>
-          Math Planet
+          Learn Math
           <br />
-          Adventure
+          with Hana
         </>
       ) : (
         <>
-          Phi Hành Tinh
+          Học Toán
           <br />
-          Phép Tính
+          Cùng Hana
         </>
       )}
     </span>
@@ -849,8 +848,8 @@ function WelcomeScreen({
       data-i18n-direct
       aria-label={
         language === "en"
-          ? "Welcome to Math Planet Adventure"
-          : "Chào mừng đến với Phi Hành Tinh Phép Tính"
+          ? "Welcome to Learn Math with Hana"
+          : "Chào mừng đến với Học Toán Cùng Hana"
       }
     >
       <div className="welcome-operation-stage" aria-hidden="true">
@@ -898,11 +897,11 @@ function WelcomeScreen({
         <p className="welcome-brand-flag" data-brand-wordmark>
           {language === "en" ? (
             <>
-              MATH PLANET <span>ADVENTURE</span>
+              LEARN MATH <span>WITH HANA</span>
             </>
           ) : (
             <>
-              PHI HÀNH TINH <span>PHÉP TÍNH</span>
+              HỌC TOÁN <span>CÙNG HANA</span>
             </>
           )}
         </p>
@@ -1010,8 +1009,8 @@ function PlayerProfileScreen({
         className="format-brand mini-brand"
         aria-label={
           language === "en"
-            ? "Math Planet Adventure"
-            : "Phi Hành Tinh Phép Tính"
+            ? "Learn Math with Hana"
+            : "Học Toán Cùng Hana"
         }
       >
         <span className="mini-brand-rocket">
@@ -1574,8 +1573,8 @@ function PracticeFormatScreen({
         className="format-brand mini-brand"
         aria-label={
           language === "en"
-            ? "Math Planet Adventure"
-            : "Phi Hành Tinh Phép Tính"
+            ? "Learn Math with Hana"
+            : "Học Toán Cùng Hana"
         }
       >
         <span className="mini-brand-rocket">
@@ -2886,7 +2885,11 @@ export default function GameCanvas() {
       context.fillStyle = "#fff9e3";
       context.font = "800 48px Baloo 2, Trebuchet MS, sans-serif";
       context.textAlign = "center";
-      context.fillText("Phi Hành Tinh Phép Tính", 600, 250);
+      context.fillText(
+        copy("Học Toán Cùng Hana", "Learn Math with Hana"),
+        600,
+        250
+      );
       context.fillStyle = "#7de4d1";
       context.font = "800 21px Be Vietnam Pro, Trebuchet MS, sans-serif";
       context.fillText(
@@ -3195,8 +3198,8 @@ export default function GameCanvas() {
             className="summary-brand mini-brand"
             aria-label={
               language === "en"
-                ? "Math Planet Adventure"
-                : "Phi Hành Tinh Phép Tính"
+                ? "Learn Math with Hana"
+                : "Học Toán Cùng Hana"
             }
           >
             <span className="mini-brand-rocket">
@@ -3402,7 +3405,15 @@ export default function GameCanvas() {
                 <img className="brand-mark" src={ASSETS.logo} alt="" />
               </div>
               <p className="eyebrow" data-brand-wordmark>
-                Phi Hành Tinh <span>Phép Tính</span>
+                {language === "en" ? (
+                  <>
+                    Learn Math <span>with Hana</span>
+                  </>
+                ) : (
+                  <>
+                    Học Toán <span>Cùng Hana</span>
+                  </>
+                )}
               </p>
             </div>
             <div className="mission-actions">

@@ -68,8 +68,8 @@ try {
   );
   noVietnamese(welcome, "Màn chào mừng");
   if (
-    !wordmark?.includes("Math Planet") ||
-    !wordmark?.includes("Adventure") ||
+    !wordmark?.includes("Learn Math") ||
+    !wordmark?.includes("with Hana") ||
     !welcome.includes("Guide")
   )
     throw new Error(

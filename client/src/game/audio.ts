@@ -1,5 +1,5 @@
 /**
- * Phi Hành Tinh Phép Tính audio: gentle background music plus short, low-volume
+ * Học Toán Cùng Hana audio: gentle background music plus short, low-volume
  * Web Audio signals that affirm actions without disrupting reading or reasoning.
  */
 

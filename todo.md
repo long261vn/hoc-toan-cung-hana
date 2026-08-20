@@ -269,3 +269,10 @@
 - [x] Đánh giá đồ họa, độ tương phản, thứ bậc thị giác, kích thước chữ và vùng chạm trên desktop/mobile.
 - [x] Chơi thử toàn bộ hành trình theo góc nhìn học sinh lớp 3; ghi nhận điểm gây khó hiểu hoặc cần nhiều thao tác.
 - [x] Sửa các vấn đề ưu tiên, kiểm thử hồi quy, dựng sản phẩm và lưu checkpoint bàn giao.
+
+## Đổi nhận diện Học Toán Cùng Hana và tăng khả năng đọc
+
+- [x] Kiểm kê và thay toàn bộ tên “Phi Hành Tinh Phép Tính”/“Math Planet Adventure” ở mã nguồn, tiêu đề, thẻ ảnh kỷ niệm và kiểm thử.
+- [x] Áp dụng tên “Học Toán Cùng Hana” khi chọn VIE và “Learn Math with Hana” khi chọn ENG trên mọi màn hình.
+- [x] Rà soát cỡ chữ, khoảng cách, độ tương phản và vùng đặt chữ trên nền ở desktop/mobile; tinh chỉnh để học sinh lớp 3 đọc dễ dàng.
+- [x] Kiểm thử song ngữ, chụp giao diện, dựng bản phát hành và lưu checkpoint.

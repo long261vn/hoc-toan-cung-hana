@@ -2234,7 +2234,7 @@ button:focus-visible {
   text-align: center;
 }
 
-/* Phi Hành Tinh Phép Tính: the welcome and summary screens carry the same four-stop orbit as the cockpit. */
+/* Học Toán Cùng Hana: welcome and summary share the same four-stop learning journey. */
 .welcome-path {
   display: grid;
   gap: 9px;
@@ -2397,7 +2397,7 @@ button:focus-visible {
   }
 }
 
-/* Phi Hành Tinh Phép Tính: the welcome screen opens as Hana's four-planet mission map. */
+/* Học Toán Cùng Hana opens with Hana's four-planet learning map. */
 .welcome-operation-stage {
   position: absolute;
   z-index: 0;
@@ -5516,10 +5516,13 @@ button:focus-visible {
     font-size: 0;
   }
   .compact-mission-brand .eyebrow::after {
-    content: "Phi Hành Tinh · Phép Tính";
+    content: "Học Toán Cùng Hana";
     color: #f6f2dd;
     font-family: "Baloo 2", cursive;
-    font-size: 10px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 6px rgba(4, 10, 43, 0.8);
   }
   .mission-control,
   .mission-control.is-menu-collapsed {
@@ -5536,7 +5539,71 @@ button:focus-visible {
     font-size: 13px;
   }
   html[lang="en"] .compact-mission-brand .eyebrow::after {
-    content: "Math Planet Adventure";
+    content: "Learn Math with Hana";
+  }
+}
+
+/* Readability audit: text remains clear on cosmic scenes and comfortable for grade-3 readers. */
+.welcome-intro,
+.format-intro,
+.profile-screen > p:not(.format-kicker),
+.activity-heading span,
+.summary-intro {
+  color: #edf2ff;
+  font-size: clamp(13px, 1.2vw, 15px);
+  line-height: 1.6;
+  text-shadow: 0 2px 9px rgba(2, 7, 38, 0.9);
+}
+.welcome-kicker,
+.format-kicker,
+.summary-kicker,
+.question-label,
+.table-panel-heading span,
+.table-picker-head,
+.reward-board-heading,
+.score-reward-board > div:first-child {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+.math-helper,
+.table-panel-heading p,
+.activity-copy small,
+.format-option > small,
+.profile-name-field span {
+  font-size: 11px;
+  line-height: 1.5;
+}
+.welcome-content h2,
+.format-screen h2,
+.profile-screen h2,
+.summary-screen h2 {
+  text-shadow: 0 5px 0 rgba(16, 24, 77, 0.38), 0 0 18px rgba(2, 7, 38, 0.68);
+}
+@media (max-width: 760px) {
+  .welcome-intro,
+  .format-intro,
+  .profile-screen > p:not(.format-kicker),
+  .activity-heading span,
+  .summary-intro {
+    font-size: 12px;
+    line-height: 1.55;
+  }
+  .welcome-kicker,
+  .format-kicker,
+  .summary-kicker,
+  .question-label,
+  .table-panel-heading span,
+  .table-picker-head,
+  .reward-board-heading,
+  .score-reward-board > div:first-child {
+    font-size: 9px;
+  }
+  .math-helper,
+  .table-panel-heading p,
+  .activity-copy small,
+  .format-option > small,
+  .profile-name-field span {
+    font-size: 10px;
   }
 }
 
@@ -5795,5 +5862,28 @@ html[lang="vi"] .console-topline::after {
     left: 37%;
     padding: 4px 6px;
     font-size: 6px;
+  }
+}
+
+/* Small choices remain comfortably legible for grade-3 readers. */
+.table-kind-switch button,
+.table-picker-head button,
+.practice-format button,
+.level-switch button {
+  font-size: 10px;
+  line-height: 1.3;
+}
+.table-number-grid button {
+  font-size: 18px;
+}
+@media (max-width: 760px) {
+  .table-kind-switch button,
+  .table-picker-head button,
+  .practice-format button,
+  .level-switch button {
+    font-size: 10px;
+  }
+  .table-number-grid button {
+    font-size: 17px;
   }
 }
