@@ -1593,6 +1593,14 @@ function TestSetupScreen({
       <div className="test-setup-panel">
         <section>
           <h3>{language === "en" ? "1. Choose a level" : "1. Chọn cấp độ"}</h3>
+          <div className="test-choice-label">
+            <span>{language === "en" ? "LEVEL" : "CẤP ĐỘ"}</span>
+            <small>
+              {language === "en"
+                ? "Pick the level that feels right for you."
+                : "Chọn cấp độ phù hợp với bạn."}
+            </small>
+          </div>
           <div className="test-level-options">
             {levels.map(level => (
               <button
@@ -3608,24 +3616,6 @@ export default function GameCanvas() {
             )}
           >
             <div className="console-topline">
-              <div className="mascot-wrap">
-                <span className="cockpit-orbit" aria-hidden="true">
-                  {(Object.keys(operationSymbol) as Operation[]).map(planet => (
-                    <i
-                      key={planet}
-                      className={`${planet} ${operation === planet ? "is-active" : ""}`}
-                    >
-                      {operationSymbol[planet]}
-                    </i>
-                  ))}
-                </span>
-                <span className="speech-spark">
-                  <Sparkles size={14} />
-                </span>
-                <span className="console-operation-symbol" aria-hidden="true">
-                  {operationSymbol[operation]}
-                </span>
-              </div>
               <div className="console-title">
                 <p data-dynamic-text>
                   {isTableMode
@@ -3743,6 +3733,17 @@ export default function GameCanvas() {
                               : `${selectedTables.length} bảng đã chọn`}
                       </p>
                     </div>
+                    <div className="table-selection-label">
+                      <span data-dynamic-text>
+                        {copy("CHỌN KIỂU LUYỆN", "CHOOSE PRACTICE TYPE")}
+                      </span>
+                      <small data-dynamic-text>
+                        {copy(
+                          "Chọn nhân, chia hoặc cả hai.",
+                          "Choose multiplication, division or both."
+                        )}
+                      </small>
+                    </div>
                     <div
                       className="table-kind-switch"
                       aria-label={copy(
@@ -3772,8 +3773,8 @@ export default function GameCanvas() {
                     <div className="table-picker-head">
                       <span data-dynamic-text>
                         {copy(
-                          "Chọn một hoặc nhiều bảng",
-                          "Choose one or more tables"
+                          "CHỌN BẢNG TỪ 2 ĐẾN 9",
+                          "CHOOSE TABLES 2 TO 9"
                         )}
                       </span>
                       <div className="table-picker-actions">
@@ -3984,17 +3985,25 @@ export default function GameCanvas() {
 
             <div className="control-row">
               {!isTableMode && mode !== "test" && (
-                <div className="level-switch" aria-label="Chọn cấp độ">
-                  {(Object.keys(difficultyMeta) as Difficulty[]).map(key => (
-                    <button
-                      key={key}
-                      type="button"
-                      className={difficulty === key ? "is-active" : ""}
-                      onClick={() => selectDifficulty(key)}
-                    >
-                      {difficultyMeta[key].label}
-                    </button>
-                  ))}
+                <div className="exercise-level-control">
+                  <span data-dynamic-text>
+                    {copy("CẤP ĐỘ", "LEVEL")}
+                  </span>
+                  <div
+                    className="level-switch"
+                    aria-label={copy("Chọn cấp độ", "Choose level")}
+                  >
+                    {(Object.keys(difficultyMeta) as Difficulty[]).map(key => (
+                      <button
+                        key={key}
+                        type="button"
+                        className={difficulty === key ? "is-active" : ""}
+                        onClick={() => selectDifficulty(key)}
+                      >
+                        {difficultyMeta[key].label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

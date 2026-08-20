@@ -6087,3 +6087,82 @@ html[lang="vi"] .console-topline::after {
   .app-settings-panel { width: min(316px, calc(100vw - 22px)); }
   .activity-topbar .mini-brand { margin-right: 49px; }
 }
+
+/* Focus the exercise console on the math, not decorative cockpit chrome. */
+.console-topline {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+.console-topline::after {
+  display: none;
+}
+.console-title p {
+  margin-bottom: 5px;
+  font-size: 10px;
+}
+.exercise-level-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.exercise-level-control > span {
+  padding: 4px 6px;
+  color: #695a9d;
+  border-radius: 7px;
+  background: #f1edff;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+.table-selection-label {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin: 9px 0 5px;
+}
+.table-selection-label span {
+  color: #257f73;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+.table-selection-label small {
+  color: #65759b;
+  font-size: 9px;
+  font-weight: 700;
+}
+.table-kind-switch {
+  margin-bottom: 8px;
+}
+.table-picker-head > span {
+  color: #365783;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+@media (max-width: 760px) {
+  .console-topline {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .console-title h3 {
+    font-size: 17px;
+    line-height: 1.12;
+  }
+  .exercise-level-control {
+    width: 100%;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .table-selection-label {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 7px;
+  }
+  .table-selection-label span,
+  .table-picker-head > span {
+    font-size: 9px;
+  }
+}

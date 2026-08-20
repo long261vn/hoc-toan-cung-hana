@@ -297,3 +297,10 @@
 - [x] Sửa luồng kích hoạt nhạc nền để phát ổn định sau thao tác người dùng đầu tiên mà vẫn tôn trọng cài đặt đã lưu.
 - [x] Tạo nút Cài đặt bánh răng xuất hiện trên tất cả màn, gom lựa chọn VIE/ENG, Hướng dẫn và Âm thanh.
 - [x] Kiểm thử mở/đóng Cài đặt, đổi ngôn ngữ, âm lượng/nhạc và giao diện desktop/mobile; dựng bản phát hành và lưu checkpoint.
+
+## Tối giản bảng bài tập và chống chồng lấn
+
+- [x] Kiểm kê logo/tên ứng dụng và nút quay lại trên từng màn để xác định mọi vị trí có thể chồng lấn.
+- [x] Bỏ nhãn thừa trong bảng làm bài, sửa Robot Hana trùng lặp hoặc che chữ và tăng khoảng trắng nội dung.
+- [x] Làm rõ nhãn/chỉ dẫn cho chọn bảng nhân–chia và thêm nhãn Cấp độ cho ba mức kiểm tra.
+- [x] Kiểm tra trực quan desktop/mobile, TypeScript, build và lưu checkpoint.
