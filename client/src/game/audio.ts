@@ -142,8 +142,16 @@ export class HanaAudio {
       this.music.setAttribute("aria-hidden", "true");
       this.music.src = BACKGROUND_TRACK;
       this.music.loop = true;
-      this.music.preload = "metadata";
+      this.music.preload = "auto";
       this.music.volume = this.musicVolume;
+      this.music.dataset.hanaPlaybackState = "ready";
+      this.music.addEventListener("playing", () => {
+        if (this.music) this.music.dataset.hanaPlaybackState = "playing";
+      });
+      this.music.addEventListener("pause", () => {
+        if (this.music && !this.music.ended)
+          this.music.dataset.hanaPlaybackState = "paused";
+      });
       document.body.appendChild(this.music);
     }
     return this.music;
@@ -162,6 +170,7 @@ export class HanaAudio {
     void music.play().catch(() => {
       this.musicPrimed = false;
       music.muted = false;
+      music.dataset.hanaPlaybackState = "awaiting-gesture";
     });
   }
 
@@ -175,10 +184,20 @@ export class HanaAudio {
     if (!music) return;
     if (this.musicPrimed && !music.paused) {
       music.muted = false;
+      music.dataset.hanaPlaybackState = "playing";
       return;
     }
     music.muted = false;
-    void music.play().catch(() => undefined);
+    void music
+      .play()
+      .then(() => {
+        this.musicPrimed = true;
+        music.dataset.hanaPlaybackState = "playing";
+      })
+      .catch(() => {
+        this.musicPrimed = false;
+        music.dataset.hanaPlaybackState = "awaiting-gesture";
+      });
   }
 
   setEnabled(nextEnabled: boolean) {

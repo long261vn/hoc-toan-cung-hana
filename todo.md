@@ -290,3 +290,10 @@
 - [x] Thu gọn các lựa chọn thành thẻ nhiều màu sắc, rõ ràng, đủ vùng chạm nhưng không chiếm quá nhiều không gian.
 - [x] Rà soát chuyển VIE/ENG ở từng màn và sửa mọi nhãn, mô tả, aria-label hoặc nội dung động còn không đồng bộ.
 - [x] Kiểm thử trực quan, hồi quy English/Vietnamese, TypeScript, build và lưu checkpoint.
+
+## Nhạc nền và Cài đặt chung
+
+- [x] Kiểm tra chính sách phát nhạc nền, trạng thái âm lượng và thời điểm thao tác đầu tiên để tái hiện lỗi không nghe thấy nhạc.
+- [x] Sửa luồng kích hoạt nhạc nền để phát ổn định sau thao tác người dùng đầu tiên mà vẫn tôn trọng cài đặt đã lưu.
+- [x] Tạo nút Cài đặt bánh răng xuất hiện trên tất cả màn, gom lựa chọn VIE/ENG, Hướng dẫn và Âm thanh.
+- [x] Kiểm thử mở/đóng Cài đặt, đổi ngôn ngữ, âm lượng/nhạc và giao diện desktop/mobile; dựng bản phát hành và lưu checkpoint.

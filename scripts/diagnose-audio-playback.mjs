@@ -23,5 +23,13 @@ try {
   await command("Input.dispatchMouseEvent", { type: "mouseReleased", x: bounds.x, y: bounds.y, button: "left", clickCount: 1 });
   await sleep(1200);
   const diagnostic = await evaluate(`(() => { const music = document.querySelector("audio[data-hana-background-music]"); return { events: window.__hanaAudioEvents, audio: music ? { src: music.currentSrc || music.src, paused: music.paused, currentTime: music.currentTime, readyState: music.readyState, networkState: music.networkState, volume: music.volume, error: music.error ? { code: music.error.code, message: music.error.message } : null, requested: music.dataset.hanaPlaybackRequested } : null }; })()`);
+  const settingsBounds = await evaluate(`(() => { const rect = document.querySelector(".app-settings-trigger")?.getBoundingClientRect(); return rect ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 } : null; })()`);
+  if (!settingsBounds) throw new Error("Không tìm thấy nút Cài đặt bánh răng.");
+  await command("Input.dispatchMouseEvent", { type: "mousePressed", x: settingsBounds.x, y: settingsBounds.y, button: "left", clickCount: 1 });
+  await command("Input.dispatchMouseEvent", { type: "mouseReleased", x: settingsBounds.x, y: settingsBounds.y, button: "left", clickCount: 1 });
+  await sleep(150);
+  const settingsText = await evaluate(`document.querySelector(".app-settings-panel")?.textContent?.replace(/\\s+/g, " ").trim()`);
+  if (!settingsText?.includes("Ngôn ngữ") || !settingsText.includes("Hướng dẫn") || !settingsText.includes("Âm thanh"))
+    throw new Error(`Bảng Cài đặt thiếu điều khiển: ${settingsText}`);
   console.log(JSON.stringify(diagnostic));
 } finally { socket.close(); }
