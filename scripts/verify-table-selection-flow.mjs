@@ -1,5 +1,5 @@
 const debugPort = process.env.CDP_PORT ?? "9222";
-const previewUrl = "http://localhost:3000/";
+const previewUrl = "http://localhost:3000/?nowebgl&lang=vi";
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const targets = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then((response) => response.json());
 const target = targets.find((item) => item.type === "page");
@@ -22,8 +22,10 @@ try {
   await sleep(120);
   await evaluate(`document.querySelector(".profile-continue")?.click()`);
   await sleep(350);
+  await evaluate(`document.querySelector(".start-mode-card.is-practice")?.click()`);
+  await sleep(260);
   const tablesActivityClicked = await evaluate(`(() => { const button = document.querySelectorAll(".activity-card")[2]; button?.click(); return Boolean(button); })()`);
-  if (!tablesActivityClicked) throw new Error("Không tìm thấy thẻ Học Bảng Nhân và Chia để kiểm thử.");
+  if (!tablesActivityClicked) throw new Error("Không tìm thấy thẻ Học Bảng Nhân và Bảng Chia để kiểm thử.");
   await sleep(450);
   const before = await evaluate(`({ empty: Boolean(document.querySelector(".table-empty-state")), question: Boolean(document.querySelector(".question-panel")), status: document.querySelector(".table-panel-heading p")?.textContent?.trim() })`);
   if (!before.empty || before.question || before.status !== "Chưa chọn bảng") throw new Error(`Chưa hiển thị đúng trạng thái trước khi chọn bảng: ${JSON.stringify(before)}`);

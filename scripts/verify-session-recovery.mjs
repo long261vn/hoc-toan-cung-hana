@@ -1,5 +1,5 @@
 const debugPort = process.env.CDP_PORT ?? "9242";
-const url = "http://localhost:3000/?nowebgl";
+const url = "http://localhost:3000/?nowebgl&lang=vi";
 const sleep = milliseconds =>
   new Promise(resolve => setTimeout(resolve, milliseconds));
 const targets = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then(

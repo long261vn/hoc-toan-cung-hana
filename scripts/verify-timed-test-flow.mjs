@@ -76,7 +76,7 @@ try {
   );
   if (
     activities.length !== 5 ||
-    !["Cộng", "Trừ", "Học Bảng Nhân và Chia", "Nhân", "Chia"].every(label =>
+    !["Cộng", "Trừ", "Học Bảng Nhân và Bảng Chia", "Nhân", "Chia"].every(label =>
       activities.includes(label)
     )
   )
@@ -122,9 +122,9 @@ try {
   const firstExpression = await evaluate(
     `document.querySelector(".math-expression")?.textContent`
   );
-  await evaluate(
-    `document.querySelector(".mission-language-control")?.click()`
-  );
+  await evaluate(`document.querySelector(".app-settings-trigger")?.click()`);
+  await sleep(80);
+  await evaluate(`document.querySelector(".app-settings-row")?.click()`);
   for (let attempt = 0; attempt < 30; attempt += 1) {
     if ((await evaluate(`document.documentElement.lang`)) === "en") break;
     await sleep(100);
@@ -146,9 +146,9 @@ try {
     throw new Error(
       `Đổi sang English giữa Bài Kiểm Tra không ổn định: ${JSON.stringify({ englishDuringTest, timerAfterLanguageToggle, firstExpression })}`
     );
-  await evaluate(
-    `document.querySelector(".mission-language-control")?.click()`
-  );
+  await evaluate(`document.querySelector(".app-settings-trigger")?.click()`);
+  await sleep(80);
+  await evaluate(`document.querySelector(".app-settings-row")?.click()`);
   for (let attempt = 0; attempt < 30; attempt += 1) {
     if ((await evaluate(`document.documentElement.lang`)) === "vi") break;
     await sleep(100);

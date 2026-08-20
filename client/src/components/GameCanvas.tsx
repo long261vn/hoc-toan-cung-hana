@@ -107,7 +107,8 @@ type ThemeBadge = {
 type PlanetUnlock = { operation: Operation; badge: ThemeBadge };
 
 const SESSION_DRAFT_KEY = "hana-active-session-v1";
-const AVATAR_STORAGE_KEY = "hana-astronaut-avatar-v1";
+const AVATAR_STORAGE_KEY = "hana-player-avatar-v2";
+const LEGACY_AVATAR_STORAGE_KEY = "hana-astronaut-avatar-v1";
 const THEME_BADGE_STORAGE_KEY = "hana-theme-badges-v1";
 const DRAFT_SCREENS = [
   "menu",
@@ -146,15 +147,61 @@ const LEGACY_AVATAR_IDS: Record<string, AvatarId> = {
 };
 const AVATAR_OPTIONS: Array<{
   id: AvatarId;
-  image: string;
-  vi: string;
-  en: string;
 }> = [
-  { id: "minh-khoa", image: "/manus-storage/avatar-be-trai-minh-khoa_7cfd3781.png", vi: "Bé trai Minh Khoa", en: "Minh Khoa" },
-  { id: "ngoc-anh", image: "/manus-storage/avatar-be-gai-ngoc-anh_c72068d7.png", vi: "Bé gái Ngọc Anh", en: "Ngọc Anh" },
-  { id: "gia-huy", image: "/manus-storage/avatar-be-trai-gia-huy_15eb4c71.png", vi: "Bé trai Gia Huy", en: "Gia Huy" },
-  { id: "linh-chi", image: "/manus-storage/avatar-be-gai-linh-chi_fe69e6ee.png", vi: "Bé gái Linh Chi", en: "Linh Chi" },
+  { id: "minh-khoa" },
+  { id: "ngoc-anh" },
+  { id: "gia-huy" },
+  { id: "linh-chi" },
 ];
+
+const PLAYER_AVATAR_STYLES: Record<
+  AvatarId,
+  { skin: string; hair: string; suit: string; accent: string; hairstyle: "short" | "pigtails" | "waves" | "bob" }
+> = {
+  "minh-khoa": { skin: "#f1b887", hair: "#20223b", suit: "#4c87cf", accent: "#a8f1dc", hairstyle: "short" },
+  "ngoc-anh": { skin: "#f5c59b", hair: "#2d243d", suit: "#9d83d6", accent: "#ffb39c", hairstyle: "pigtails" },
+  "gia-huy": { skin: "#c98e63", hair: "#362733", suit: "#55b7a5", accent: "#ffe27d", hairstyle: "waves" },
+  "linh-chi": { skin: "#e6aa7e", hair: "#1f2739", suit: "#e87872", accent: "#cfc3ff", hairstyle: "bob" },
+};
+
+function PlayerAvatar({
+  avatarId,
+  className = "",
+  decorative = false,
+}: {
+  avatarId: AvatarId;
+  className?: string;
+  decorative?: boolean;
+}) {
+  const style = PLAYER_AVATAR_STYLES[avatarId];
+  const pigtails = style.hairstyle === "pigtails";
+  const bob = style.hairstyle === "bob";
+  const waves = style.hairstyle === "waves";
+  return (
+    <svg
+      className={`player-avatar ${className}`}
+      viewBox="0 0 120 120"
+      aria-hidden={decorative}
+      role={decorative ? undefined : "img"}
+      aria-label={decorative ? undefined : "Player avatar"}
+    >
+      <circle cx="60" cy="60" r="58" fill="#233875" />
+      <circle cx="60" cy="60" r="51" fill={style.accent} opacity="0.9" />
+      <path d="M20 120c4-30 21-43 40-43s36 13 40 43H20Z" fill={style.suit} />
+      <path d="M42 83h36l6 37H36l6-37Z" fill="#f9f2dd" opacity="0.94" />
+      {pigtails && <><circle cx="26" cy="51" r="16" fill={style.hair} /><circle cx="94" cy="51" r="16" fill={style.hair} /></>}
+      {bob && <path d="M28 49c0-25 14-38 32-38s32 13 32 38v24H28V49Z" fill={style.hair} />}
+      <circle cx="60" cy="54" r="29" fill={style.skin} />
+      {waves ? <path d="M31 45c2-23 18-34 31-34 19 0 29 14 29 34-8-7-14-10-22-10-8 0-14 4-20 4-7 0-12-2-18 6Z" fill={style.hair} /> : !bob && <path d="M31 46c1-25 16-36 30-36 20 0 30 15 29 35-11-8-19-10-29-10-9 0-17 3-30 11Z" fill={style.hair} />}
+      {pigtails && <path d="M32 44c5-22 19-34 30-34 17 0 27 13 27 34-10-8-18-10-28-10s-18 3-29 10Z" fill={style.hair} />}
+      <circle cx="49" cy="55" r="3.6" fill="#202343" /><circle cx="71" cy="55" r="3.6" fill="#202343" />
+      <path d="M49 68c6 6 16 6 22 0" fill="none" stroke="#a84f57" strokeWidth="3.5" strokeLinecap="round" />
+      <circle cx="38" cy="65" r="4" fill="#e98c89" opacity="0.36" /><circle cx="82" cy="65" r="4" fill="#e98c89" opacity="0.36" />
+      <circle cx="60" cy="96" r="7" fill={style.accent} /><path d="M57 96h6M60 93v6" stroke="#233875" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="99" cy="23" r="8" fill="#fff3a3" /><path d="M99 19v8M95 23h8" stroke="#d27a54" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
 const THEME_BADGES: ThemeBadge[] = [
   { id: "level-20-pathfinder", symbol: "✦", threshold: 200, accent: "coral", vi: { label: "Người Mở Đường", detail: "Chinh phục Cấp 20 của hành trình 100 cấp." }, en: { label: "Pathfinder", detail: "Reach Level 20 in the 100-level journey." } },
   { id: "level-60-orbit-captain", symbol: "◌", threshold: 600, accent: "lavender", vi: { label: "Thuyền Trưởng Quỹ Đạo", detail: "Chinh phục Cấp 60 với sự kiên trì." }, en: { label: "Orbit Captain", detail: "Reach Level 60 with persistence." } },
@@ -225,7 +272,9 @@ function isAvatarId(value: unknown): value is AvatarId {
 
 function readAvatarPreference(): AvatarId {
   try {
-    const stored = window.localStorage.getItem(AVATAR_STORAGE_KEY);
+    const stored =
+      window.localStorage.getItem(AVATAR_STORAGE_KEY) ??
+      window.localStorage.getItem(LEGACY_AVATAR_STORAGE_KEY);
     return normalizeAvatarId(stored) ?? "minh-khoa";
   } catch {
     return "minh-khoa";
@@ -1227,27 +1276,24 @@ function PlayerProfileScreen({
         className="profile-avatar-chooser"
         aria-label={
           language === "en"
-            ? "Choose a Solar System avatar"
-            : "Chọn avatar Hệ Mặt Trời"
+            ? "Choose your player avatar"
+            : "Chọn avatar của bạn"
         }
       >
         <div className="avatar-chooser-heading">
           <span>
             {language === "en"
-              ? "CHOOSE YOUR SPACE COMPANION"
-              : "CHỌN BẠN ĐỒNG HÀNH"}
+              ? "CHOOSE YOUR AVATAR"
+              : "CHỌN AVATAR CỦA BẠN"}
           </span>
           <small>
             {language === "en"
-              ? "Pick a friendly learning companion"
-              : "Chọn một người bạn đồng hành"}
+              ? "Tap to choose your player character"
+              : "Chạm để chọn nhân vật đại diện của bạn"}
           </small>
         </div>
-        <div className="collectible-operation-route" aria-hidden="true">
-          <i className="add">+</i><i className="subtract">−</i><i className="multiply">×</i><i className="divide">÷</i>
-        </div>
         <div className="avatar-option-grid" role="radiogroup">
-          {AVATAR_OPTIONS.map(avatar => {
+          {AVATAR_OPTIONS.map((avatar, index) => {
             const selected = avatar.id === avatarId;
             return (
               <button
@@ -1257,9 +1303,9 @@ function PlayerProfileScreen({
                 aria-checked={selected}
                 className={selected ? "is-selected" : ""}
                 onClick={() => onAvatarChange(avatar.id)}
+                aria-label={`${language === "en" ? "Player avatar" : "Avatar người chơi"} ${index + 1}`}
               >
-                <img src={avatar.image} alt="" />
-                <span>{language === "en" ? avatar.en : avatar.vi}</span>
+                <PlayerAvatar avatarId={avatar.id} decorative />
                 {selected && <Check size={15} aria-hidden="true" />}
               </button>
             );
@@ -2979,15 +3025,6 @@ export default function GameCanvas() {
 
     try {
       await document.fonts?.ready;
-      const loadCanvasImage = (source: string) =>
-        new Promise<HTMLImageElement | null>(resolve => {
-          const image = new Image();
-          image.crossOrigin = "anonymous";
-          image.onload = () => resolve(image);
-          image.onerror = () => resolve(null);
-          image.src = source;
-        });
-      const avatarImage = await loadCanvasImage(selectedAvatar.image);
       const drawOrbit = (
         x: number,
         y: number,
@@ -3105,6 +3142,45 @@ export default function GameCanvas() {
         context.fill();
         context.restore();
       };
+      const drawCanvasPlayerAvatar = (x: number, y: number, radius: number) => {
+        const style = PLAYER_AVATAR_STYLES[selectedAvatar.id];
+        context.save();
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.clip();
+        context.fillStyle = style.accent;
+        context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+        context.fillStyle = style.suit;
+        context.beginPath();
+        context.arc(x, y + radius * 0.85, radius * 0.92, Math.PI, Math.PI * 2);
+        context.fill();
+        context.fillStyle = style.skin;
+        context.beginPath();
+        context.arc(x, y - radius * 0.06, radius * 0.43, 0, Math.PI * 2);
+        context.fill();
+        context.fillStyle = style.hair;
+        context.beginPath();
+        context.arc(x, y - radius * 0.33, radius * 0.43, Math.PI, Math.PI * 2);
+        context.fill();
+        if (style.hairstyle === "pigtails") {
+          context.beginPath();
+          context.arc(x - radius * 0.48, y - radius * 0.06, radius * 0.2, 0, Math.PI * 2);
+          context.arc(x + radius * 0.48, y - radius * 0.06, radius * 0.2, 0, Math.PI * 2);
+          context.fill();
+        }
+        context.fillStyle = "#202343";
+        context.beginPath();
+        context.arc(x - radius * 0.16, y - radius * 0.04, radius * 0.05, 0, Math.PI * 2);
+        context.arc(x + radius * 0.16, y - radius * 0.04, radius * 0.05, 0, Math.PI * 2);
+        context.fill();
+        context.strokeStyle = "#a84f57";
+        context.lineWidth = radius * 0.05;
+        context.lineCap = "round";
+        context.beginPath();
+        context.arc(x, y + radius * 0.15, radius * 0.14, 0.2, Math.PI - 0.2);
+        context.stroke();
+        context.restore();
+      };
       const background = context.createLinearGradient(0, 0, 1080, 1350);
       background.addColorStop(0, "#172b78");
       background.addColorStop(0.58, "#101c5d");
@@ -3158,20 +3234,7 @@ export default function GameCanvas() {
       context.fillStyle = "#dff9f4";
       drawRoundedRectangle(context, 98, 350, 884, 210, 30);
       context.fill();
-      context.save();
-      context.beginPath();
-      context.arc(220, 455, 82, 0, Math.PI * 2);
-      context.clip();
-      if (avatarImage) {
-        context.drawImage(avatarImage, 130, 365, 180, 180);
-      } else {
-        const avatarFill = context.createRadialGradient(186, 415, 12, 220, 455, 100);
-        avatarFill.addColorStop(0, "#eafffa");
-        avatarFill.addColorStop(1, "#78d8c7");
-        context.fillStyle = avatarFill;
-        context.fillRect(130, 365, 180, 180);
-      }
-      context.restore();
+      drawCanvasPlayerAvatar(220, 455, 82);
       context.lineWidth = 7;
       context.strokeStyle = "#ffffff";
       context.beginPath();
@@ -3183,11 +3246,7 @@ export default function GameCanvas() {
       context.fillText(displayName, 360, 435);
       context.fillStyle = "#267b72";
       context.font = "800 18px Be Vietnam Pro, sans-serif";
-      context.fillText(
-        language === "en" ? selectedAvatar.en.toUpperCase() : selectedAvatar.vi.toUpperCase(),
-        360,
-        470
-      );
+      context.fillText(copy("AVATAR CỦA BẠN", "YOUR AVATAR"), 360, 470);
       context.fillStyle = "#63759a";
       context.font = "700 20px Be Vietnam Pro, sans-serif";
       drawWrappedText(
@@ -3397,7 +3456,12 @@ export default function GameCanvas() {
         </span>
         <GameBrand language={language} />
       </button>
-      {screen !== "summary" && (
+      {screen !== "summary" &&
+        !showGuide &&
+        !showScorePanel &&
+        !showEndSessionConfirm &&
+        !showHomeConfirm &&
+        !activePlanetUnlock && (
         <div className="app-settings-dock" data-i18n-direct>
           <AppSettings
             language={language}
@@ -3676,8 +3740,8 @@ export default function GameCanvas() {
             )}
           </h2>
           <div className="summary-player-identity">
-            <img src={selectedAvatar.image} alt="" />
-            <span>{copy("Phi hành gia", "Astronaut")}</span>
+            <PlayerAvatar avatarId={selectedAvatar.id} decorative />
+            <span>{copy("Người chơi", "Player")}</span>
             <strong>{displayName}</strong>
           </div>
           <p className="summary-intro">
@@ -3980,6 +4044,34 @@ export default function GameCanvas() {
                     : sessionPoints}
                 </strong>
               </button>
+            </div>
+            <div className="mission-flight-rail" data-i18n-direct>
+              <span className={`mission-planet-chip operation-${operation}`}>
+                <b aria-hidden="true">
+                  {operation === "add"
+                    ? "+"
+                    : operation === "subtract"
+                      ? "−"
+                      : operation === "multiply"
+                        ? "×"
+                        : "÷"}
+                </b>
+                <span>
+                  {language === "en"
+                    ? UNLOCKED_PLANET_NAMES[operation].en
+                    : UNLOCKED_PLANET_NAMES[operation].vi}
+                </span>
+              </span>
+              <span className="mission-hana-signal">
+                <Sparkles size={14} aria-hidden="true" />
+                {copy("Hana sẵn sàng", "Hana is ready")}
+              </span>
+              <span className="mission-reward-signal">
+                <Trophy size={14} aria-hidden="true" />
+                {mode === "test"
+                  ? copy("Chế độ kiểm tra", "Test mode")
+                  : `${copy("Tiến độ", "Progress")} ${Math.min(100, Math.floor(sessionPoints / 10))}/100`}
+              </span>
             </div>
             {testComplete ? (
               <div className="completion-card">
@@ -4370,8 +4462,8 @@ export default function GameCanvas() {
                 <h2>{copy("Cách chơi thật dễ", "How to play")}</h2>
                 <p>
                   {copy(
-                    "Nhập tên, chọn nhiệm vụ và cùng Hana tích điểm để mở khóa thật nhiều phần thưởng nhé.",
-                    "Enter your name, choose a mission and collect points with Hana to unlock many rewards."
+                    "Tạo hồ sơ, chọn cách học phù hợp rồi cùng Hana chinh phục từng phép tính nhé.",
+                    "Create your profile, choose a learning path and solve each math mission with Hana."
                   )}
                 </p>
               </div>
@@ -4381,12 +4473,12 @@ export default function GameCanvas() {
                 <span>01</span>
                 <div>
                   <strong>
-                    {copy("Đặt tên phi hành gia", "Choose your astronaut name")}
+                    {copy("Tạo hồ sơ của bạn", "Create your player profile")}
                   </strong>
                   <p>
                     {copy(
-                      "Hana sẽ gọi tên bạn trong nhiệm vụ, lúc gợi ý và trên thẻ kỷ niệm cuối lượt.",
-                      "Hana will use your name in missions, hints and your end-of-session souvenir card."
+                      "Nhập tên và chọn avatar đại diện cho bạn. Hana sẽ dùng tên của bạn trong nhiệm vụ, lời gợi ý và thẻ kỷ niệm.",
+                      "Enter your name and choose an avatar that represents you. Hana uses your name in missions, hints and your souvenir card."
                     )}
                   </p>
                 </div>
@@ -4402,8 +4494,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                        "Bạn chọn Cộng, Trừ, Học Bảng Nhân và Bảng Chia, Nhân, Chia hoặc Bài kiểm tra; với bốn phép tính, hãy chọn dạng bài trước khi chơi.",
-                        "Choose Addition, Subtraction, Multiplication and Division Tables, Multiplication, Division or a Test. For the four operations, choose a practice type before playing."
+                        "Ở Luyện tập, bạn chọn Cộng, Trừ, Học Bảng Nhân và Bảng Chia, Nhân hoặc Chia. Với bốn phép tính, chọn Bài bình thường, Tìm thành phần hoặc Cả hai. Ở Bài kiểm tra, chọn cấp độ và 2, 5 hoặc 10 phút.",
+                        "In Practice, choose Addition, Subtraction, Multiplication and Division Tables, Multiplication or Division. For the four operations, choose Standard, Missing Part or Both. In Test, choose a level and 2, 5 or 10 minutes."
                     )}
                   </p>
                 </div>
@@ -4419,8 +4511,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                      "Mỗi câu đúng được +10 điểm. Nếu chưa đúng, bạn trừ 2 điểm nhưng điểm không âm. Cứ đủ 10 điểm, bạn mở một phần thưởng mới, từ Thẻ Khởi Động đến Cúp Thuyền Trưởng Hana ở mốc 1.000 điểm.",
-                      "Each correct answer earns +10 points. A wrong answer subtracts 2 points, but your score never goes below zero. Every 10 points unlocks a new reward, from the Starter Card to Hana Captain's Trophy at 1,000 points."
+                      "Mỗi câu đúng được +10 điểm. Nếu chưa đúng, bạn trừ 2 điểm nhưng tổng điểm không bao giờ âm. Mỗi 10 điểm mở một cấp phần thưởng; Cấp 100 là 1.000 điểm.",
+                      "Each correct answer earns +10 points. A wrong answer subtracts 2 points, but your total never goes below zero. Every 10 points unlocks one reward level; Level 100 is 1,000 points."
                     )}
                   </p>
                 </div>
@@ -4429,12 +4521,12 @@ export default function GameCanvas() {
                 <span>04</span>
                 <div>
                   <strong>
-                    {copy("Hana luôn gợi ý", "Hana always gives hints")}
+                    {copy("Sưu tập 4 huy hiệu", "Collect 4 milestone badges")}
                   </strong>
                   <p>
                     {copy(
-                      "Mỗi câu có bốn đáp án. Nếu bạn cần thêm thời gian, Hana sẽ gợi ý từng bước để bạn thử lại.",
-                      "Every question has four answers. If you need more time, Hana gives step-by-step hints so you can try again."
+                      "Bốn huy hiệu đặc biệt chờ bạn ở Cấp 20, 60, 80 và 100 — tương ứng 200, 600, 800 và 1.000 điểm. Khi chạm mốc mới, Hana mở khóa một Hành Tinh Phép Tính.",
+                      "Four special badges wait at Levels 20, 60, 80 and 100 — 200, 600, 800 and 1,000 points. When you reach a new milestone, Hana unlocks a Math Operation Planet."
                     )}
                   </p>
                 </div>
@@ -4444,14 +4536,14 @@ export default function GameCanvas() {
                 <div>
                   <strong>
                     {copy(
-                      "Xem điểm hoặc đổi nhiệm vụ",
-                      "View points or change missions"
+                      "Gợi ý, kết thúc và lưu",
+                      "Get hints, finish and save"
                     )}
                   </strong>
                   <p>
                     {copy(
-                      "Bấm Điểm hiện tại để xem tiến độ rồi quay lại chơi tiếp. Bạn cũng có thể Đổi nhiệm vụ mà vẫn giữ điểm, hoặc Kết thúc lượt khi đã sẵn sàng.",
-                      "Tap Current points to view progress and return to learning. You can change missions while keeping your points, or end the session when you are ready."
+                      "Nếu chọn chưa đúng, Hana sẽ hướng dẫn từng bước để bạn thử lại. Bấm Điểm hiện tại để xem tiến độ, Đổi nhiệm vụ để giữ điểm, hoặc Kết thúc lượt để xem tổng kết và lưu ảnh kỷ niệm.",
+                      "If an answer is not right yet, Hana gives step-by-step help so you can try again. Tap Current points to view progress, Change mission to keep your points, or End session to see your summary and save a souvenir image."
                     )}
                   </p>
                 </div>
@@ -4459,8 +4551,8 @@ export default function GameCanvas() {
             </ol>
             <p className="guide-note">
               {copy(
-                "Mỗi lượt học là hành trình của riêng bạn; hãy bình tĩnh suy nghĩ, thử lại và sưu tập từng phần thưởng nhé.",
-                "Each session is your own journey. Think calmly, try again and collect rewards one by one."
+                "Mỗi lượt học là hành trình của riêng bạn. Hãy bình tĩnh suy nghĩ, thử lại khi cần và cùng Hana tiến đến Cấp 100 nhé.",
+                "Each session is your own journey. Think calmly, try again when needed and travel with Hana toward Level 100."
               )}
             </p>
             <button

@@ -1,5 +1,5 @@
 const debugPort = process.env.CDP_PORT ?? "9229";
-const url = "http://localhost:3000/?nowebgl";
+const url = "http://localhost:3000/?nowebgl&lang=vi";
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const targets = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then((response) => response.json());
 const page = targets.find((target) => target.type === "page");
@@ -16,7 +16,8 @@ const openPractice = async () => {
   await command("Page.navigate", { url }); await waitFor(".welcome-primary");
   await evaluate(`document.querySelector(".welcome-primary")?.click()`); await waitFor(".profile-name-field input");
   await evaluate(`(() => { const input = document.querySelector(".profile-name-field input"); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; setter.call(input, "Minh"); input.dispatchEvent(new Event("input", { bubbles: true })); })()`);
-  await evaluate(`document.querySelector(".profile-continue")?.click()`); await waitFor(".activity-card");
+  await evaluate(`document.querySelector(".profile-continue")?.click()`); await waitFor(".start-mode-card.is-practice");
+  await evaluate(`document.querySelector(".start-mode-card.is-practice")?.click()`); await waitFor(".activity-card");
   await evaluate(`document.querySelector(".activity-card")?.click()`); await waitFor(".format-option");
   await evaluate(`document.querySelector(".format-option")?.click()`); await waitFor(".session-bottom-actions");
 };

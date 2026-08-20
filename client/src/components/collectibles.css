@@ -87,10 +87,10 @@
 .avatar-option-grid button {
   position: relative;
   display: flex;
-  min-height: 5.8rem;
+  min-height: 6.4rem;
   align-items: center;
-  gap: 0.62rem;
-  padding: 0.55rem 0.6rem;
+  justify-content: center;
+  padding: 0.6rem;
   overflow: hidden;
   color: #eff8ff;
   text-align: left;
@@ -124,22 +124,15 @@
   box-shadow: 0 0.42rem 0 #3b315f, 0 0 0 3px rgba(255, 218, 114, 0.12);
 }
 
-.avatar-option-grid img {
-  width: 4rem;
-  height: 4rem;
-  flex: 0 0 auto;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.7);
-  border-radius: 50%;
-  background: #2a3a87;
+.player-avatar {
+  display: block;
+  overflow: visible;
 }
 
-.avatar-option-grid span {
-  max-width: 7.2rem;
-  font-family: "Baloo 2", cursive;
-  font-size: clamp(0.86rem, 2.7vw, 1.02rem);
-  font-weight: 800;
-  line-height: 1.05;
+.avatar-option-grid .player-avatar {
+  width: 5.05rem;
+  height: 5.05rem;
+  filter: drop-shadow(0 0.28rem 0.32rem rgba(5, 12, 46, 0.26));
 }
 
 .avatar-option-grid svg {
@@ -165,10 +158,9 @@
   box-shadow: 0 0.35rem 0.8rem rgba(4, 14, 44, 0.2);
 }
 
-.summary-player-identity img {
+.summary-player-identity .player-avatar {
   width: 2.45rem;
   height: 2.45rem;
-  object-fit: cover;
   border: 2px solid #fff2af;
   border-radius: 50%;
   background: #33459b;
@@ -433,9 +425,8 @@
 }
 
 @media (max-width: 31rem) {
-  .avatar-option-grid button { min-height: 5.35rem; gap: 0.42rem; padding: 0.45rem; }
-  .avatar-option-grid img { width: 3.45rem; height: 3.45rem; }
-  .avatar-option-grid span { font-size: 0.8rem; }
+  .avatar-option-grid button { min-height: 5.35rem; padding: 0.45rem; }
+  .avatar-option-grid .player-avatar { width: 4.2rem; height: 4.2rem; }
   .theme-badge-row { grid-template-columns: 1fr; }
   .planet-unlock-card { padding: 1.4rem 1rem 1.2rem; }
   .planet-unlock-dismiss { right: 50%; bottom: 0.7rem; transform: translateX(50%); }

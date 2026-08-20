@@ -109,3 +109,5 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 - Cam Sao Băng **#FF6B4A** chỉ dành cho hành động khởi động/tiếp tục quan trọng và điểm nhấn hành tinh Cộng; các mảng nhấn còn lại ưu tiên kem, tím, xanh ngọc và vàng để giao diện cân bằng hơn.
 - Màn hồ sơ và tổng kết lặp lại bốn ký hiệu hành tinh như một vệt quỹ đạo ngắn, để avatar, thành tích và huy hiệu vẫn thuộc cùng một hành trình Cộng–Trừ–Nhân–Chia.
 - Huy hiệu chủ đề chỉ xuất hiện như phần thưởng cho điểm số đạt được; mỗi thẻ dùng màu mốc riêng, mô tả ngắn và không cạnh tranh với nút hành động chính màu Cam Sao Băng.
+- Nhận diện hiển thị chính thức ở mọi màn là **Học Toán Cùng Hana** / **Learn Math with Hana** theo yêu cầu sản phẩm. Tên “Phi Hành Tinh Phép Tính” chỉ mô tả hướng phong cách nội bộ, không thay thế tên ứng dụng đã chốt.
+- Màn hồ sơ, Hướng dẫn, làm bài và tổng kết đều phải có logo phi thuyền cùng một dải quỹ đạo bốn phép tính. Trên màn làm bài, hành tinh phép tính hiện tại, Hana, điểm/phần thưởng và câu hỏi được gom thành cụm buồng lái rõ ràng.

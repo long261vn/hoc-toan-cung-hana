@@ -64,6 +64,8 @@ const startToMenu = async () => {
   await waitFor(".profile-name-field input", "màn nhập tên");
   await evaluate(`(() => { const input = document.querySelector(".profile-name-field input"); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set; setter.call(input, "Minh Anh"); input.dispatchEvent(new Event("input", { bubbles: true })); })()`);
   await evaluate(`document.querySelector(".profile-continue")?.click()`);
+  await waitFor(".start-mode-card.is-practice", "màn chọn Luyện tập/Bài kiểm tra");
+  await evaluate(`document.querySelector(".start-mode-card.is-practice")?.click()`);
   await waitFor(".activity-card", "menu hoạt động");
 };
 const chooseActivity = async (index, formatIndex = null) => {
@@ -105,8 +107,5 @@ try {
     await runSequence(kind, 8, reports);
   }
 
-  await startToMenu();
-  await chooseActivity(5);
-  await runSequence("Bài kiểm tra", 8, reports);
   console.log(JSON.stringify({ checkedFlows: reports.length, sample: reports.slice(0, 4), result: "all rendered question-answer pairs valid" }));
 } finally { socket.close(); }

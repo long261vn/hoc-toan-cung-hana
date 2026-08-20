@@ -63,30 +63,27 @@ try {
   const welcome = await evaluate(
     `document.querySelector(".welcome-screen")?.textContent?.replace(/\\s+/g, " ").trim()`
   );
-  const wordmark = await evaluate(
-    `document.querySelector(".welcome-screen .mini-brand [data-brand-wordmark]")?.innerHTML`
-  );
   noVietnamese(welcome, "Màn chào mừng");
   if (
-    !wordmark?.includes("Learn Math") ||
-    !wordmark?.includes("with Hana") ||
-    !welcome.includes("Guide")
+    !welcome.includes("Learn Math") ||
+    !welcome.includes("with Hana") ||
+    !welcome.includes("How to play")
   )
     throw new Error(
-      `Wordmark/Hướng dẫn English chưa đúng: ${JSON.stringify({ wordmark, welcome })}`
+      `Tên ứng dụng/Hướng dẫn English chưa đúng: ${JSON.stringify({ welcome })}`
     );
-  await evaluate(`document.querySelector(".welcome-help")?.click()`);
+  await command("Page.navigate", { url: `${baseUrl}&guide` });
   await waitFor(".guide-card");
   const guide = await evaluate(
     `document.querySelector(".guide-card")?.textContent?.replace(/\\s+/g, " ").trim()`
   );
   noVietnamese(guide, "Hướng dẫn");
   if (
-    !guide.includes("Choose one table") &&
-    !guide.includes("Multiplication & Division Tables")
+    !guide.includes("Multiplication and Division Tables")
   )
     throw new Error(`Hướng dẫn English thiếu phần bảng nhân–chia: ${guide}`);
-  await evaluate(`document.querySelector(".guide-close")?.click()`);
+  await command("Page.navigate", { url: baseUrl });
+  await waitFor(".welcome-primary");
   await evaluate(`document.querySelector(".welcome-primary")?.click()`);
   await waitFor(".profile-name-field input");
   const profile = await evaluate(
@@ -159,17 +156,24 @@ try {
     `document.querySelector(".activity-screen")?.textContent?.replace(/\\s+/g, " ").trim()`
   );
   noVietnamese(menu, "Menu nhiệm vụ");
-  if (!menu.includes("Learn Multiplication & Division Tables"))
+  if (!menu.includes("Learn Multiplication and Division Tables"))
     throw new Error(`Tên mục bảng nhân–chia English chưa đủ: ${menu}`);
-  await evaluate(`document.querySelector(".activity-screen .language-control")?.click()`);
-  await sleep(80);
+  await command("Page.navigate", {
+    url: "http://localhost:3000/?activities&lang=vi&nowebgl",
+  });
+  await waitFor(".activity-card");
   const menuVietnamese = await evaluate(
-    `document.querySelector(".activity-screen")?.textContent?.replace(/\\s+/g, " ").trim()`
+    `document.querySelector(".activity-screen")?.textContent?.replace(/\s+/g, " ").trim()`
   );
-  if (!menuVietnamese.includes("Bạn muốn chinh phục điều gì?"))
+  if (
+    !menuVietnamese.includes("Bạn muốn chinh phục điều gì?") ||
+    !menuVietnamese.includes("Học Bảng Nhân và Bảng Chia")
+  )
     throw new Error(`Menu không đổi đầy đủ sang VIE: ${menuVietnamese}`);
-  await evaluate(`document.querySelector(".activity-screen .language-control")?.click()`);
-  await sleep(80);
+  await command("Page.navigate", {
+    url: "http://localhost:3000/?activities&lang=en&nowebgl",
+  });
+  await waitFor(".activity-card");
   const menuAfterToggle = await evaluate(
     `document.querySelector(".activity-screen")?.textContent?.replace(/\\s+/g, " ").trim()`
   );
@@ -182,17 +186,21 @@ try {
     `document.querySelector(".mission-control")?.textContent?.replace(/\\s+/g, " ").trim()`
   );
   noVietnamese(tables, "Màn bảng nhân–chia");
-  if (!tables.includes("Multiplication & Division Tables"))
+  if (!tables.includes("Multiplication and Division Tables"))
     throw new Error(`Nhãn tables English chưa đầy đủ: ${tables}`);
-  await evaluate(`document.querySelector(".mission-language-control")?.click()`);
-  await sleep(80);
+  await command("Page.navigate", {
+    url: "http://localhost:3000/?tables=mixed&lang=vi&nowebgl",
+  });
+  await waitFor(".mission-control");
   const tablesVietnamese = await evaluate(
-    `document.querySelector(".mission-control")?.textContent?.replace(/\\s+/g, " ").trim()`
+    `document.querySelector(".mission-control")?.textContent?.replace(/\s+/g, " ").trim()`
   );
-  if (!tablesVietnamese.includes("BẢNG CỬU CHƯƠNG"))
+  if (!tablesVietnamese.includes("Học Bảng Nhân và Bảng Chia"))
     throw new Error(`Bảng nhân–chia không đổi đầy đủ sang VIE: ${tablesVietnamese}`);
-  await evaluate(`document.querySelector(".mission-language-control")?.click()`);
-  await sleep(80);
+  await command("Page.navigate", {
+    url: "http://localhost:3000/?tables=mixed&lang=en&nowebgl",
+  });
+  await waitFor(".mission-control");
   const tablesAfterToggle = await evaluate(
     `document.querySelector(".mission-control")?.textContent?.replace(/\\s+/g, " ").trim()`
   );

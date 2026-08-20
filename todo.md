@@ -359,3 +359,12 @@
 - [x] Đổi nhãn bốn hành tinh thành Hành Tinh Phép Cộng, Hành Tinh Phép Trừ, Hành Tinh Phép Nhân và Hành Tinh Phép Chia, gồm cả bản English.
 - [x] Thiết kế lại thẻ PNG kỷ niệm để cân đối hơn giữa vùng nhận diện, chân dung, số liệu, phần thưởng và huy hiệu.
 - [x] Kiểm thử avatar, mốc điểm, VIE/ENG, hiệu ứng, desktop/mobile, PNG tải thực tế, TypeScript, build và lưu checkpoint.
+
+## Làm lại avatar, Hướng dẫn và rà soát toàn diện
+
+- [x] Thay bộ chọn “bạn đồng hành” thành chọn avatar đại diện người chơi; bỏ tên cố định của avatar và mọi ngôn ngữ khiến avatar bị hiểu là nhân vật khác.
+- [x] Thay bốn tài sản avatar lỗi bằng một bộ avatar học sinh ổn định, đồng nhất về phong cách, có phương án dự phòng hiển thị rõ ràng khi ảnh chưa tải.
+- [x] Viết lại Hướng dẫn theo luồng hiện tại: tạo hồ sơ, chọn hoạt động/dạng bài, trả lời, điểm thưởng/trừ điểm, 100 cấp phần thưởng, bốn huy hiệu, đổi nhiệm vụ và lưu ảnh kỷ niệm.
+- [x] Thực hiện rà soát QA toàn app: liệt kê lỗi, nội dung không nhất quán, thao tác dư thừa, trạng thái biên và mã/CSS mồ côi; sửa các mục có ảnh hưởng thực tế.
+- [x] Thực hiện rà soát thiết kế đồ họa toàn app: liệt kê vấn đề về phân cấp, căn chỉnh, tỷ lệ, màu, khoảng trắng, độ tương phản và trạng thái responsive; áp dụng một lượt đổi mới giao diện tổng thể.
+- [x] Kiểm thử lại toàn bộ luồng VIE/ENG, desktop/mobile, lưu ảnh PNG, TypeScript, build và lưu checkpoint.
