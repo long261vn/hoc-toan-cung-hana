@@ -45,12 +45,16 @@ try {
     await waitFor(".hana-learning-card");
     const details = await evaluate(`(() => ({ expression: document.querySelector(".hana-learning-context strong")?.textContent?.trim(), answer: Number((document.querySelector(".hana-learning-context span")?.textContent?.match(/(\\d+)$/) ?? [])[1]) }))()`);
     const equation = parseEquation(details.expression, details.answer);
-    for (let step = 0; step < 3; step += 1) {
+    for (let step = 0; step < 2; step += 1) {
       await evaluate(`document.querySelector(".hana-primary-action")?.click()`);
       await sleep(55);
     }
-    const visual = await evaluate(`(() => ({ text: document.querySelector(".hana-math-visual")?.textContent?.replace(/\\s+/g, " ").trim(), groupCount: document.querySelectorAll(".hana-equal-groups .hana-group").length, hidden: document.querySelectorAll(".hana-quantity.is-hidden").length }))()`);
-    if (visual.hidden !== 0) throw new Error(`Minh họa ${operation} vẫn che số sau bài mẫu: ${JSON.stringify(visual)}`);
+    const finalStep = await evaluate(`(() => ({ label: document.querySelector(".hana-learning-step > span")?.textContent?.trim(), action: document.querySelector(".hana-primary-action")?.textContent?.replace(/\s+/g, " ").trim() }))()`);
+    if (finalStep.label !== "Bước 3/3" || !finalStep.action?.includes("Thử lại câu này")) {
+      throw new Error(`Hướng dẫn ${operation} chưa dừng ở bước 3 để học sinh tự thử lại: ${JSON.stringify(finalStep)}`);
+    }
+    const visual = await evaluate(`(() => ({ text: document.querySelector(".hana-math-visual")?.textContent?.replace(/\s+/g, " ").trim(), groupCount: document.querySelectorAll(".hana-equal-groups .hana-group").length, hidden: document.querySelectorAll(".hana-quantity.is-hidden").length }))()`);
+    if (!visual.text?.includes("?")) throw new Error(`Minh họa ${operation} đã lộ đáp án ở bước 3: ${JSON.stringify(visual)}`);
     const numbers = operation === "add"
       ? [equation.result, equation.answer].filter(Number.isFinite)
       : operation === "subtract"
@@ -62,7 +66,7 @@ try {
     }
     reports.push({ operation, expression: details.expression, visual: visual.text, groupCount: visual.groupCount });
   }
-  console.log(JSON.stringify({ reports, status: "Hana visuals match each missing-component question" }));
+  console.log(JSON.stringify({ reports, status: "Hana visuals match each missing-component question without revealing the answer" }));
 } finally {
   socket.close();
 }

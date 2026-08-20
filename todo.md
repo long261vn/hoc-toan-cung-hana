@@ -1,5 +1,11 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Nút điểm rõ ràng và Hana ba bước
+
+- [x] Thiết kế lại Điểm hiện tại thành nút nhận biết rõ, có tín hiệu bấm để mở bảng tiến độ.
+- [x] Giới hạn Hana còn ba bước gợi ý đúng phép tính, không kèm bài mẫu hoặc hình ảnh làm lộ đáp án.
+- [x] Kiểm thử VIE/ENG, các phép/dạng bài, điện thoại/desktop, TypeScript, production build và lưu checkpoint.
+
 ## Hành trình gọn và minh họa Hana theo câu
 
 - [x] Di chuyển Loại bài tập và Mức độ khó xuống dưới dải Hành trình trong màn Cộng, Trừ, Nhân và Chia.
@@ -17,7 +23,7 @@
 
 - [x] Chuẩn hóa nhãn và tiến độ Cấp hành trình 1–100 với bốn huy hiệu Cấp 20/60/80/100 trên dải nhiệm vụ, bảng điểm, tổng kết và Hướng dẫn.
 - [x] Rút ngắn lối vào Cộng/Trừ/Nhân/Chia bằng bài bình thường mặc định; thêm bộ đổi dạng bài ngay trong màn học.
-- [x] Tạo cửa sổ Hana ba bước sau đáp án sai, có minh họa trực quan, bài mẫu, thử lại câu gốc và cơ chế tạm dừng bài kiểm tra công bằng.
+- [x] Tạo cửa sổ Hana ba bước sau đáp án sai, có minh họa trực quan đúng câu, thử lại câu gốc và cơ chế tạm dừng bài kiểm tra công bằng; không tiết lộ đáp án.
 - [x] Kiểm thử sâu câu hỏi–đáp án, điểm, mốc huy hiệu, bảng nhân–chia, timed test, lưu phiên, VIE/ENG, điện thoại/desktop và ảnh kỷ niệm.
 - [x] Chạy TypeScript, production build, hồi quy tự động và lưu checkpoint.
 
