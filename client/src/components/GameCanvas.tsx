@@ -526,7 +526,7 @@ function localizeVisibleText(language: Language) {
   nodes.forEach(node => {
     if (
       node.parentElement?.closest(
-        ".language-control, [data-brand-wordmark], [data-sound-control], [data-dynamic-text]"
+        ".language-control, [data-brand-wordmark], [data-sound-control], [data-dynamic-text], [data-i18n-direct]"
       )
     )
       return;
@@ -1668,6 +1668,7 @@ export default function GameCanvas() {
   const isDemo = demoParams.has("demo");
   const isTableDemo = demoParams.has("tables");
   const isMenuPreview = demoParams.has("menu");
+  const isActivitiesPreview = demoParams.has("activities");
   const isSummaryDemo = demoParams.has("summary");
   const isProfileDemo = demoParams.has("profile");
   const isScoreDemo = demoParams.has("score");
@@ -1721,9 +1722,11 @@ export default function GameCanvas() {
                 isMissingDemo ||
                 isEndSessionConfirmDemo
               ? "game"
-              : isMenuPreview
-                ? "menu"
-                : "welcome"
+              : isActivitiesPreview
+                ? "activities"
+                : isMenuPreview
+                  ? "menu"
+                  : "welcome"
   );
   const [mode, setMode] = useState<ExerciseMode>(
     isTableDemo ? "tables" : isTestSetupDemo ? "test" : "practice"

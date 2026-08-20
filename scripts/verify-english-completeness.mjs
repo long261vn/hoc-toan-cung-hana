@@ -161,6 +161,19 @@ try {
   noVietnamese(menu, "Menu nhiệm vụ");
   if (!menu.includes("Learn Multiplication & Division Tables"))
     throw new Error(`Tên mục bảng nhân–chia English chưa đủ: ${menu}`);
+  await evaluate(`document.querySelector(".activity-screen .language-control")?.click()`);
+  await sleep(80);
+  const menuVietnamese = await evaluate(
+    `document.querySelector(".activity-screen")?.textContent?.replace(/\\s+/g, " ").trim()`
+  );
+  if (!menuVietnamese.includes("Bạn muốn chinh phục điều gì?"))
+    throw new Error(`Menu không đổi đầy đủ sang VIE: ${menuVietnamese}`);
+  await evaluate(`document.querySelector(".activity-screen .language-control")?.click()`);
+  await sleep(80);
+  const menuAfterToggle = await evaluate(
+    `document.querySelector(".activity-screen")?.textContent?.replace(/\\s+/g, " ").trim()`
+  );
+  noVietnamese(menuAfterToggle, "Menu nhiệm vụ sau khi đổi VIE/ENG");
   await command("Page.navigate", {
     url: "http://localhost:3000/?tables=mixed&lang=en&nowebgl",
   });
@@ -171,6 +184,19 @@ try {
   noVietnamese(tables, "Màn bảng nhân–chia");
   if (!tables.includes("Multiplication & Division Tables"))
     throw new Error(`Nhãn tables English chưa đầy đủ: ${tables}`);
+  await evaluate(`document.querySelector(".mission-language-control")?.click()`);
+  await sleep(80);
+  const tablesVietnamese = await evaluate(
+    `document.querySelector(".mission-control")?.textContent?.replace(/\\s+/g, " ").trim()`
+  );
+  if (!tablesVietnamese.includes("BẢNG CỬU CHƯƠNG"))
+    throw new Error(`Bảng nhân–chia không đổi đầy đủ sang VIE: ${tablesVietnamese}`);
+  await evaluate(`document.querySelector(".mission-language-control")?.click()`);
+  await sleep(80);
+  const tablesAfterToggle = await evaluate(
+    `document.querySelector(".mission-control")?.textContent?.replace(/\\s+/g, " ").trim()`
+  );
+  noVietnamese(tablesAfterToggle, "Bảng nhân–chia sau khi đổi VIE/ENG");
   const tableAriaLabels = await evaluate(
     `Array.from(document.querySelectorAll(".table-practice-panel, .table-kind-switch, .table-number-grid, .answer-grid")).map((node) => node.getAttribute("aria-label") ?? "").join(" ")`
   );

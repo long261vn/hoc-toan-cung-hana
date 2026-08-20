@@ -5902,3 +5902,92 @@ html[lang="vi"] .console-topline::after {
     font-size: 17px;
   }
 }
+
+/* Compact colourful mission cards: clear choices without filling the whole screen. */
+.activity-heading {
+  width: min(720px, 100%);
+  margin: clamp(26px, 5vh, 48px) auto 16px;
+}
+.activity-heading h2 {
+  font-size: clamp(30px, 3.7vw, 42px);
+}
+.activity-grid {
+  width: min(870px, 100%);
+  gap: 10px;
+}
+.activity-card {
+  grid-template-columns: 38px minmax(0, 1fr) 18px;
+  min-height: 96px;
+  gap: 9px;
+  padding: 12px 14px;
+  border-radius: 18px;
+}
+.activity-icon {
+  width: 38px;
+  height: 38px;
+}
+.activity-card .activity-icon.sigil b {
+  font-size: 27px;
+}
+.activity-card.tables .activity-icon.sigil b {
+  font-size: 14px;
+}
+.activity-copy b {
+  font-size: 9px;
+}
+.activity-copy strong {
+  font-size: 17px;
+  line-height: 1.04;
+}
+.activity-copy small {
+  margin-top: 3px;
+  font-size: 10px;
+  line-height: 1.32;
+}
+.activity-arrow {
+  width: 18px;
+  height: 18px;
+}
+@media (max-width: 760px) {
+  .activity-heading {
+    margin: 25px auto 14px;
+  }
+  .activity-heading h2 {
+    font-size: 30px;
+  }
+  .activity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .activity-card {
+    grid-template-columns: 31px minmax(0, 1fr);
+    min-height: 84px;
+    gap: 8px;
+    padding: 11px;
+    border-radius: 16px;
+  }
+  .activity-icon {
+    width: 31px;
+    height: 31px;
+  }
+  .activity-card .activity-icon.sigil b {
+    font-size: 23px;
+  }
+  .activity-card.tables .activity-icon.sigil b {
+    font-size: 12px;
+  }
+  .activity-copy b,
+  .activity-copy small,
+  .activity-arrow {
+    display: none;
+  }
+  .activity-copy strong {
+    font-size: 15px;
+    line-height: 1.12;
+  }
+  .activity-order {
+    top: 7px;
+    right: 9px;
+    font-size: 8px;
+  }
+}

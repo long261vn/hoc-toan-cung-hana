@@ -283,3 +283,10 @@
 - [x] Bỏ nhãn thương hiệu nhỏ trùng lặp phía trên tiêu đề lớn ở màn bắt đầu.
 - [x] Kiểm kê và thay các biến thể biểu tượng cũ để mọi màn dùng cùng logo phi thuyền.
 - [x] Kiểm tra desktop/mobile, TypeScript, bản dựng và lưu checkpoint.
+
+## Tinh chỉnh Luyện Tập và đồng bộ ENG/VIE
+
+- [x] Kiểm kê kích thước, khoảng cách và độ ưu tiên của các lựa chọn trong nhánh Luyện Tập trên desktop/mobile.
+- [x] Thu gọn các lựa chọn thành thẻ nhiều màu sắc, rõ ràng, đủ vùng chạm nhưng không chiếm quá nhiều không gian.
+- [x] Rà soát chuyển VIE/ENG ở từng màn và sửa mọi nhãn, mô tả, aria-label hoặc nội dung động còn không đồng bộ.
+- [x] Kiểm thử trực quan, hồi quy English/Vietnamese, TypeScript, build và lưu checkpoint.
