@@ -1103,10 +1103,12 @@ function practiceFormatName(format: PracticeFormat, language: Language) {
 function WelcomeScreen({
   onStart,
   onGuide,
+  soundEnabled,
   language,
 }: {
   onStart: () => void;
   onGuide: () => void;
+  soundEnabled: boolean;
   language: Language;
 }) {
   return (
@@ -1170,6 +1172,15 @@ function WelcomeScreen({
             {language === "en" ? "How to play" : "Xem cách chơi"}
           </button>
         </div>
+        <p className="welcome-audio-note" data-sound-control>
+          {soundEnabled
+            ? language === "en"
+              ? "Music begins when you tap Start."
+              : "Nhạc nền sẽ bật khi bạn chạm Bắt đầu."
+            : language === "en"
+              ? "Sound is off. Turn it on in Settings."
+              : "Âm thanh đang tắt. Bạn có thể bật trong Cài đặt."}
+        </p>
         <div
           className="welcome-path"
           aria-label={
@@ -2105,19 +2116,15 @@ export default function GameCanvas() {
     // mobile browsers authorize media playback reliably.
     window.addEventListener("pointerdown", unlockAudio, {
       capture: true,
-      once: true,
     });
     window.addEventListener("keydown", unlockAudio, {
       capture: true,
-      once: true,
     });
     window.addEventListener("touchend", unlockAudio, {
       capture: true,
-      once: true,
     });
     window.addEventListener("click", unlockAudio, {
       capture: true,
-      once: true,
     });
     return () => {
       window.removeEventListener("pointerdown", unlockAudio, { capture: true });
@@ -3610,6 +3617,7 @@ export default function GameCanvas() {
             playSound("tap");
             setShowGuide(true);
           }}
+          soundEnabled={soundEnabled}
           language={language}
         />
       )}
@@ -3979,7 +3987,7 @@ export default function GameCanvas() {
           </div>
 
           <section
-            className={`mission-control operation-${operation}`}
+            className={`mission-control operation-${operation}${isTableMode ? " is-table-mode" : ""}`}
             aria-label={copy(
               "Bảng điều khiển bài tập",
               "Exercise control panel"

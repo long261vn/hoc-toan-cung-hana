@@ -1,5 +1,11 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Âm thanh đầu phiên và bảng nhân–chia trên điện thoại
+
+- [x] Kiểm tra khởi tạo nhạc nền, trạng thái âm lượng và thao tác đầu tiên để học sinh nhận biết âm thanh đã sẵn sàng.
+- [x] Thu gọn màn Học Bảng Nhân và Bảng Chia trên điện thoại để hai nút hành động cuối hiển thị trong vùng nhìn thấy.
+- [x] Kiểm thử âm thanh, giao diện bảng nhân–chia ở điện thoại, TypeScript, production build và lưu checkpoint.
+
 ## Rà soát chồng lấn toàn giao diện
 
 - [x] Kiểm tra màn chào mừng, hồ sơ, chọn Luyện tập/Bài kiểm tra, menu nhiệm vụ và chọn dạng bài trên desktop lẫn điện thoại.

@@ -442,6 +442,14 @@ button:focus-visible {
   gap: 10px;
   flex-wrap: wrap;
 }
+.welcome-audio-note {
+  margin: 8px 0 0;
+  color: #d8e8ff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 8px rgba(2, 7, 38, 0.72);
+}
 .welcome-primary,
 .welcome-secondary {
   display: inline-flex;
@@ -4842,6 +4850,38 @@ button:focus-visible {
 }
 @media (max-width: 760px) {
   .mission-control { margin-top: 86px; }
+  .mission-control.is-table-mode {
+    margin-top: 69px;
+    padding: 11px 12px 10px;
+  }
+  .mission-control.is-table-mode .mission-flight-rail { margin-bottom: 0.42rem; }
+  .mission-control.is-table-mode .table-practice-panel {
+    margin-top: 8px;
+    padding: 8px;
+  }
+  .mission-control.is-table-mode .table-selection-label { margin-top: 7px; }
+  .mission-control.is-table-mode .table-selection-label small { display: none; }
+  .mission-control.is-table-mode .table-kind-switch {
+    gap: 4px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+  }
+  .mission-control.is-table-mode .table-kind-switch button { padding: 5px 3px; }
+  .mission-control.is-table-mode .table-picker-head { margin-top: 7px; }
+  .mission-control.is-table-mode .table-number-grid {
+    gap: 4px;
+    margin-top: 5px;
+  }
+  .mission-control.is-table-mode .table-number-grid button { min-height: 40px; }
+  .mission-control.is-table-mode .question-panel {
+    margin-top: 8px;
+    padding: 11px 13px 9px;
+  }
+  .mission-control.is-table-mode .answer-grid { margin-top: 8px; }
+  .mission-control.is-table-mode .session-bottom-actions {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
   .session-bottom-actions {
     gap: 7px;
     margin-top: 11px;
