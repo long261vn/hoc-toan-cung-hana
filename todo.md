@@ -1,5 +1,11 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Bộ chọn dạng bài và mức độ cố định
+
+- [x] Bỏ hoàn toàn menu dạng bài sổ xuống trong màn Cộng, Trừ, Nhân và Chia.
+- [x] Đặt Loại bài tập và Mức độ khó thành hai nhóm nút luôn hiện ở đầu buồng lái, có nhãn rõ ràng và không che nội dung.
+- [x] Kiểm thử đổi dạng bài/độ khó, VIE/ENG, điện thoại/desktop, TypeScript, production build và lưu checkpoint.
+
 ## Triển khai cải tiến hành trình, luồng học và gợi ý Hana
 
 - [x] Chuẩn hóa nhãn và tiến độ Cấp hành trình 1–100 với bốn huy hiệu Cấp 20/60/80/100 trên dải nhiệm vụ, bảng điểm, tổng kết và Hướng dẫn.

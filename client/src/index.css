@@ -1109,57 +1109,65 @@ button:focus-visible {
   margin: 0 3px;
   color: #f1966f;
 }
-.in-game-format-switch {
-  position: relative;
-  display: inline-flex;
-  margin-top: 2px;
-  z-index: 6;
-}
-.in-game-format-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  min-height: 25px;
-  padding: 3px 8px;
-  color: #355879;
-  border: 1px solid #c7dce9;
-  border-radius: 999px;
-  background: #edf8ff;
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 9px;
-  font-weight: 800;
-  line-height: 1;
-}
-.in-game-format-trigger span { color: #e27a59; font-size: 11px; }
-.in-game-format-menu {
-  position: absolute;
-  top: calc(100% + 5px);
-  left: 0;
+/* Buồng lái giữ Loại bài tập và Mức độ khó luôn trong vùng nhìn thấy; không dùng menu phủ. */
+.mission-study-controls {
   display: grid;
-  min-width: 164px;
-  gap: 4px;
-  padding: 5px;
-  border: 1px solid #cbdfe9;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 5px 0 6px;
+  padding: 6px;
+  border: 1px solid #d9e7eb;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 9px 22px rgba(20, 50, 86, 0.2);
+  background: linear-gradient(135deg, #f5fbff 0%, #fff9ea 100%);
 }
-.in-game-format-menu button {
-  min-height: 30px;
-  padding: 5px 8px;
-  color: #4b5d84;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
+.mission-study-control-group {
+  min-width: 0;
+}
+.mission-study-control-group > span {
+  display: block;
+  margin: 0 0 4px;
+  color: #58718a;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+.mission-format-options,
+.mission-difficulty-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+}
+.mission-format-options button,
+.mission-difficulty-options button {
+  min-width: 0;
+  min-height: 27px;
+  padding: 3px 2px;
+  color: #58698d;
+  border: 1px solid #d8e3ec;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.82);
   font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 10px;
+  font-size: 8px;
   font-weight: 800;
-  text-align: left;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
 }
-.in-game-format-menu button:hover,
-.in-game-format-menu button.is-active {
-  color: #203e68;
-  background: #e5f5ff;
+.mission-format-options button:hover,
+.mission-difficulty-options button:hover {
+  transform: translateY(-1px);
+  border-color: #b6d8dc;
+  background: #eefbfa;
+}
+.mission-format-options button.is-active {
+  color: #fff;
+  border-color: #4b9e96;
+  background: linear-gradient(135deg, #55b7ab, #338d92);
+}
+.mission-difficulty-options button.is-active {
+  color: #94471f;
+  border-color: #ffb090;
+  background: #fff0e8;
 }
 .console-title h3 {
   margin: 0;

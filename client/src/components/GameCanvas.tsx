@@ -2124,7 +2124,6 @@ export default function GameCanvas() {
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
   const [practiceFormat, setPracticeFormat] =
     useState<PracticeFormat>("standard");
-  const [showPracticeFormatMenu, setShowPracticeFormatMenu] = useState(false);
   const [operation, setOperation] = useState<Operation>(initialOperation);
   const [question, setQuestion] = useState<QuizQuestion>(() =>
     isTableDemo
@@ -2670,7 +2669,6 @@ export default function GameCanvas() {
     );
     setAnswered(null);
     setFeedback("idle");
-    setShowPracticeFormatMenu(false);
   };
 
   const beginTimedTest = () => {
@@ -4249,42 +4247,6 @@ export default function GameCanvas() {
                       ? copy("Bài kiểm tra tính giờ", "Timed test")
                       : copy("Luyện tập", "Practice")}
                 </p>
-                {!isTableMode && mode === "practice" && (
-                  <div className="in-game-format-switch">
-                    <button
-                      type="button"
-                      className="in-game-format-trigger"
-                      aria-haspopup="menu"
-                      aria-expanded={showPracticeFormatMenu}
-                      onClick={() => {
-                        playSound("tap");
-                        setShowPracticeFormatMenu(open => !open);
-                      }}
-                    >
-                      {practiceFormatName(practiceFormat, language)} <span>▾</span>
-                    </button>
-                    {showPracticeFormatMenu && (
-                      <div className="in-game-format-menu" role="menu">
-                        {(Object.keys(practiceFormatMeta) as PracticeFormat[]).map(
-                          format => (
-                            <button
-                              key={format}
-                              type="button"
-                              role="menuitemradio"
-                              aria-checked={practiceFormat === format}
-                              className={
-                                practiceFormat === format ? "is-active" : ""
-                              }
-                              onClick={() => changePracticeFormatInGame(format)}
-                            >
-                              {practiceFormatName(format, language)}
-                            </button>
-                          )
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
                 <h3 data-dynamic-text>
                   {testComplete
                     ? copy("Hết giờ rồi!", "Time is up!")
@@ -4326,6 +4288,50 @@ export default function GameCanvas() {
                 </strong>
               </button>
             </div>
+            {!isTableMode && mode === "practice" && (
+              <div className="mission-study-controls" data-i18n-direct>
+                <section
+                  className="mission-study-control-group"
+                  aria-label={copy("Chọn loại bài tập", "Choose practice type")}
+                >
+                  <span>{copy("LOẠI BÀI TẬP", "PRACTICE TYPE")}</span>
+                  <div className="mission-format-options">
+                    {(Object.keys(practiceFormatMeta) as PracticeFormat[]).map(
+                      format => (
+                        <button
+                          key={format}
+                          type="button"
+                          aria-pressed={practiceFormat === format}
+                          className={practiceFormat === format ? "is-active" : ""}
+                          onClick={() => changePracticeFormatInGame(format)}
+                        >
+                          {practiceFormatName(format, language)}
+                        </button>
+                      )
+                    )}
+                  </div>
+                </section>
+                <section
+                  className="mission-study-control-group"
+                  aria-label={copy("Chọn mức độ khó", "Choose difficulty")}
+                >
+                  <span>{copy("MỨC ĐỘ KHÓ", "DIFFICULTY")}</span>
+                  <div className="mission-difficulty-options">
+                    {(Object.keys(difficultyMeta) as Difficulty[]).map(key => (
+                      <button
+                        key={key}
+                        type="button"
+                        aria-pressed={difficulty === key}
+                        className={difficulty === key ? "is-active" : ""}
+                        onClick={() => selectDifficulty(key)}
+                      >
+                        {difficultyMeta[key].label}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
             <div className="mission-flight-rail" data-i18n-direct>
               <span className={`mission-planet-chip operation-${operation}`}>
                 <b aria-hidden="true">
@@ -4650,30 +4656,6 @@ export default function GameCanvas() {
               </>
             )}
 
-            <div className="control-row">
-              {!isTableMode && mode !== "test" && (
-                <div className="exercise-level-control">
-                  <span data-dynamic-text>
-                    {copy("CẤP ĐỘ", "LEVEL")}
-                  </span>
-                  <div
-                    className="level-switch"
-                    aria-label={copy("Chọn cấp độ", "Choose level")}
-                  >
-                    {(Object.keys(difficultyMeta) as Difficulty[]).map(key => (
-                      <button
-                        key={key}
-                        type="button"
-                        className={difficulty === key ? "is-active" : ""}
-                        onClick={() => selectDifficulty(key)}
-                      >
-                        {difficultyMeta[key].label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
             {!testComplete && (
               <div
                 className="session-bottom-actions"
