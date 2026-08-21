@@ -43,7 +43,7 @@
 - [x] Chuẩn bị hướng dẫn cấu hình GitHub Pages và GitHub Actions phù hợp để xuất bản phiên bản tĩnh của game.
 - [x] Hướng dẫn xuất phiên bản Học Toán Cùng Hana đã kiểm thử sang repository GitHub được kết nối trong Manus.
 - [x] Hướng dẫn cấu hình GitHub Pages sau khi export repository, gồm base URL Vite, GitHub Actions, artifact `dist/public` và kiểm tra phát hành.
-- [ ] Tự cấu hình Vite, GitHub Actions và GitHub Pages cho repository `long261vn/hoc-toan-cung-hana`; xác minh URL phát hành hoạt động.
+- [x] Tự cấu hình Vite, GitHub Actions và GitHub Pages cho repository `long261vn/hoc-toan-cung-hana`; xác minh URL phát hành hoạt động.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 
