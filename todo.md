@@ -85,11 +85,11 @@
 
 ## Chọn dạng bài và quà thưởng mới
 
-- [ ] Rà soát luồng vào bốn phép tính và xác định tất cả nhãn, biến, hiệu ứng Tinh thể cũ.
-- [ ] Tạo màn chọn Dạng Bài trước câu hỏi, mặc định Bình thường, cho Cộng, Trừ, Nhân, Chia.
-- [ ] Loại bỏ hoàn toàn Tinh thể cũ và thay bằng điểm, huy hiệu cùng quà thưởng trực quan.
-- [ ] Kiểm tra tính điểm, mốc mở quà, kết thúc lượt và tải ảnh kỷ niệm; sửa lỗi nếu có.
-- [ ] Kiểm thử giao diện mới trên máy tính, điện thoại, lưu checkpoint và bàn giao.
+- [x] Rà soát luồng vào bốn phép tính và xác định tất cả nhãn, biến, hiệu ứng Tinh thể cũ.
+- [x] Tạo màn chọn Dạng Bài trước câu hỏi, mặc định Bình thường, cho Cộng, Trừ, Nhân, Chia.
+- [x] Loại bỏ hoàn toàn Tinh thể cũ và thay bằng điểm, huy hiệu cùng quà thưởng trực quan.
+- [x] Kiểm tra tính điểm, mốc mở quà, kết thúc lượt và tải ảnh kỷ niệm; sửa lỗi nếu có.
+- [x] Kiểm thử giao diện mới trên máy tính, điện thoại, lưu checkpoint và bàn giao.
 
 ## Cập nhật hồ sơ người chơi và phần thưởng mở rộng
 
@@ -175,11 +175,11 @@
 
 ## Hoàn thiện phản hồi Hana và Bảng Nhân–Chia
 
-- [ ] Dịch toàn bộ phản hồi đúng/sai, gợi ý và nút hành động của Robot Hana sang English theo ngôn ngữ đang dùng.
-- [ ] Điều chỉnh Bảng Nhân và Chia để chỉ sinh câu hỏi sau khi người chơi đã chọn ít nhất một bảng.
-- [ ] Bảo đảm mỗi thay đổi bảng hoặc kiểu luyện sinh một câu hỏi mới với bộ đáp án mới.
-- [ ] Kiểm tra tự động số lượng lớn câu hỏi cộng, trừ, nhân, chia và bảng nhân–chia để xác minh đáp án đúng luôn nằm trong lựa chọn.
-- [ ] Kiểm thử trực quan luồng chọn bảng, đổi bảng, trả lời đúng/sai trên desktop/mobile; dựng bản phát hành và lưu checkpoint.
+- [x] Dịch toàn bộ phản hồi đúng/sai, gợi ý và nút hành động của Robot Hana sang English theo ngôn ngữ đang dùng.
+- [x] Điều chỉnh Bảng Nhân và Chia để chỉ sinh câu hỏi sau khi người chơi đã chọn ít nhất một bảng.
+- [x] Bảo đảm mỗi thay đổi bảng hoặc kiểu luyện sinh một câu hỏi mới với bộ đáp án mới.
+- [x] Kiểm tra tự động số lượng lớn câu hỏi cộng, trừ, nhân, chia và bảng nhân–chia để xác minh đáp án đúng luôn nằm trong lựa chọn.
+- [x] Kiểm thử trực quan luồng chọn bảng, đổi bảng, trả lời đúng/sai trên desktop/mobile; dựng bản phát hành và lưu checkpoint.
 
 ## Lượt chơi, điểm và quà thưởng
 
@@ -331,13 +331,13 @@
 
 ## Luồng Luyện Tập và Bài Kiểm Tra theo thời gian
 
-- [ ] Sửa khẩu hiệu English thành “Learn Math with Hana”.
-- [ ] Thêm màn chọn Luyện Tập hoặc Bài Kiểm Tra khi bắt đầu.
-- [ ] Chuyển Cộng, Trừ, Nhân, Chia và Bảng nhân–chia vào nhánh Luyện Tập.
-- [ ] Tạo cấu hình Bài Kiểm Tra: thời gian 2/5/10 phút và ba cấp độ.
-- [ ] Thêm đồng hồ đếm ngược, chuỗi câu hỏi liên tục và kết thúc tự động khi hết giờ.
-- [ ] Bổ sung tổng kết kiểm tra gồm thời gian/cấp độ đã chọn, số câu đúng/sai và điểm.
-- [ ] Kiểm thử logic, desktop/mobile, song ngữ, TypeScript và build trước khi lưu checkpoint.
+- [x] Sửa khẩu hiệu English thành “Learn Math with Hana”.
+- [x] Thêm màn chọn Luyện Tập hoặc Bài Kiểm Tra khi bắt đầu.
+- [x] Chuyển Cộng, Trừ, Nhân, Chia và Bảng nhân–chia vào nhánh Luyện Tập.
+- [x] Tạo cấu hình Bài Kiểm Tra: thời gian 2/5/10 phút và ba cấp độ.
+- [x] Thêm đồng hồ đếm ngược, chuỗi câu hỏi liên tục và kết thúc tự động khi hết giờ.
+- [x] Bổ sung tổng kết kiểm tra gồm thời gian/cấp độ đã chọn, số câu đúng/sai và điểm.
+- [x] Kiểm thử logic, desktop/mobile, song ngữ, TypeScript và build trước khi lưu checkpoint.
 
 ## Rà soát ENG sau luồng Bài Kiểm Tra
 
@@ -411,11 +411,11 @@
 
 ## Avatar, mở khóa hành tinh và huy hiệu chủ đề
 
-- [ ] Thiết kế bộ avatar phi hành gia, bộ huy hiệu chủ đề và các mốc điểm/thành tích phù hợp học sinh lớp 3.
-- [ ] Thêm chọn avatar ở màn điền tên và lưu lựa chọn trong lượt học/ảnh kỷ niệm.
-- [ ] Thêm huy hiệu theo chủ đề nhận sau lượt đạt điểm cao và hiển thị rõ ở tổng kết.
-- [ ] Tạo hiệu ứng mở khóa hành tinh khi đạt thành tích xuất sắc, có hỗ trợ giảm chuyển động.
-- [ ] Kiểm thử desktop/mobile, luồng phần thưởng, TypeScript, build và lưu checkpoint.
+- [x] Thiết kế bộ avatar phi hành gia, bộ huy hiệu chủ đề và các mốc điểm/thành tích phù hợp học sinh lớp 3.
+- [x] Thêm chọn avatar ở màn điền tên và lưu lựa chọn trong lượt học/ảnh kỷ niệm.
+- [x] Thêm huy hiệu theo chủ đề nhận sau lượt đạt điểm cao và hiển thị rõ ở tổng kết.
+- [x] Tạo hiệu ứng mở khóa hành tinh khi đạt thành tích xuất sắc, có hỗ trợ giảm chuyển động.
+- [x] Kiểm thử desktop/mobile, luồng phần thưởng, TypeScript, build và lưu checkpoint.
 
 ## Tinh gọn giao diện và loại bỏ điều khiển dư thừa
 
