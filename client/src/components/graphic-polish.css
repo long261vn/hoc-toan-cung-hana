@@ -45,6 +45,7 @@
 .format-option.is-selected { border-bottom-color: #ff6b4a; box-shadow: 0 11px 0 rgba(201, 74, 51, 0.3), 0 19px 30px rgba(3, 10, 51, 0.22); }
 .test-setup-panel {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   border-top: 6px solid #79ddca;
   box-shadow: 0 13px 0 rgba(10, 27, 75, 0.16), 0 25px 42px rgba(0, 0, 35, 0.28);
@@ -66,6 +67,7 @@
 .test-duration-options button.is-active { box-shadow: 0 4px 0 #e6a078, inset 0 1px 0 #fff; }
 .mission-control {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   border-top: 6px solid #7ddcca;
   box-shadow: 0 14px 0 rgba(12, 29, 76, 0.18), 0 24px 42px rgba(0, 0, 35, 0.3);
@@ -132,7 +134,6 @@
 }
 .mission-flight-rail > * { position: relative; z-index: 1; }
 .mission-planet-chip,
-.mission-hana-signal,
 .mission-reward-signal,
 .mission-journey-signal {
   display: inline-flex;
@@ -142,7 +143,7 @@
   white-space: nowrap;
 }
 .mission-planet-chip {
-  max-width: 46%;
+  max-width: 72%;
   padding: 0.16rem 0.42rem 0.16rem 0.16rem;
   color: var(--mission-tone-ink);
   border: 1px solid color-mix(in srgb, var(--mission-tone) 42%, white);
@@ -164,34 +165,6 @@
 .mission-planet-chip.operation-subtract b { background: #c9baff; }
 .mission-planet-chip.operation-multiply b { background: #9de9d0; }
 .mission-planet-chip.operation-divide b { background: #ffda70; }
-.mission-hana-signal {
-  padding: 0.12rem 0.32rem 0.12rem 0.12rem;
-  color: #21766d;
-  border: 1px solid #bde9df;
-  border-radius: 0.72rem;
-  background: #effcf7;
-  box-shadow: 0 2px 0 rgba(67, 165, 141, 0.14);
-}
-.mission-hana-avatar {
-  position: relative;
-  display: inline-block;
-  width: 1.94rem;
-  height: 1.62rem;
-  flex: 0 0 auto;
-}
-.mission-hana-avatar .robot-fallback {
-  top: 0;
-  left: 0;
-  transform: scale(0.52);
-  transform-origin: top left;
-}
-.mission-hana-label {
-  display: grid;
-  gap: 0.02rem;
-  line-height: 1;
-}
-.mission-hana-label strong { font-size: 0.67rem; }
-.mission-hana-label small { color: #4d897e; font-size: 0.51rem; font-weight: 800; }
 .mission-reward-signal {
   margin-left: auto;
   color: #936626;

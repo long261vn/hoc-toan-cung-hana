@@ -1000,6 +1000,16 @@ function translateLearningText(text: string, language: Language) {
       "Use repeated addition or a times table.",
     "Bạn hãy nhân lần lượt với hàng đơn vị rồi hàng chục.":
       "Multiply the ones place, then the tens place.",
+    "Hãy hiểu mỗi nhóm có bao nhiêu phần tử trước, rồi dùng bảng nhân để kiểm tra.":
+      "Understand what is in each group first, then use the times table to check.",
+    "Hãy hiểu phép nhân là các nhóm bằng nhau, rồi dùng bảng nhân để kiểm tra.":
+      "Understand multiplication as equal groups, then use the times table to check.",
+    "Hãy đặt tính và nhân từng hàng để không bỏ sót số nhớ.":
+      "Set up the multiplication and work one place at a time so you do not miss regrouping.",
+    "Kiểm tra lại các hàng đã nhân và số nhớ trước khi chọn đáp án.":
+      "Check each place you multiplied and any regrouping before choosing an answer.",
+    "Dùng bảng nhân để kiểm tra lại tích bạn vừa tìm.":
+      "Use the times table to check the product you just worked out.",
     "Bạn hãy đổi phép chia thành phép nhân để kiểm tra đáp án.":
       "Turn division into multiplication to check your answer.",
     "Bạn hãy dùng phép nhân để tìm thương rồi kiểm tra lại.":
@@ -1044,6 +1054,14 @@ function translateLearningText(text: string, language: Language) {
     .replace(
       /^Bạn hãy dùng bảng nhân (\d+) để tính thật chắc\.$/,
       "Use the $1 times table to calculate carefully."
+    )
+    .replace(
+      /^(\d+) × (\d+) nghĩa là lấy (\d+) nhóm(?: bằng nhau)?, mỗi nhóm có (\d+)\.$/,
+      "$1 × $2 means $3 equal groups with $4 in each group."
+    )
+    .replace(
+      /^Hãy cộng (\d+) thêm (\d+) lần để (?:biết tất cả có bao nhiêu|tìm tổng số phần tử)\.$/,
+      "Add $1 another $2 times to find how many there are altogether."
     )
     .replace(
       /^Bạn hãy nghĩ: (\d+) nhân mấy thì được (\d+)\?$/,
@@ -1199,6 +1217,22 @@ function translateLearningText(text: string, language: Language) {
     .replace(
       /^Nếu tích ở một hàng từ 10 trở lên, viết hàng đơn vị và nhớ sang hàng tiếp theo\.$/,
       "If a place-value product is 10 or more, write the ones digit and regroup to the next place."
+    )
+    .replace(
+      /^Đặt tính (\d+) × (\d+); viết (\d+) thẳng cột với hàng đơn vị của (\d+)\.$/,
+      "Set up $1 × $2, placing $3 under the ones place of $4."
+    )
+    .replace(
+      /^Nhân (\d+) với hàng đơn vị của (\d+); ghi chữ số đơn vị và nhớ nếu tích có hai chữ số\.$/,
+      "Multiply $1 by the ones place of $2; write the ones digit and regroup if the product has two digits."
+    )
+    .replace(
+      /^Tiếp tục nhân (\d+) với các hàng còn lại của (\d+); cộng số nhớ vào đúng hàng\.$/,
+      "Continue multiplying $1 by the remaining places of $2; add any regrouped amount in the correct place."
+    )
+    .replace(
+      /^Đặt tính (\d+) ÷ (\d+); chia lần lượt từ hàng lớn nhất bên trái\.$/,
+      "Set up $1 ÷ $2 and divide one place at a time from the largest place on the left."
     )
     .replace(/^Đặt tính (\d+) ÷ (\d+)\.$/, "Set up $1 ÷ $2 in columns.")
     .replace(
@@ -1423,7 +1457,6 @@ function PlayerProfileScreen({
   avatarPhotoUrl,
   onAvatarChange,
   onAvatarPhotoSelect,
-  onRemoveAvatarPhoto,
   isUploadingAvatar,
   avatarUploadError,
   onBack,
@@ -1436,7 +1469,6 @@ function PlayerProfileScreen({
   avatarPhotoUrl: string | null;
   onAvatarChange: (avatarId: AvatarId) => void;
   onAvatarPhotoSelect: (file: File) => void;
-  onRemoveAvatarPhoto: () => void;
   isUploadingAvatar: boolean;
   avatarUploadError: string | null;
   onBack: () => void;
@@ -1507,7 +1539,7 @@ function PlayerProfileScreen({
         </div>
         <div className="avatar-option-grid" role="radiogroup">
           {AVATAR_OPTIONS.map((avatar, index) => {
-            const selected = avatar.id === avatarId;
+            const selected = !avatarPhotoUrl && avatar.id === avatarId;
             return (
               <button
                 key={avatar.id}
@@ -1523,52 +1555,44 @@ function PlayerProfileScreen({
               </button>
             );
           })}
-        </div>
-        <div className="profile-avatar-photo" data-i18n-direct>
-          {avatarPhotoUrl ? (
-            <>
+          <label
+            className={`avatar-photo-option ${avatarPhotoUrl ? "is-selected" : ""}`}
+            role="radio"
+            aria-checked={Boolean(avatarPhotoUrl)}
+            aria-label={language === "en" ? "Use your own photo as avatar" : "Dùng ảnh của bạn làm avatar"}
+          >
+            {avatarPhotoUrl ? (
               <PlayerAvatar avatarId={avatarId} photoUrl={avatarPhotoUrl} decorative />
-              <div>
-                <strong>{language === "en" ? "YOUR PHOTO" : "ẢNH CỦA BẠN"}</strong>
-                <small>
-                  {language === "en"
-                    ? "This photo is cropped into a round avatar."
-                    : "Ảnh được cắt giữa thành avatar hình tròn."}
-                </small>
-              </div>
-              <button type="button" onClick={onRemoveAvatarPhoto}>
-                {language === "en" ? "Use a character" : "Dùng avatar có sẵn"}
-              </button>
-            </>
-          ) : (
-            <label className="profile-avatar-upload">
-              <ImagePlus size={18} />
-              <span>
-                <b>{language === "en" ? "Use your own photo" : "Dùng ảnh của bạn"}</b>
-                <small>
-                  {isUploadingAvatar
-                    ? language === "en"
-                      ? "Preparing your avatar..."
-                      : "Hana đang chuẩn bị avatar..."
-                    : language === "en"
-                      ? "JPG, PNG or WEBP · up to 8 MB"
-                      : "JPG, PNG hoặc WEBP · tối đa 8 MB"}
-                </small>
-              </span>
-              {isUploadingAvatar ? <LoaderCircle className="avatar-upload-spinner" size={19} /> : <ChevronRight size={18} />}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                disabled={isUploadingAvatar}
-                onChange={event => {
-                  const file = event.target.files?.[0];
-                  if (file) onAvatarPhotoSelect(file);
-                  event.currentTarget.value = "";
-                }}
-              />
-            </label>
-          )}
+            ) : (
+              <ImagePlus size={31} aria-hidden="true" />
+            )}
+            {avatarPhotoUrl && <Check className="avatar-selected-check" size={15} aria-hidden="true" />}
+            {isUploadingAvatar && <LoaderCircle className="avatar-upload-spinner" size={19} aria-hidden="true" />}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={isUploadingAvatar}
+              onChange={event => {
+                const file = event.target.files?.[0];
+                if (file) onAvatarPhotoSelect(file);
+                event.currentTarget.value = "";
+              }}
+            />
+          </label>
         </div>
+        <p className="avatar-photo-helper" data-i18n-direct>
+          {isUploadingAvatar
+            ? language === "en"
+              ? "Hana is preparing your round avatar..."
+              : "Hana đang chuẩn bị avatar tròn của bạn..."
+            : avatarPhotoUrl
+              ? language === "en"
+                ? "Tap a character anytime to switch back."
+                : "Chạm avatar có sẵn bất cứ lúc nào để đổi lại."
+              : language === "en"
+                ? "Tap the photo circle for JPG, PNG or WEBP · up to 8 MB."
+                : "Chạm vòng tròn ảnh để chọn JPG, PNG hoặc WEBP · tối đa 8 MB."}
+        </p>
         {avatarUploadError && <p className="avatar-upload-error" role="status">{avatarUploadError}</p>}
       </section>
       <label className="profile-name-field">
@@ -2434,6 +2458,8 @@ export default function GameCanvas() {
     unlockDemoOperation === "multiply" ||
     unlockDemoOperation === "divide";
   const missingDemoOperation = demoParams.get("missing");
+  const hanaGuideDemoOperation = demoParams.get("operation");
+  const hanaGuideDifficulty = demoParams.get("difficulty");
   const formatDemoOperation = demoParams.get("format");
   const isMissingDemo =
     missingDemoOperation === "add" ||
@@ -2445,6 +2471,17 @@ export default function GameCanvas() {
     formatDemoOperation === "subtract" ||
     formatDemoOperation === "multiply" ||
     formatDemoOperation === "divide";
+  const hasHanaGuideDemoOperation =
+    hanaGuideDemoOperation === "add" ||
+    hanaGuideDemoOperation === "subtract" ||
+    hanaGuideDemoOperation === "multiply" ||
+    hanaGuideDemoOperation === "divide";
+  const previewDifficulty: Difficulty =
+    hanaGuideDifficulty === "challenge"
+      ? "challenge"
+      : hanaGuideDifficulty === "medium"
+        ? "medium"
+        : "easy";
   const tableDemoKind: TablePracticeKind =
     demoParams.get("tables") === "divide"
       ? "divide"
@@ -2455,6 +2492,8 @@ export default function GameCanvas() {
     ? missingDemoOperation
     : isFormatDemo
       ? formatDemoOperation
+      : isHanaGuideDemo && hasHanaGuideDemoOperation
+        ? hanaGuideDemoOperation
       : isDemo || isTableDemo
         ? tableDemoKind === "divide"
           ? "divide"
@@ -2491,13 +2530,13 @@ export default function GameCanvas() {
       ? "tables"
       : isTestSetupDemo
         ? "test"
-        : isMissingDemo || isFormatDemo
-          ? initialOperation
+          : isMissingDemo || isFormatDemo || isHanaGuideDemo
+            ? initialOperation
           : isDemo
             ? "multiply"
             : "add"
   );
-  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
+  const [difficulty, setDifficulty] = useState<Difficulty>(previewDifficulty);
   const [practiceFormat, setPracticeFormat] =
     useState<PracticeFormat>("standard");
   const [operation, setOperation] = useState<Operation>(initialOperation);
@@ -2505,8 +2544,8 @@ export default function GameCanvas() {
     isTableDemo
       ? generateTableQuestion({ kind: tableDemoKind, tables: [2, 4, 6] })
       : isMissingDemo
-        ? generateMissingComponentQuestion(initialOperation, "easy")
-        : generateQuestion(initialOperation, "easy")
+        ? generateMissingComponentQuestion(initialOperation, previewDifficulty)
+        : generateQuestion(initialOperation, previewDifficulty)
   );
   const recentQuestionExpressionsRef = useRef<string[]>([question.expression]);
   const lastShownQuestionExpressionRef = useRef(question.expression);
@@ -4327,7 +4366,6 @@ export default function GameCanvas() {
             setAvatarPhotoUrl(null);
           }}
           onAvatarPhotoSelect={selectAvatarPhoto}
-          onRemoveAvatarPhoto={() => setAvatarPhotoUrl(null)}
           isUploadingAvatar={uploadAvatar.isPending}
           avatarUploadError={avatarUploadError}
           onBack={() => setScreen("welcome")}
@@ -4440,7 +4478,9 @@ export default function GameCanvas() {
               </>
             ) : (
               <>
-                Lượt học của {displayName}
+                <span>
+                  Lượt học của <strong>{displayName}</strong>
+                </span>
                 <br />
                 <em>thật đáng tự hào!</em>
               </>
@@ -4779,19 +4819,6 @@ export default function GameCanvas() {
                   {language === "en"
                     ? UNLOCKED_PLANET_NAMES[operation].en
                     : UNLOCKED_PLANET_NAMES[operation].vi}
-                </span>
-              </span>
-              <span className="mission-hana-signal">
-                <span className="mission-hana-avatar" aria-hidden="true">
-                  <span className="robot-fallback">
-                    <span />
-                    <span />
-                    <i />
-                  </span>
-                </span>
-                <span className="mission-hana-label">
-                  <strong>{copy("Hana đồng hành", "Hana is with you")}</strong>
-                  <small>{copy("Gợi ý từng bước", "Step-by-step hints")}</small>
                 </span>
               </span>
               {!isTableMode && mode !== "test" && (
@@ -5305,8 +5332,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                      "Nếu chọn chưa đúng, Hana sẽ đưa tối đa ba bước gợi ý để bạn tự suy nghĩ. Sau bước cuối, bạn tự thử lại câu đó. Bấm Điểm hiện tại để xem Cấp hành trình và huy hiệu tiếp theo, Đổi nhiệm vụ để giữ điểm, hoặc Kết thúc lượt để xem tổng kết và lưu ảnh kỷ niệm.",
-                      "If an answer is not right yet, Hana gives up to three written clues so you can think it through. After the final step, you try that question yourself. Tap Current points to view your Journey Level and next badge, Change mission to keep your points, or End session to see your summary and save a souvenir image."
+                      "Nếu chọn chưa đúng, Hana thường đưa ba bước gợi ý để bạn tự suy nghĩ; phép nhân khó có thể có bốn bước đặt tính. Sau bước cuối, bạn tự thử lại câu đó. Bấm Điểm hiện tại để xem Cấp hành trình và huy hiệu tiếp theo, Đổi nhiệm vụ để giữ điểm, hoặc Kết thúc lượt để xem tổng kết và lưu ảnh kỷ niệm.",
+                      "If an answer is not right yet, Hana usually gives three written clues so you can think it through; challenging multiplication can use four column-method steps. After the final step, you try that question yourself. Tap Current points to view your Journey Level and next badge, Change mission to keep your points, or End session to see your summary and save a souvenir image."
                     )}
                   </p>
                 </div>

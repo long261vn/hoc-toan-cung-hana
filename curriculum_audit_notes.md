@@ -29,3 +29,7 @@ Vì vậy, gợi ý trong game được chuẩn hóa theo ba bước: nêu các 
 | Tìm thành phần chưa biết | Gọi đúng tên thành phần, dùng quan hệ phép tính ngược, không thay bằng ký hiệu đại số phức tạp. | Nêu số đã biết, chọn quy tắc phù hợp và hướng dẫn đặt tính nếu phép tính ngược có nhiều chữ số. | Tách riêng các bước tính theo cột của phép tính ngược; không đưa đáp số. |
 
 Mỗi gợi ý chỉ đưa một chiến lược phù hợp câu hiện tại, không yêu cầu học sinh đi qua nhiều cách làm khi không cần thiết. Học sinh luôn được chọn thử lại ngay hoặc chủ động xem gợi ý.
+
+### Điều chỉnh sau phản hồi trải nghiệm
+
+Với phép nhân trong phạm vi bảng nhân, Hana không yêu cầu trẻ chỉ “đọc bảng nhân để tìm đáp án”. Gợi ý mới phải dẫn từ ý nghĩa: xác định số nhóm bằng nhau và số phần tử trong mỗi nhóm, liên hệ một phép cộng lặp **ngắn** để giải thích tích, rồi dùng bảng nhân như bước kiểm tra sau cùng. Với phép nhân số lớn, gợi ý được phép có bốn bước: đặt tính cùng hàng; nhân từ hàng đơn vị; ghi–nhớ đúng hàng; tiếp tục các hàng còn lại và kiểm tra tính hợp lý. Mọi bước vẫn dừng trước đáp số.

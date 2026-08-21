@@ -170,7 +170,8 @@ export function generateMissingComponentQuestion(
 
   if (operation === "multiply") {
     const knownFactor = rand(2, 9);
-    const otherFactor = difficulty === "easy" ? rand(2, 5) : rand(2, 10);
+    const otherFactor =
+      difficulty === "easy" ? rand(2, 5) : difficulty === "medium" ? rand(2, 10) : rand(12, 36);
     const product = knownFactor * otherFactor;
     answer = otherFactor;
     expression =
@@ -179,12 +180,20 @@ export function generateMissingComponentQuestion(
         : `${knownFactor} × ? = ${product}`;
     component = "thừa số";
     hint = "Bạn hãy tìm thừa số chưa biết.";
-    hintSteps = [
-      `Tích là ${product}; thừa số đã biết là ${knownFactor}.`,
-      "Muốn tìm thừa số, lấy tích chia thừa số đã biết.",
-      `${product} ÷ ${knownFactor} = ?`,
-    ];
-    span = 5;
+    hintSteps =
+      difficulty === "challenge"
+        ? [
+            `Tích là ${product}; thừa số đã biết là ${knownFactor}.`,
+            "Muốn tìm thừa số, lấy tích chia thừa số đã biết.",
+            `Đặt tính ${product} ÷ ${knownFactor}; chia lần lượt từ hàng lớn nhất bên trái.`,
+            `Kiểm tra: lấy số vừa tìm được nhân ${knownFactor}; tích phải bằng ${product}.`,
+          ]
+        : [
+            `Tích là ${product}; thừa số đã biết là ${knownFactor}.`,
+            "Muốn tìm thừa số, lấy tích chia thừa số đã biết.",
+            `${product} ÷ ${knownFactor} = ?`,
+          ];
+    span = difficulty === "challenge" ? 12 : 5;
   }
 
   if (operation === "divide") {
@@ -324,33 +333,34 @@ export function generateQuestion(
     if (difficulty === "easy") {
       a = rand(2, 5);
       b = rand(2, 10);
-      hint = `Bạn hãy nhớ lại bảng nhân ${a} nhé.`;
+      hint = "Hãy hiểu mỗi nhóm có bao nhiêu phần tử trước, rồi dùng bảng nhân để kiểm tra.";
       hintSteps = [
-        `Đọc bảng nhân ${a} đến phép nhân với ${b}.`,
-        `Tìm dòng ${a} × ${b} trong bảng nhân.`,
-        "Chọn tích của phép nhân đó.",
+        `${a} × ${b} nghĩa là lấy ${a} nhóm, mỗi nhóm có ${b}.`,
+        `Hãy cộng ${b} thêm ${a - 1} lần để biết tất cả có bao nhiêu.`,
+        `Dùng bảng nhân ${a} để kiểm tra lại tích bạn vừa tìm.`,
       ];
       mission = "Khởi động bảng nhân quen thuộc.";
       span = 4;
     } else if (difficulty === "medium") {
       a = rand(2, 9);
       b = rand(3, 9);
-      hint = `Bạn hãy dùng bảng nhân ${a} để tính thật chắc.`;
+      hint = "Hãy hiểu phép nhân là các nhóm bằng nhau, rồi dùng bảng nhân để kiểm tra.";
       hintSteps = [
-        `Đọc bảng nhân ${a} đến phép nhân với ${b}.`,
-        `Xác định phép tính ${a} × ${b}.`,
-        "Chọn tích bạn vừa đọc được trong bảng nhân.",
+        `${a} × ${b} nghĩa là lấy ${a} nhóm bằng nhau, mỗi nhóm có ${b}.`,
+        `Hãy cộng ${b} thêm ${a - 1} lần để tìm tổng số phần tử.`,
+        `Dùng bảng nhân ${a} để kiểm tra lại tích bạn vừa tìm.`,
       ];
       mission = "Xếp các nhóm bằng nhau để nhân.";
       span = 7;
     } else {
       a = rand(120, 980);
       b = rand(2, 9);
-      hint = "Bạn hãy nhân lần lượt với hàng đơn vị rồi hàng chục.";
+      hint = "Hãy đặt tính và nhân từng hàng để không bỏ sót số nhớ.";
       hintSteps = [
-        `Đặt tính ${a} × ${b}.`,
-        `Nhân ${b} lần lượt với từng hàng của ${a}, từ phải sang trái.`,
-        "Nếu tích ở một hàng từ 10 trở lên, viết hàng đơn vị và nhớ sang hàng tiếp theo.",
+        `Đặt tính ${a} × ${b}; viết ${b} thẳng cột với hàng đơn vị của ${a}.`,
+        `Nhân ${b} với hàng đơn vị của ${a}; ghi chữ số đơn vị và nhớ nếu tích có hai chữ số.`,
+        `Tiếp tục nhân ${b} với các hàng còn lại của ${a}; cộng số nhớ vào đúng hàng.`,
+        "Kiểm tra lại các hàng đã nhân và số nhớ trước khi chọn đáp án.",
       ];
       mission = "Nhân công suất động cơ phi thuyền.";
       span = 15;
@@ -463,7 +473,7 @@ export function generateTableQuestion(
     options: choices(answer, 6),
     hint: isDivision
       ? `Bạn hãy đổi phép chia thành phép nhân: ${table} × ? = ${product}.`
-      : `Bạn đang luyện bảng nhân ${table}. Hãy đọc đến phép nhân với ${factor}.`,
+      : "Hãy hiểu số nhóm và số phần tử trong mỗi nhóm trước, rồi kiểm tra bằng bảng nhân.",
     hintSteps: isDivision
       ? [
           `Đổi ${product} ÷ ${table} thành ${table} × ? = ${product}.`,
@@ -471,9 +481,9 @@ export function generateTableQuestion(
           "Số còn thiếu là kết quả phép chia.",
         ]
       : [
-          `Đọc bảng nhân ${table} đến phép nhân với ${factor}.`,
-          `Tìm dòng ${table} × ${factor} trong bảng nhân.`,
-          "Chọn tích của phép nhân đó.",
+          `${table} × ${factor} nghĩa là lấy ${table} nhóm, mỗi nhóm có ${factor}.`,
+          `Hãy cộng ${factor} thêm ${table - 1} lần để biết tất cả có bao nhiêu.`,
+          `Dùng bảng nhân ${table} để kiểm tra lại tích bạn vừa tìm.`,
         ],
     mission: `Khởi động bảng ${kindLabel} ${table}.`,
   };

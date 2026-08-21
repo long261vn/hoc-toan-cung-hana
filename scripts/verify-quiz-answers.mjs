@@ -43,8 +43,8 @@ const validate = (question, difficulty = null) => {
   } else if (calculate(question.expression) !== question.answer) {
     throw new Error(`Phép tính sai: ${question.expression} → ${question.answer}`);
   }
-  if (question.hintSteps.length !== 3 || question.hintSteps.some(step => !step.trim())) {
-    throw new Error(`Gợi ý Hana cần đúng ba bước có nội dung: ${question.expression}`);
+  if (question.hintSteps.length < 3 || question.hintSteps.length > 4 || question.hintSteps.some(step => !step.trim())) {
+    throw new Error(`Gợi ý Hana cần từ ba đến bốn bước có nội dung: ${question.expression}`);
   }
   if (question.hintSteps.some(step => /bài mẫu|worked example/i.test(step))) {
     throw new Error(`Gợi ý Hana không được có bài mẫu lộ đáp án: ${question.expression}`);
@@ -65,14 +65,14 @@ const validate = (question, difficulty = null) => {
     if (
       question.operation === "multiply" &&
       difficulty !== "challenge" &&
-      (!/bảng nhân/.test(steps) || /Có \d+ nhóm|cộng \d+ lặp lại/.test(steps))
+      (!/nghĩa là lấy/.test(steps) || !/Hãy cộng/.test(steps) || !/kiểm tra lại tích/.test(steps))
     ) {
-      throw new Error(`Phép nhân cơ bản cần ưu tiên bảng nhân, không khuôn nhóm/cộng lặp: ${question.expression}`);
+      throw new Error(`Phép nhân cơ bản cần giải thích nhóm bằng nhau, cộng lặp và bước kiểm tra: ${question.expression}`);
     }
     if (
       question.operation === "multiply" &&
       difficulty === "challenge" &&
-      (!steps.includes("Đặt tính") || !steps.includes("Nhân") || Number(question.expression.split(" ")[0]) < 100)
+      (question.hintSteps.length !== 4 || !steps.includes("Đặt tính") || !steps.includes("hàng đơn vị") || !steps.includes("các hàng còn lại") || !steps.includes("Kiểm tra") || Number(question.expression.split(" ")[0]) < 100)
     ) {
       throw new Error(`Phép nhân khó cần dùng đặt tính với số lớn: ${question.expression}`);
     }

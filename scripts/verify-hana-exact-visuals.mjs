@@ -56,7 +56,31 @@ try {
     }
     reports.push({ operation, initialStep: initial.label, finalStep: finalStep.label });
   }
-  console.log(JSON.stringify({ reports, status: "Hana guides use three written steps without visuals or answer-revealing examples" }));
+  await command("Page.navigate", { url: "http://localhost:3000/?hanaguide&operation=multiply&difficulty=challenge&lang=vi&nowebgl" });
+  await waitFor(".hana-learning-card");
+  const challengeSteps = [];
+  for (let step = 0; step < 4; step += 1) {
+    const page = await evaluate(`(() => ({ label: document.querySelector(".hana-learning-step > span")?.textContent?.trim(), action: document.querySelector(".hana-primary-action")?.textContent?.replace(/\\s+/g, " ").trim(), hasVisual: Boolean(document.querySelector(".hana-math-visual")), text: document.querySelector(".hana-learning-step p")?.textContent?.trim() ?? "" }))()`);
+    if (page.hasVisual || page.text.includes("Bài mẫu")) {
+      throw new Error(`Phép nhân Thám hiểm chứa hình minh họa hoặc bài mẫu: ${JSON.stringify(page)}`);
+    }
+    challengeSteps.push(page);
+    if (step < 3) {
+      await evaluate(`document.querySelector(".hana-primary-action")?.click()`);
+      await sleep(55);
+    }
+  }
+  const expectedClues = ["Đặt tính", "hàng đơn vị", "các hàng còn lại", "Kiểm tra"];
+  if (
+    challengeSteps[0].label !== "Bước 1/4" ||
+    challengeSteps[3].label !== "Bước 4/4" ||
+    !challengeSteps[3].action?.includes("Thử lại câu này") ||
+    expectedClues.some((clue, index) => !challengeSteps[index].text.includes(clue))
+  ) {
+    throw new Error(`Phép nhân Thám hiểm chưa có đủ bốn bước đặt tính đúng thứ tự: ${JSON.stringify(challengeSteps)}`);
+  }
+  reports.push({ operation: "multiply-challenge", initialStep: challengeSteps[0].label, finalStep: challengeSteps[3].label });
+  console.log(JSON.stringify({ reports, status: "Hana guides use three written steps normally and four answer-safe column-method steps for challenging multiplication" }));
 } finally {
   socket.close();
 }

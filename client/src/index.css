@@ -2100,13 +2100,14 @@ button:focus-visible {
 .summary-journey {
   position: absolute;
   z-index: 0;
-  top: 23%;
+  top: 52%;
   left: 50%;
-  width: min(680px, 76vw);
-  height: 230px;
+  width: min(620px, 70vw);
+  height: 190px;
   transform: translateX(-50%) rotate(-7deg);
-  border: 1.5px dashed rgba(128, 213, 203, 0.42);
+  border: 1px dashed rgba(128, 213, 203, 0.28);
   border-radius: 50%;
+  opacity: 0.46;
   pointer-events: none;
 }
 .summary-journey::before {
@@ -2120,8 +2121,8 @@ button:focus-visible {
 .summary-journey i {
   position: absolute;
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   place-items: center;
   border: 2px solid rgba(255, 255, 255, 0.72);
   border-radius: 50%;
@@ -2130,7 +2131,7 @@ button:focus-visible {
     0 0 0 5px rgba(255, 255, 255, 0.06),
     0 7px 17px rgba(2, 6, 32, 0.3);
   font-family: "Baloo 2", cursive;
-  font-size: 19px;
+  font-size: 15px;
   font-style: normal;
   font-weight: 800;
 }
@@ -2157,6 +2158,7 @@ button:focus-visible {
 .summary-kicker,
 .summary-screen h2,
 .summary-intro,
+.summary-player-identity,
 .summary-stats,
 .reward-board,
 .summary-actions,
@@ -2187,10 +2189,10 @@ button:focus-visible {
     min-width: 5px;
   }
   .summary-journey {
-    top: 21%;
-    width: 92vw;
-    height: 190px;
-    opacity: 0.75;
+    top: 54%;
+    width: 84vw;
+    height: 150px;
+    opacity: 0.3;
   }
 }
 
@@ -2688,11 +2690,12 @@ button:focus-visible {
 .summary-screen {
   position: relative;
   z-index: 4;
+  isolation: isolate;
   display: grid;
   min-height: 100svh;
   place-items: center;
   align-content: center;
-  gap: 11px;
+  gap: 14px;
   padding: 36px 20px;
   color: #fdf9e7;
   background:
@@ -2707,7 +2710,7 @@ button:focus-visible {
 .summary-screen::before {
   content: "";
   position: absolute;
-  z-index: -1;
+  z-index: -2;
   width: min(740px, 92vw);
   height: min(740px, 92vw);
   border-radius: 50%;
@@ -2750,13 +2753,20 @@ button:focus-visible {
 }
 .summary-screen h2 {
   margin: 0;
+  max-width: min(680px, 94vw);
   color: #fff9df;
-  font-family: "Baloo 2", cursive;
-  font-size: clamp(37px, 5.5vw, 62px);
-  line-height: 0.88;
-  text-shadow: 0 6px 0 rgba(16, 24, 77, 0.32);
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: clamp(29px, 5vw, 54px);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 1.12;
+  text-shadow: 0 4px 0 rgba(16, 24, 77, 0.28);
 }
+.summary-screen h2 > span { display: block; }
+.summary-screen h2 strong { color: #fff9df; font-weight: 900; }
 .summary-screen h2 em {
+  display: block;
+  margin-top: 0.28em;
   color: #ffb086;
   font-style: normal;
 }
@@ -3571,6 +3581,8 @@ button:focus-visible {
   backdrop-filter: blur(9px);
 }
 .hana-learning-card {
+  position: relative;
+  isolation: isolate;
   width: min(536px, 100%);
   max-height: calc(100dvh - var(--app-top-safe-zone) - var(--app-overlay-edge));
   padding: 14px;
