@@ -7,7 +7,7 @@
 - [x] Thiết kế lại bộ chọn avatar theo ô tròn đồng nhất, loại bỏ khung chữ nhật thừa quanh lựa chọn ảnh cá nhân.
 - [x] Điều chỉnh nền hành tinh/ký hiệu theo vùng an toàn để không đè lên bảng bài tập, hộp thoại hoặc tổng kết ở mọi kích thước.
 - [x] Chuẩn hóa font và khoảng cách lời chúc tổng kết, đặc biệt nhãn Lượt học của và lời khen, để dễ đọc và cân đối.
-- [ ] Rà soát toàn diện desktop/mobile, VIE/ENG, gợi ý phép nhân, tổng kết, TypeScript, build và lưu checkpoint.
+- [x] Rà soát toàn diện desktop/mobile, VIE/ENG, gợi ý phép nhân, tổng kết, TypeScript, build và lưu checkpoint.
 - [x] Cập nhật hồi quy avatar ảnh cá nhân theo ô tròn mới, kiểm tra tải lên, tải lại và đổi về avatar có sẵn.
 - [x] Mở rộng hồi quy cửa sổ Hana để xác nhận phép nhân Thám hiểm hiển thị đủ bốn bước đặt tính mà không lộ đáp án.
 
