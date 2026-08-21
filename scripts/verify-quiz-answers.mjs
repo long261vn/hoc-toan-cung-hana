@@ -93,9 +93,14 @@ const validate = (question, difficulty = null) => {
     if (
       question.operation === "divide" &&
       difficulty === "challenge" &&
-      (!steps.includes("Đặt tính") || !steps.includes("Chia từ hàng lớn nhất") || !steps.includes("Kiểm tra"))
+      (question.hintSteps.length !== 4 ||
+        !steps.includes("Đặt tính") ||
+        !/(Vì|Bắt đầu)/.test(steps) ||
+        !steps.includes("Nhân chữ số thương") ||
+        !steps.includes("Hạ chữ số tiếp theo") ||
+        !steps.includes("tích phải trở lại"))
     ) {
-      throw new Error(`Phép chia khó cần hướng dẫn đặt tính và kiểm tra: ${question.expression}`);
+      throw new Error(`Phép chia khó cần đủ bước đặt tính, chia, nhân-trừ-hạ và kiểm tra: ${question.expression}`);
     }
     if (
       question.operation === "divide" &&

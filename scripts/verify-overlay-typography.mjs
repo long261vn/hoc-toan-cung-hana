@@ -23,7 +23,7 @@ const cases = [
 
 const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 const targets = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then(response => response.json());
-const page = targets.find(target => target.type === "page");
+const page = targets.find(target => target.type === "page" && target.url.includes("localhost:3000")) ?? targets.find(target => target.type === "page");
 if (!page?.webSocketDebuggerUrl) throw new Error("Không tìm thấy Chromium để kiểm thử typography overlay.");
 
 const socket = new WebSocket(page.webSocketDebuggerUrl);

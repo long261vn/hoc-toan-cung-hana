@@ -10,7 +10,7 @@ await rm(downloadPath, { recursive: true, force: true });
 await mkdir(downloadPath, { recursive: true });
 
 const targets = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then((response) => response.json());
-const target = targets.find((item) => item.type === "page");
+const target = targets.find((item) => item.type === "page" && item.url.includes("localhost:3000")) ?? targets.find((item) => item.type === "page");
 if (!target?.webSocketDebuggerUrl) throw new Error("Không tìm thấy tab Chromium để kiểm thử tải ảnh.");
 
 const socket = new WebSocket(target.webSocketDebuggerUrl);

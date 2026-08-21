@@ -5,7 +5,7 @@ const sleep = milliseconds =>
 const targets = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then(
   response => response.json()
 );
-const page = targets.find(target => target.type === "page");
+const page = targets.find(target => target.type === "page" && target.url.includes("localhost:3000")) ?? targets.find(target => target.type === "page");
 if (!page?.webSocketDebuggerUrl)
   throw new Error("Không tìm thấy Chromium để kiểm thử English.");
 const socket = new WebSocket(page.webSocketDebuggerUrl);
@@ -78,9 +78,7 @@ try {
     `document.querySelector(".guide-card")?.textContent?.replace(/\\s+/g, " ").trim()`
   );
   noVietnamese(guide, "Hướng dẫn");
-  if (
-    !guide.includes("Multiplication and Division Tables")
-  )
+  if (!guide.includes("Tables: choose your tables first."))
     throw new Error(`Hướng dẫn English thiếu phần bảng nhân–chia: ${guide}`);
   await command("Page.navigate", { url: baseUrl });
   await waitFor(".welcome-primary");

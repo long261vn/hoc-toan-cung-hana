@@ -19,6 +19,14 @@
 - [x] Bổ sung hồi quy render orphan-line cho welcome, profile, start mode, activities, format, test setup, game và summary ở cả desktop/mobile.
 - [x] Ghi nhận kết quả pass/fail theo từng màn chính cho heading, prompt và action copy trước khi xác nhận typography toàn app.
 - [x] Lưu checkpoint mới cho batch avatar riêng tư, tổng kết thích ứng và hồi quy typography; ghi lại mã checkpoint để đối chiếu bàn giao (775d6259).
+- [x] Đồng bộ tuyệt đối tên Hành tinh Phép Cộng/Trừ/Nhân/Chia với nhiệm vụ hiện tại ở mọi vùng của bảng tính; bổ sung hồi quy chống sai ngữ cảnh.
+- [x] Bỏ câu nhắc kiểm tra chung chung khỏi giao diện; chỉ dẫn cách kiểm tra cụ thể, đúng phép tính và chỉ xuất hiện ở bước gợi ý phù hợp.
+- [x] Khi đổi nhiệm vụ, đặt lại Loại bài tập về Bài bình thường và Mức độ khó về Làm quen trước khi tạo câu hỏi mới.
+- [x] Viết lại gợi ý phép chia khó theo quy trình Toán lớp 3 rõ ràng, có kiểm tra bằng phép nhân nhưng không lộ đáp án.
+- [x] Thiết kế lại ảnh kỷ niệm để phản ánh đúng lượt học, điểm, độ chính xác, hành tinh/nhiệm vụ và phần thưởng cao nhất bằng bố cục đẹp, có ý nghĩa.
+- [x] Kiểm thử các luồng sửa lỗi desktop/mobile, VIE/ENG, TypeScript, hồi quy và production build; lưu checkpoint.
+- [x] Phân tích và khắc phục việc production build bị dừng ở bước render chunks trong môi trường sandbox, sau đó xác nhận build hoàn tất.
+- [x] Chuẩn hóa giới hạn bộ nhớ cần thiết trong script build dự án và xác nhận `pnpm build` nguyên bản hoàn tất không cần biến môi trường ngoài.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 

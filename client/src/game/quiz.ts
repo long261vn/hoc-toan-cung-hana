@@ -414,11 +414,17 @@ export function generateQuestion(
       b = rand(2, 9);
       answer = rand(12, 36);
       a = b * answer;
+      const digits = String(a).split("").map(Number);
+      const firstChunk = digits[0] < b ? Number(digits.slice(0, 2).join("")) : digits[0];
+      const firstChunkInstruction = digits[0] < b
+        ? `Vì ${digits[0]} bé hơn ${b}, ghép ${digits[0]} với chữ số kế tiếp thành ${firstChunk}. Chia ${firstChunk} cho ${b} để tìm chữ số đầu của thương.`
+        : `Bắt đầu từ ${digits[0]}. Chia ${digits[0]} cho ${b} để tìm chữ số đầu của thương.`;
       hint = "Bạn hãy đặt tính chia theo từng hàng rồi dùng phép nhân để kiểm tra.";
       hintSteps = [
         `Đặt tính ${a} ÷ ${b}.`,
-        `Chia từ hàng lớn nhất bên trái; viết từng chữ số của thương đúng hàng.`,
-        `Kiểm tra: lấy thương nhân ${b}; nếu được ${a} thì thương đúng.`,
+        firstChunkInstruction,
+        `Nhân chữ số thương vừa tìm với ${b}, đặt kết quả thẳng cột rồi trừ. Hạ chữ số tiếp theo xuống và làm tương tự đến hết số bị chia.`,
+        `Kiểm tra: lấy thương bạn vừa tìm nhân ${b}; tích phải trở lại ${a}.`,
       ];
       mission = "Tìm thương của phép chia.";
       span = 10;

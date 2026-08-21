@@ -259,7 +259,7 @@ function PlayerAvatar({
   );
 }
 const THEME_BADGES: ThemeBadge[] = [
-  { id: "level-20-pathfinder", symbol: "✦", threshold: 200, accent: "coral", vi: { label: "Người Mở Đường", detail: "Chinh phục Cấp 20 của hành trình 100 cấp." }, en: { label: "Pathfinder", detail: "Reach Level 20 in the 100-level journey." } },
+  { id: "level-20-pathfinder", symbol: "✦", threshold: 200, accent: "coral", vi: { label: "Người Mở Đường", detail: "Chinh phục Cấp 20 của hành trình 100 cấp." }, en: { label: "Pathfinder", detail: "Reach Level 20 first." } },
   { id: "level-60-orbit-captain", symbol: "◌", threshold: 600, accent: "lavender", vi: { label: "Thuyền Trưởng Quỹ Đạo", detail: "Chinh phục Cấp 60 với sự kiên trì." }, en: { label: "Orbit Captain", detail: "Reach Level 60 with persistence." } },
   { id: "level-80-math-comet", symbol: "☄", threshold: 800, accent: "mint", vi: { label: "Sao Chổi Toán Học", detail: "Chinh phục Cấp 80 thật xuất sắc." }, en: { label: "Math Comet", detail: "Reach Level 80 with skill." } },
   { id: "level-100-hana-legend", symbol: "♛", threshold: 1000, accent: "gold", vi: { label: "Huyền Thoại Hana", detail: "Hoàn thành trọn vẹn Cấp 100 huy hoàng." }, en: { label: "Hana Legend", detail: "Complete the triumphant Level 100." } },
@@ -933,10 +933,10 @@ const englishText: Record<string, string> = {
   "CHỌN NHIỆM VỤ": "CHOOSE A MISSION",
   "Hãy chọn dạng bài phù hợp để Hana bắt đầu lượt học nhé.":
     "Choose a practice type so Hana can begin your session.",
-  "Tính kết quả của phép tính.": "Calculate the answer.",
+  "Tính kết quả của phép tính.": "Solve it.",
   "Tìm số còn thiếu trong phép tính.":
-    "Find the missing number in the equation.",
-  "Luyện xen kẽ cả hai dạng bài.": "Alternate between both practice types.",
+    "Find it.",
+  "Luyện xen kẽ cả hai dạng bài.": "Use both.",
   "Nhân và chia xen kẽ": "Mix multiplication and division",
   "Học Toán": "Learn Math",
   "BẢNG CỬU CHƯƠNG": "TIMES TABLES",
@@ -2139,7 +2139,7 @@ function PracticeFormatScreen({
       symbol: "✓",
       description:
         language === "en"
-          ? "Calculate the answer."
+          ? "Solve it."
           : "Tính kết quả của phép tính.",
     },
     {
@@ -2147,7 +2147,7 @@ function PracticeFormatScreen({
       symbol: "?",
       description:
         language === "en"
-          ? "Find the missing number in the equation."
+          ? "Find it."
           : "Tìm số còn thiếu trong phép tính.",
     },
     {
@@ -2155,7 +2155,7 @@ function PracticeFormatScreen({
       symbol: "↻",
       description:
         language === "en"
-          ? "Alternate between both practice types."
+          ? "Use both."
           : "Luyện xen kẽ cả hai dạng bài.",
     },
   ];
@@ -2272,6 +2272,46 @@ function hanaEquation(question: QuizQuestion) {
     result: resolve(resultToken),
     missing: firstToken === "?" ? "first" : secondToken === "?" ? "second" : resultToken === "?" ? "result" : null,
   } as const;
+}
+
+function hanaCheckGuidance(question: QuizQuestion, language: Language) {
+  if (question.kind === "missing") {
+    const missingGuidance = {
+      add: language === "en"
+        ? "Put the number you found back into the addition. The total must match the number already shown."
+        : "Thay số bạn tìm được vào phép cộng. Tổng phải đúng bằng số đã cho.",
+      subtract: language === "en"
+        ? "Put the number you found back into the subtraction. The difference must match the number already shown."
+        : "Thay số bạn tìm được vào phép trừ. Hiệu phải đúng bằng số đã cho.",
+      multiply: language === "en"
+        ? "Put the number you found back into the multiplication. The product must match the number already shown."
+        : "Thay số bạn tìm được vào phép nhân. Tích phải đúng bằng số đã cho.",
+      divide: language === "en"
+        ? "Put the number you found back into the division, then multiply the quotient by the divisor to check the dividend."
+        : "Thay số bạn tìm được vào phép chia, rồi lấy thương nhân số chia để kiểm tra số bị chia.",
+    } as const;
+    return missingGuidance[question.operation];
+  }
+
+  const equation = hanaEquation(question);
+  if (question.operation === "add") {
+    return language === "en"
+      ? `Subtract ${equation.second} from the total you chose. It should return ${equation.first}.`
+      : `Lấy tổng bạn chọn trừ ${equation.second}; kết quả phải trở lại ${equation.first}.`;
+  }
+  if (question.operation === "subtract") {
+    return language === "en"
+      ? `Add ${equation.second} to the difference you chose. It should return ${equation.first}.`
+      : `Lấy hiệu bạn chọn cộng ${equation.second}; kết quả phải trở lại ${equation.first}.`;
+  }
+  if (question.operation === "multiply") {
+    return language === "en"
+      ? `Read the ${equation.first} times table and check that ${equation.first} × ${equation.second} matches the product you chose.`
+      : `Đọc bảng nhân ${equation.first} và kiểm tra ${equation.first} × ${equation.second} có đúng bằng tích bạn chọn không.`;
+  }
+  return language === "en"
+    ? `Multiply the quotient you chose by ${equation.second}. The product should return ${equation.first}.`
+    : `Lấy thương bạn chọn nhân ${equation.second}; tích phải trở lại ${equation.first}.`;
 }
 
 /** Câu tìm thành phần dùng phép tính ngược để hình vẽ vẫn khớp chính xác với các số của câu đó. */
@@ -2458,6 +2498,7 @@ function HanaLearningDialog({
   const pageText =
     instructionPages[step] ?? translateLearningText(question.hint, language);
   const totalPages = instructionPages.length;
+  const checkGuidance = hanaCheckGuidance(question, language);
   return (
     <div
       className="hana-learning-backdrop"
@@ -2505,9 +2546,8 @@ function HanaLearningDialog({
           <p>{pageText}</p>
           {isLastStep && (
             <p className="hana-learning-check-note">
-              {language === "en"
-                ? "Before you choose again, check with the inverse operation or the matching multiplication/division table."
-                : "Trước khi chọn lại, hãy kiểm tra bằng phép tính ngược hoặc bảng nhân/chia phù hợp nhé."}
+              <strong>{language === "en" ? "CHECK YOUR ANSWER" : "CÁCH KIỂM TRA"}</strong>{" "}
+              {checkGuidance}
             </p>
           )}
         </div>
@@ -3200,6 +3240,21 @@ export default function GameCanvas() {
     setFeedback("idle");
   };
 
+  const returnToMissionPicker = () => {
+    setPracticeFormat("standard");
+    setDifficulty("easy");
+    setTableKind("multiply");
+    setSelectedTables([]);
+    lastTableSelectionRef.current = null;
+    setAnswered(null);
+    setFeedback("idle");
+    setTestStep(0);
+    setTestCorrect(0);
+    setTestComplete(false);
+    setTestTimedOut(false);
+    setScreen(mode === "test" ? "menu" : "activities");
+  };
+
   const beginTimedTest = () => {
     playSound("launch");
     startFreshSession();
@@ -3729,8 +3784,8 @@ export default function GameCanvas() {
           )
         : imageAccuracy >= 0.8
           ? copy(
-              `Bạn làm đúng ${correctCount}/${answeredQuestions} câu. Hãy tiếp tục kiểm tra lại trước khi chọn đáp án nhé!`,
-              `You got ${correctCount}/${answeredQuestions} correct. Keep checking your work before choosing an answer!`
+              `Bạn làm đúng ${correctCount}/${answeredQuestions} câu. Khả năng tính toán của bạn đang rất vững!`,
+              `You got ${correctCount}/${answeredQuestions} correct. Your maths skills are growing strong!`
             )
           : imageAccuracy >= 0.5
             ? copy(
@@ -3741,6 +3796,45 @@ export default function GameCanvas() {
                 `Bạn làm đúng ${correctCount}/${answeredQuestions} câu. Hana sẽ cùng bạn luyện từng bước nhé!`,
                 `You got ${correctCount}/${answeredQuestions} correct. Hana will practise step by step with you!`
               );
+    const souvenirOperation = question.operation;
+    const souvenirSymbol: Record<Operation, string> = {
+      add: "+",
+      subtract: "−",
+      multiply: "×",
+      divide: "÷",
+    };
+    const souvenirPlanet: Record<Operation, { light: string; deep: string; ink: string }> = {
+      add: { light: "#ffd4b1", deep: "#ef7d70", ink: "#8c3a4b" },
+      subtract: { light: "#e4dcff", deep: "#9b8ce0", ink: "#51417e" },
+      multiply: { light: "#b8f5e2", deep: "#4cc7ad", ink: "#17685f" },
+      divide: { light: "#fff0a7", deep: "#e6b850", ink: "#88601a" },
+    };
+    const missionLabel =
+      mode === "test"
+        ? copy("Bài kiểm tra tính giờ", "Timed test")
+        : mode === "tables"
+          ? `${tableLabel(tableKind)} · ${UNLOCKED_PLANET_NAMES[souvenirOperation][language]}`
+          : UNLOCKED_PLANET_NAMES[souvenirOperation][language];
+    const missionDetail =
+      mode === "test"
+        ? copy(
+            `${difficultyMeta[difficulty].label} · ${formatDuration(testDurationSeconds)}`,
+            `${difficulty === "easy" ? "Getting started" : difficulty === "medium" ? "Confident" : "Explorer"} · ${formatDuration(testDurationSeconds)}`
+          )
+        : answeredQuestions
+          ? copy(
+              `Độ chính xác ${Math.round(imageAccuracy * 100)}% · ${correctCount}/${answeredQuestions} câu đúng`,
+              `${Math.round(imageAccuracy * 100)}% accuracy · ${correctCount}/${answeredQuestions} correct`
+            )
+          : copy("Sẵn sàng cho chuyến học đầu tiên", "Ready for a first learning flight");
+    const newBadge = sessionThemeBadges.at(-1);
+    const nextBadge = THEME_BADGES.find(
+      badge => !displayedBadgeCollectionIds.includes(badge.id)
+    );
+    const pointsUntilSouvenirBadge = nextBadge
+      ? Math.max(0, nextBadge.threshold - sessionPoints)
+      : 0;
+    const nextBadgeLevel = nextBadge ? nextBadge.threshold / 10 : 0;
     setIsSavingImage(true);
     setImageSaveStatus(
       copy(
@@ -4046,82 +4140,92 @@ export default function GameCanvas() {
         context.stroke();
         context.restore();
       };
-      const background = context.createLinearGradient(0, 0, 1080, 1350);
-      background.addColorStop(0, "#172b78");
-      background.addColorStop(0.58, "#101c5d");
-      background.addColorStop(1, "#281557");
+      const background = context.createLinearGradient(0, 0, 1080, 1440);
+      background.addColorStop(0, "#183a86");
+      background.addColorStop(0.56, "#111f62");
+      background.addColorStop(1, "#26124f");
       context.fillStyle = background;
       context.fillRect(0, 0, canvas.width, canvas.height);
-
       context.fillStyle = "rgba(255,255,255,0.34)";
-      for (let index = 0; index < 72; index += 1) {
+      for (let index = 0; index < 76; index += 1) {
         context.beginPath();
-        context.arc(
-          ((index * 137) % 1050) + 16,
-          ((index * 71) % 1320) + 14,
-          index % 5 === 0 ? 3 : 1.5,
-          0,
-          Math.PI * 2
-        );
+        context.arc(((index * 137) % 1050) + 16, ((index * 71) % 1410) + 14, index % 5 === 0 ? 3 : 1.5, 0, Math.PI * 2);
         context.fill();
       }
-      drawOrbit(540, 205, 454, 124, -0.08, "rgba(160, 221, 255, .3)");
-      drawOrbit(540, 208, 334, 92, 0.18, "rgba(122, 238, 209, .24)");
-      drawPlanet(104, 210, 54, "#ffd7ac", "#ed8778", true);
-      drawPlanet(976, 210, 54, "#e7ddff", "#a99be5", true);
-      drawPlanet(960, 1350, 52, "#d7fff2", "#5bcbb3", true);
+      drawOrbit(540, 185, 454, 124, -0.08, "rgba(160, 221, 255, .3)");
+      drawOrbit(540, 188, 334, 92, 0.18, "rgba(122, 238, 209, .24)");
+      drawPlanet(104, 205, 50, "#ffd7ac", "#ed8778", true);
+      drawPlanet(976, 205, 50, "#e7ddff", "#a99be5", true);
+      drawPlanet(960, 1360, 48, "#d7fff2", "#5bcbb3", true);
       context.save();
-      context.translate(540, 210);
-      context.scale(0.7, 0.7);
+      context.translate(540, 205);
+      context.scale(0.65, 0.65);
       drawHana(0, 0);
       context.restore();
 
       context.fillStyle = "#d8fff2";
-      context.font = "800 20px Be Vietnam Pro, Trebuchet MS, sans-serif";
+      context.font = "800 19px Be Vietnam Pro, Trebuchet MS, sans-serif";
       context.textAlign = "center";
-      context.fillText(
-        copy("THẺ KỶ NIỆM CHUYẾN BAY", "FLIGHT SOUVENIR CARD"),
-        540,
-        70
-      );
+      context.fillText(copy("DẤU ẤN LƯỢT HỌC", "LEARNING FLIGHT MEMENTO"), 540, 66);
       context.fillStyle = "#fff9e3";
-      context.font = "800 52px Baloo 2, Trebuchet MS, sans-serif";
-      context.fillText(copy("Học Toán Cùng Hana", "Learn Math with Hana"), 540, 126);
+      context.font = "800 50px Baloo 2, Trebuchet MS, sans-serif";
+      context.fillText(copy("Học Toán Cùng Hana", "Learn Math with Hana"), 540, 120);
 
       context.shadowColor = "rgba(1, 8, 49, .34)";
       context.shadowBlur = 28;
       context.shadowOffsetY = 14;
       context.fillStyle = "#fffaf0";
-      drawRoundedRectangle(context, 66, 310, 948, 1000, 42);
+      drawRoundedRectangle(context, 58, 282, 964, 1042, 44);
       context.fill();
       context.shadowColor = "transparent";
 
-      context.fillStyle = "#dff9f4";
-      drawRoundedRectangle(context, 98, 350, 884, 210, 30);
+      const profilePanel = context.createLinearGradient(90, 324, 990, 512);
+      profilePanel.addColorStop(0, "#e0faf4");
+      profilePanel.addColorStop(1, "#eef4ff");
+      context.fillStyle = profilePanel;
+      drawRoundedRectangle(context, 90, 324, 900, 188, 30);
       context.fill();
-      drawCanvasPlayerAvatar(220, 455, 82);
+      drawCanvasPlayerAvatar(190, 418, 70);
       context.lineWidth = 7;
       context.strokeStyle = "#ffffff";
       context.beginPath();
-      context.arc(220, 455, 85, 0, Math.PI * 2);
+      context.arc(190, 418, 73, 0, Math.PI * 2);
       context.stroke();
+      context.fillStyle = "#267b72";
+      context.font = "800 17px Be Vietnam Pro, sans-serif";
+      context.textAlign = "left";
+      context.fillText(copy("LƯỢT HỌC CỦA BẠN", "YOUR LEARNING SESSION"), 310, 372);
       context.fillStyle = "#1a2b67";
       context.font = "800 42px Baloo 2, sans-serif";
+      context.fillText(displayName, 310, 420);
+      context.fillStyle = "#5d6f99";
+      context.font = "700 19px Be Vietnam Pro, sans-serif";
+      drawWrappedText(context, souvenirMessage, 310, 458, 520, 27);
+      const currentPlanet = souvenirPlanet[souvenirOperation];
+      drawPlanet(902, 402, 42, currentPlanet.light, currentPlanet.deep);
+      context.fillStyle = currentPlanet.ink;
+      context.font = "800 44px Baloo 2, sans-serif";
+      context.textAlign = "center";
+      context.fillText(souvenirSymbol[souvenirOperation], 902, 417);
+
+      context.fillStyle = "#eef5ff";
+      drawRoundedRectangle(context, 90, 546, 900, 126, 28);
+      context.fill();
+      drawPlanet(166, 609, 36, currentPlanet.light, currentPlanet.deep);
+      context.fillStyle = currentPlanet.ink;
+      context.font = "800 36px Baloo 2, sans-serif";
+      context.textAlign = "center";
+      context.fillText(souvenirSymbol[souvenirOperation], 166, 621);
       context.textAlign = "left";
-      context.fillText(displayName, 360, 435);
-      context.fillStyle = "#267b72";
-      context.font = "800 18px Be Vietnam Pro, sans-serif";
-      context.fillText(copy("AVATAR CỦA BẠN", "YOUR AVATAR"), 360, 470);
-      context.fillStyle = "#63759a";
-      context.font = "700 20px Be Vietnam Pro, sans-serif";
-      drawWrappedText(
-        context,
-        souvenirMessage,
-        360,
-        510,
-        540,
-        28
-      );
+      context.fillStyle = "#516797";
+      context.font = "800 16px Be Vietnam Pro, sans-serif";
+      context.fillText(copy("NHIỆM VỤ BẠN VỪA HỌC", "MISSION YOU JUST COMPLETED"), 238, 582);
+      context.fillStyle = "#27316d";
+      context.font = "800 28px Baloo 2, sans-serif";
+      drawWrappedText(context, missionLabel, 238, 618, 680, 32);
+      context.fillStyle = "#5d6f99";
+      context.font = "700 17px Be Vietnam Pro, sans-serif";
+      context.fillText(missionDetail, 238, 654);
 
       const stats = [
         [copy("Điểm", "Points"), `${sessionPoints}`],
@@ -4130,113 +4234,119 @@ export default function GameCanvas() {
         [copy("Thời gian", "Time"), formatDuration(currentDuration())],
       ];
       stats.forEach(([label, value], index) => {
-        const x = 98 + index * 221;
-        context.fillStyle = index === 0 ? "#fff1c8" : "#eef5ff";
-        drawRoundedRectangle(context, x, 600, 201, 152, 24);
+        const x = 90 + index * 225;
+        context.fillStyle = index === 0 ? "#fff0bf" : "#eef5ff";
+        drawRoundedRectangle(context, x, 706, 205, 154, 24);
         context.fill();
         context.fillStyle = index === 0 ? "#a0692f" : "#5e709b";
-        context.font = "800 18px Be Vietnam Pro, sans-serif";
+        context.font = "800 17px Be Vietnam Pro, sans-serif";
         context.textAlign = "center";
-        context.fillText(label, x + 100, 644);
+        context.fillText(label, x + 102, 750);
         context.fillStyle = "#27316d";
-        context.font = "800 47px Baloo 2, sans-serif";
-        context.fillText(value, x + 100, 708);
+        context.font = "800 46px Baloo 2, sans-serif";
+        context.fillText(value, x + 102, 814);
       });
 
       context.fillStyle = "#fff4cf";
-      drawRoundedRectangle(context, 98, 790, 884, 190, 30);
+      drawRoundedRectangle(context, 90, 898, 900, 182, 30);
       context.fill();
       context.fillStyle = "#a66f2d";
-      context.font = "800 18px Be Vietnam Pro, sans-serif";
+      context.font = "800 17px Be Vietnam Pro, sans-serif";
       context.textAlign = "left";
-      context.fillText(
-        copy("CẤP HÀNH TRÌNH CAO NHẤT", "HIGHEST JOURNEY LEVEL"),
-        138,
-        838
-      );
-      const badgeFill = context.createRadialGradient(188, 896, 8, 188, 896, 58);
-      badgeFill.addColorStop(0, "#fffbe0");
-      badgeFill.addColorStop(0.64, "#ffd66d");
-      badgeFill.addColorStop(1, "#ec9a48");
-      context.fillStyle = badgeFill;
+      context.fillText(copy("PHẦN THƯỞNG CAO NHẤT", "HIGHEST REWARD"), 132, 944);
+      const rewardFill = context.createRadialGradient(190, 994, 8, 190, 994, 58);
+      rewardFill.addColorStop(0, "#fffbe0");
+      rewardFill.addColorStop(0.64, "#ffd66d");
+      rewardFill.addColorStop(1, "#ec9a48");
+      context.fillStyle = rewardFill;
       context.beginPath();
-      context.arc(188, 896, 58, 0, Math.PI * 2);
+      context.arc(190, 994, 58, 0, Math.PI * 2);
       context.fill();
       context.fillStyle = "#8a4211";
       context.font = "800 45px Baloo 2, sans-serif";
       context.textAlign = "center";
-      context.fillText(highestReward?.symbol ?? "✦", 188, 912);
+      context.fillText(highestReward?.symbol ?? "✦", 190, 1010);
       context.fillStyle = "#29316c";
-      context.font = "800 31px Baloo 2, sans-serif";
+      context.font = "800 29px Baloo 2, sans-serif";
       context.textAlign = "left";
       drawWrappedText(
         context,
         highestReward
           ? `${language === "en" ? "Level" : "Cấp"} ${highestReward.level} · ${rewardLabel(highestReward)}`
           : copy("Cấp hành trình đầu tiên đang chờ bạn!", "Your first Journey Level is waiting!"),
-        286,
-        886,
-        620,
-        38
+        292,
+        986,
+        610,
+        34
       );
       context.fillStyle = "#756d8d";
-      context.font = "700 18px Be Vietnam Pro, sans-serif";
+      context.font = "700 17px Be Vietnam Pro, sans-serif";
       drawWrappedText(
         context,
         highestReward
           ? rewardDetail(highestReward)
-          : copy(
-              "Hãy làm thêm vài phép tính để tăng Cấp hành trình nhé!",
-              "Solve a few more questions to raise your Journey Level!"
-            ),
-        286,
-        940,
-        620,
-        27
+          : copy("Mỗi 10 điểm giúp bạn tiến thêm một Cấp hành trình.", "Every 10 points take you one Journey Level higher."),
+        292,
+        1040,
+        610,
+        25
       );
 
-      const earnedBadges = sessionThemeBadges;
-      context.fillStyle = "#32417c";
-      context.font = "800 18px Be Vietnam Pro, sans-serif";
-      context.textAlign = "left";
-      context.fillText(copy("BỘ SƯU TẬP HUY HIỆU", "BADGE COLLECTION"), 98, 1034);
-      const badgeColors: Record<ThemeBadge["accent"], string> = {
-        coral: "#ffae95",
-        lavender: "#cfc3ff",
-        mint: "#a8f1dc",
-        gold: "#ffe27c",
-      };
-      const displayedBadges = THEME_BADGES;
-      displayedBadges.forEach((badge, index) => {
-        const isEarned = earnedBadges.some(earnedBadge => earnedBadge.id === badge.id);
-        const x = 98 + (index % 2) * 442;
-        const y = 1062 + Math.floor(index / 2) * 108;
-        context.fillStyle = isEarned ? "#eef5ff" : "#f3f0f7";
-        drawRoundedRectangle(context, x, y, 410, 92, 22);
-        context.fill();
-        context.fillStyle = isEarned ? badgeColors[badge.accent] : "#d7d9e1";
+      context.fillStyle = newBadge ? "#e7fbf5" : "#f1edff";
+      drawRoundedRectangle(context, 90, 1114, 900, 160, 28);
+      context.fill();
+      const progressBadge = newBadge ?? nextBadge;
+      if (progressBadge) {
+        const accent = progressBadge.accent === "coral" ? "#ffae95" : progressBadge.accent === "lavender" ? "#cfc3ff" : progressBadge.accent === "mint" ? "#a8f1dc" : "#ffe27c";
+        context.fillStyle = accent;
         context.beginPath();
-        context.arc(x + 44, y + 46, 25, 0, Math.PI * 2);
+        context.arc(174, 1194, 48, 0, Math.PI * 2);
         context.fill();
         context.fillStyle = "#29316c";
-        context.font = "800 26px Baloo 2, sans-serif";
+        context.font = "800 39px Baloo 2, sans-serif";
         context.textAlign = "center";
-        context.fillText(badge.symbol, x + 44, y + 55);
-        context.fillStyle = "#33416f";
-        context.font = "800 15px Be Vietnam Pro, sans-serif";
+        context.fillText(progressBadge.symbol, 174, 1208);
         context.textAlign = "left";
-        const badgeName = language === "en" ? badge.en.label : badge.vi.label;
-        context.fillText(`${copy("Cấp", "Level")} ${badge.threshold / 10}`, x + 84, y + 30);
-        drawWrappedText(context, badgeName, x + 84, y + 55, 290, 19);
-      });
+        context.fillStyle = newBadge ? "#277569" : "#66598c";
+        context.font = "800 16px Be Vietnam Pro, sans-serif";
+        context.fillText(
+          newBadge ? copy("HUY HIỆU MỚI TRONG LƯỢT NÀY", "NEW BADGE THIS SESSION") : copy("MỤC TIÊU TIẾP THEO", "NEXT JOURNEY GOAL"),
+          250,
+          1160
+        );
+        context.fillStyle = "#29316c";
+        context.font = "800 27px Baloo 2, sans-serif";
+        drawWrappedText(context, language === "en" ? progressBadge.en.label : progressBadge.vi.label, 250, 1194, 620, 31);
+        context.fillStyle = "#6e7497";
+        context.font = "700 17px Be Vietnam Pro, sans-serif";
+        context.fillText(
+          newBadge
+            ? `${copy("Cấp", "Level")} ${newBadge.threshold / 10} · ${copy("đã mở khóa", "unlocked")}`
+            : copy(`Còn ${pointsUntilSouvenirBadge} điểm để mở ở Cấp ${nextBadgeLevel}.`, `${pointsUntilSouvenirBadge} points until Level ${nextBadgeLevel}.`),
+          250,
+          1244
+        );
+      } else {
+        context.fillStyle = "#ffe27c";
+        context.beginPath();
+        context.arc(174, 1194, 48, 0, Math.PI * 2);
+        context.fill();
+        context.fillStyle = "#29316c";
+        context.font = "800 38px Baloo 2, sans-serif";
+        context.textAlign = "center";
+        context.fillText("✦", 174, 1208);
+        context.textAlign = "left";
+        context.fillStyle = "#8a6d29";
+        context.font = "800 16px Be Vietnam Pro, sans-serif";
+        context.fillText(copy("BỘ SƯU TẬP HOÀN THÀNH", "BADGE COLLECTION COMPLETE"), 250, 1160);
+        context.fillStyle = "#29316c";
+        context.font = "800 27px Baloo 2, sans-serif";
+        context.fillText(copy("Bạn đã mở đủ 4 huy hiệu!", "You unlocked all 4 badges!"), 250, 1203);
+      }
       context.fillStyle = "#b9c8ef";
       context.font = "700 17px Be Vietnam Pro, sans-serif";
       context.textAlign = "center";
-      context.fillText(
-        copy("Hana luôn sẵn sàng bay cùng bạn ở chuyến học tiếp theo!", "Hana is ready for your next learning flight!"),
-        540,
-        1384
-      );
+      context.fillText(copy("Hana hẹn bạn ở chuyến học tiếp theo!", "Hana will meet you on the next learning flight!"), 540, 1388);
 
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
@@ -4300,7 +4410,7 @@ export default function GameCanvas() {
             : `Bài kiểm tra của ${displayName}`,
         tail:
           summaryTone === "strong"
-            ? copy("Kết quả rất đáng ghi nhận!", "A result worth celebrating!")
+            ? copy("Kết quả rất đáng ghi nhận!", "Great result!")
             : summaryTone === "steady"
               ? copy("Cùng xem lại để tiến bộ hơn nhé!", "Review it and grow even more!")
               : copy("Hãy luyện thêm từng bước nhé!", "Let’s practise one step at a time!"),
@@ -4325,8 +4435,8 @@ export default function GameCanvas() {
         )
       : summaryTone === "strong"
         ? copy(
-            `${displayName}, bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Hãy giữ thói quen kiểm tra lại trước khi chọn đáp án.`,
-            `${displayName}, you got ${correctCount}/${attemptedQuestions} correct. Keep checking your work before choosing an answer.`
+            `${displayName}, bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Khả năng tính toán của bạn đang rất vững!`,
+            `${displayName}, you got ${correctCount}/${attemptedQuestions} correct. Your maths skills are growing strong!`
           )
         : summaryTone === "steady"
           ? copy(
@@ -4429,11 +4539,11 @@ export default function GameCanvas() {
             {hasSessionPoints
               ? copy(
                   "Điểm và tiến độ của lượt này sẽ được làm mới. Hana sẽ đưa bạn về màn hình đầu tiên.",
-                  "This session's points and progress will reset. Hana will take you to the first screen."
+                  "This session's points and progress will reset."
                 )
               : copy(
                   "Hana sẽ đưa bạn về màn hình đầu tiên để bắt đầu một chuyến học mới.",
-                  "Hana will take you to the first screen to begin a new learning journey."
+                  "Return to the first screen to start again."
                 )}
           </AlertDialogDescription>
           <div className="home-confirm-actions">
@@ -4873,7 +4983,7 @@ export default function GameCanvas() {
       {screen === "game" && (
         <>
           <div
-            className={`mission-orbit-map operation-${operation}`}
+            className={`mission-orbit-map operation-${question.operation}`}
             aria-hidden="true"
           >
             <span className="mission-orbit-ring ring-one" />
@@ -4884,13 +4994,13 @@ export default function GameCanvas() {
             <span className="mission-orbit-node divide">÷</span>
             <span className="mission-orbit-status">
               {language === "en"
-                ? `${operationLabel(operation).toUpperCase()} PLANET`
-                : `HÀNH TINH ${operationLabel(operation).toUpperCase()}`}
+                ? `${operationLabel(question.operation).toUpperCase()} PLANET`
+                : `HÀNH TINH ${operationLabel(question.operation).toUpperCase()}`}
             </span>
           </div>
 
           <section
-            className={`mission-control operation-${operation}${isTableMode ? " is-table-mode" : ""}`}
+            className={`mission-control operation-${question.operation}${isTableMode ? " is-table-mode" : ""}`}
             aria-label={copy(
               "Bảng điều khiển bài tập",
               "Exercise control panel"
@@ -4904,7 +5014,7 @@ export default function GameCanvas() {
                         "Học Bảng Nhân và Bảng Chia",
                         "Multiplication and Division Tables"
                       )
-                    : operationLabel(operation)}{" "}
+                    : operationLabel(question.operation)}{" "}
                   <span>•</span>{" "}
                   {isTableMode
                     ? tableSubtitle(tableKind)
@@ -4957,20 +5067,20 @@ export default function GameCanvas() {
               </button>
             </div>
             <div className="mission-flight-rail" data-i18n-direct>
-              <span className={`mission-planet-chip operation-${operation}`}>
+              <span className={`mission-planet-chip operation-${question.operation}`}>
                 <b aria-hidden="true">
-                  {operation === "add"
+                  {question.operation === "add"
                     ? "+"
-                    : operation === "subtract"
+                    : question.operation === "subtract"
                       ? "−"
-                      : operation === "multiply"
+                      : question.operation === "multiply"
                         ? "×"
                         : "÷"}
                 </b>
                 <span className="mission-planet-label">
                   {language === "en"
-                    ? UNLOCKED_PLANET_NAMES[operation].en
-                    : UNLOCKED_PLANET_NAMES[operation].vi}
+                    ? UNLOCKED_PLANET_NAMES[question.operation].en
+                    : UNLOCKED_PLANET_NAMES[question.operation].vi}
                 </span>
               </span>
               {!isTableMode && mode !== "test" && (
@@ -5341,11 +5451,11 @@ export default function GameCanvas() {
                 aria-label={copy("Điều khiển nhiệm vụ", "Mission controls")}
               >
                 <button
-                  className="session-change-mission"
+                  className="mission-change-button"
                   type="button"
                   onClick={() => {
                     playSound("tap");
-                    setScreen(mode === "test" ? "menu" : "activities");
+                    returnToMissionPicker();
                   }}
                 >
                   <span>↔</span>
@@ -5440,7 +5550,7 @@ export default function GameCanvas() {
                   <p>
                     {copy(
                         "Ở Luyện tập, chạm Cộng, Trừ, Nhân hoặc Chia để vào ngay Bài bình thường. Bạn có thể đổi sang Tìm thành phần hoặc Cả hai ngay trong lúc học. Với Bảng Nhân và Bảng Chia, hãy chọn bảng trước. Ở Bài kiểm tra, chọn cấp độ và 2, 5 hoặc 10 phút.",
-                        "In Practice, tap Addition, Subtraction, Multiplication or Division to begin Standard practice straight away. You can switch to Find the Missing Number or Both while learning. For Multiplication and Division Tables, choose your tables first. In Test, choose a level and 2, 5 or 10 minutes."
+                        "Practice: choose an operation, then switch types. Tables: choose your tables first. Test: choose a level and time."
                     )}
                   </p>
                 </div>
@@ -5457,7 +5567,7 @@ export default function GameCanvas() {
                   <p>
                     {copy(
                       "Mỗi câu đúng được +10 điểm. Nếu chưa đúng, bạn bị trừ 2 điểm nhưng tổng điểm không bao giờ âm. Bấm Điểm hiện tại để xem điểm, số câu đúng, số câu sai và thời gian học.",
-                      "Each correct answer earns +10 points. A wrong answer subtracts 2 points, but your total never goes below zero. Tap Current points to view your score, correct answers, incorrect answers and learning time."
+                      "Each correct answer earns +10; a wrong answer costs 2, never below zero. Tap Current points to view your score, answers and study time."
                     )}
                   </p>
                 </div>
@@ -5536,14 +5646,15 @@ export default function GameCanvas() {
               </span>
               <div>
                 <p className="eyebrow">
-                  {copy("TIẾN ĐỘ CỦA", "PROGRESS FOR")}{" "}
-                  {displayName.toUpperCase()}
+                  {language === "en"
+                    ? "PROGRESS"
+                    : `${copy("TIẾN ĐỘ CỦA", "PROGRESS FOR")} ${displayName.toUpperCase()}`}
                 </p>
                 <h2>{copy("Điểm hiện tại", "Current points")}</h2>
                 <p>
                   {nextThemeBadge
                     ? language === "en"
-                      ? `Journey Level ${journeyLevel}/100 · ${levelsUntilNextBadge} levels until ${nextThemeBadge.en.label}.`
+                      ? `Level ${journeyLevel}/100 · ${levelsUntilNextBadge} levels left.`
                       : `Cấp hành trình ${journeyLevel}/100 · còn ${levelsUntilNextBadge} cấp để đạt ${nextThemeBadge.vi.label}.`
                     : copy(
                         "Cấp hành trình 100/100 · bạn đã sưu tập đủ 4 huy hiệu đặc biệt!",
@@ -5638,7 +5749,7 @@ export default function GameCanvas() {
           <AlertDialogDescription>
             {copy(
               "Hana sẽ lưu kết quả hiện tại và đưa bạn đến màn tổng kết.",
-              "Hana will save your current results and take you to the session summary."
+              "Hana saves your results and shows your session summary."
             )}
           </AlertDialogDescription>
           <div
