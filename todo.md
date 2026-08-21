@@ -6,7 +6,7 @@
 - [x] Phân biệt rõ huy hiệu đã đạt và huy hiệu còn khóa bằng trạng thái mờ, biểu tượng khóa, độ tương phản và thông tin tiến độ dễ hiểu.
 - [x] Thiết kế lại khu vực avatar: bốn lựa chọn minh họa đa dạng đặt ở hàng riêng, còn ảnh cá nhân là hành động tải lên tách biệt, rõ ràng và chuyên nghiệp.
 - [x] Rà soát và tinh chỉnh các bảng tính/câu hỏi thành hệ bố cục gọn, dễ đọc, có khoảng cách chuẩn và phân biệt rõ thành phần có thể bấm.
-- [ ] Kiểm thử toàn diện VIE/ENG, nội dung toán, huy hiệu, avatar, desktop/mobile, TypeScript, hồi quy và production build; lưu checkpoint.
+- [x] Kiểm thử toàn diện VIE/ENG, nội dung toán, huy hiệu, avatar, desktop/mobile, TypeScript, hồi quy và production build; lưu checkpoint.
 
 ## Gợi ý phép nhân và bố cục rõ ràng toàn diện
 
