@@ -225,8 +225,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin: 0.15rem auto 0.95rem;
-  padding: 0.25rem 0.68rem 0.25rem 0.3rem;
+  margin: 0.05rem auto 0.4rem;
+  padding: 0.18rem 0.56rem 0.18rem 0.24rem;
   color: #d8ecff;
   border: 1px solid rgba(194, 225, 255, 0.3);
   border-radius: 99px;
@@ -235,22 +235,22 @@
 }
 
 .summary-player-identity .player-avatar {
-  width: 2.45rem;
-  height: 2.45rem;
+  width: 2rem;
+  height: 2rem;
   border: 2px solid #fff2af;
   border-radius: 50%;
   background: #33459b;
 }
 
 .summary-player-identity span {
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   font-weight: 700;
 }
 
 .summary-player-identity strong {
   color: #fff9dc;
   font-family: "Baloo 2", cursive;
-  font-size: 1rem;
+  font-size: 0.92rem;
 }
 
 .theme-badge-section {

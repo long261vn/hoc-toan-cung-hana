@@ -2720,7 +2720,7 @@ html:lang(en) .mission-difficulty-options button {
   min-height: 100svh;
   place-items: center;
   align-content: center;
-  gap: 14px;
+  gap: 10px;
   padding: 36px 20px;
   color: #fdf9e7;
   background:
@@ -2747,6 +2747,13 @@ html:lang(en) .mission-difficulty-options button {
   filter: blur(7px);
 }
 .summary-stars {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  z-index: 0;
+  opacity: 0.58;
+  pointer-events: none;
+  transform: translateX(-50%) scale(0.7);
   display: flex;
   align-items: center;
   gap: 30px;
@@ -2760,17 +2767,20 @@ html:lang(en) .mission-difficulty-options button {
 }
 .summary-robot {
   position: relative;
-  width: 78px;
-  height: 69px;
+  width: 42px;
+  height: 38px;
 }
 .summary-robot .robot-fallback {
   position: absolute;
   inset: 0;
-  transform: scale(1.28);
+  transform: scale(0.68);
   transform-origin: center;
 }
+.summary-support-line {
+  display: none;
+}
 .summary-kicker {
-  margin: 4px 0 0;
+  margin: 0;
   color: #83e0cf;
   font-size: 10px;
   font-weight: 800;
@@ -3009,7 +3019,7 @@ html:lang(en) .mission-difficulty-options button {
   .summary-screen {
     align-content: start;
     overflow-y: auto;
-    padding-top: 28px;
+    padding-top: 78px;
   }
   .summary-stars {
     gap: 20px;
@@ -3029,9 +3039,7 @@ html:lang(en) .mission-difficulty-options button {
   .summary-intro {
     font-size: 11px;
   }
-  .summary-robot {
-    margin-top: 4px;
-  }
+  .summary-stars { top: 22px; }
 }
 
 /* The format choice is a clear pause before a child begins any arithmetic mission. */

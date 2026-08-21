@@ -3811,12 +3811,18 @@ export default function GameCanvas() {
       multiply: { light: "#b8f5e2", deep: "#4cc7ad", ink: "#17685f" },
       divide: { light: "#fff0a7", deep: "#e6b850", ink: "#88601a" },
     };
+    const practiceMissionLabels: Record<Operation, string> = {
+      add: copy("Luyện phép cộng", "Addition practice"),
+      subtract: copy("Luyện phép trừ", "Subtraction practice"),
+      multiply: copy("Luyện phép nhân", "Multiplication practice"),
+      divide: copy("Luyện phép chia", "Division practice"),
+    };
     const missionLabel =
       mode === "test"
         ? copy("Bài kiểm tra tính giờ", "Timed test")
         : mode === "tables"
-          ? `${tableLabel(tableKind)} · ${UNLOCKED_PLANET_NAMES[souvenirOperation][language]}`
-          : UNLOCKED_PLANET_NAMES[souvenirOperation][language];
+          ? tableLabel(tableKind)
+          : practiceMissionLabels[souvenirOperation];
     const missionDetail =
       mode === "test"
         ? copy(
@@ -4092,8 +4098,15 @@ export default function GameCanvas() {
         context.arc(x, y, radius, 0, Math.PI * 2);
         context.clip();
         if (avatarPhotoImage) {
+          const sourceWidth = avatarPhotoImage.naturalWidth || avatarPhotoImage.width;
+          const sourceHeight = avatarPhotoImage.naturalHeight || avatarPhotoImage.height;
+          const sourceSize = Math.min(sourceWidth, sourceHeight);
           context.drawImage(
             avatarPhotoImage,
+            (sourceWidth - sourceSize) / 2,
+            (sourceHeight - sourceSize) / 2,
+            sourceSize,
+            sourceSize,
             x - radius,
             y - radius,
             radius * 2,
@@ -4109,8 +4122,80 @@ export default function GameCanvas() {
           context.restore();
           return;
         }
-        context.fillStyle = style.accent;
+        context.fillStyle = "#233875";
         context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+        context.fillStyle = style.accent;
+        context.beginPath();
+        context.arc(x, y, radius * 0.87, 0, Math.PI * 2);
+        context.fill();
+        if (selectedAvatar.id === "gia-huy") {
+          context.fillStyle = "#4f90cb";
+          context.beginPath();
+          context.arc(x, y + radius * 0.82, radius * 0.78, Math.PI, Math.PI * 2);
+          context.fill();
+          context.fillStyle = "#4b5c86";
+          context.beginPath();
+          context.moveTo(x - radius * 0.57, y - radius * 0.3);
+          context.lineTo(x - radius * 0.31, y - radius * 0.72);
+          context.lineTo(x - radius * 0.03, y - radius * 0.32);
+          context.moveTo(x + radius * 0.03, y - radius * 0.32);
+          context.lineTo(x + radius * 0.31, y - radius * 0.72);
+          context.lineTo(x + radius * 0.57, y - radius * 0.3);
+          context.fill();
+          context.fillStyle = "#ffd6af";
+          context.beginPath();
+          context.arc(x, y, radius * 0.49, 0, Math.PI * 2);
+          context.fill();
+          context.strokeStyle = "#4b5c86";
+          context.lineWidth = radius * 0.045;
+          [-0.52, -0.34, 0.34, 0.52].forEach(offset => {
+            context.beginPath();
+            context.moveTo(x + offset * radius, y + radius * 0.12);
+            context.lineTo(x + Math.sign(offset) * radius * 0.12, y + radius * 0.16);
+            context.stroke();
+          });
+          context.fillStyle = "#26345f";
+          context.beginPath();
+          context.arc(x - radius * 0.17, y - radius * 0.02, radius * 0.055, 0, Math.PI * 2);
+          context.arc(x + radius * 0.17, y - radius * 0.02, radius * 0.055, 0, Math.PI * 2);
+          context.fill();
+          context.strokeStyle = "#9b5162";
+          context.lineWidth = radius * 0.04;
+          context.beginPath();
+          context.arc(x, y + radius * 0.15, radius * 0.14, 0.2, Math.PI - 0.2);
+          context.stroke();
+        } else if (selectedAvatar.id === "linh-chi") {
+          context.save();
+          context.translate(x, y - radius * 0.05);
+          context.fillStyle = "#ff9ba6";
+          for (let petal = 0; petal < 5; petal += 1) {
+            context.rotate((Math.PI * 2) / 5);
+            context.beginPath();
+            context.ellipse(0, -radius * 0.45, radius * 0.22, radius * 0.42, 0, 0, Math.PI * 2);
+            context.fill();
+          }
+          context.restore();
+          context.fillStyle = "#ffd96c";
+          context.beginPath();
+          context.arc(x, y - radius * 0.05, radius * 0.36, 0, Math.PI * 2);
+          context.fill();
+          context.strokeStyle = "#4aa484";
+          context.lineWidth = radius * 0.1;
+          context.beginPath();
+          context.moveTo(x, y + radius * 0.36);
+          context.lineTo(x, y + radius * 0.84);
+          context.stroke();
+          context.fillStyle = "#26345f";
+          context.beginPath();
+          context.arc(x - radius * 0.12, y - radius * 0.08, radius * 0.045, 0, Math.PI * 2);
+          context.arc(x + radius * 0.12, y - radius * 0.08, radius * 0.045, 0, Math.PI * 2);
+          context.fill();
+          context.strokeStyle = "#a65b57";
+          context.lineWidth = radius * 0.04;
+          context.beginPath();
+          context.arc(x, y + radius * 0.08, radius * 0.12, 0.2, Math.PI - 0.2);
+          context.stroke();
+        } else {
         context.fillStyle = style.suit;
         context.beginPath();
         context.arc(x, y + radius * 0.85, radius * 0.92, Math.PI, Math.PI * 2);
@@ -4140,6 +4225,105 @@ export default function GameCanvas() {
         context.beginPath();
         context.arc(x, y + radius * 0.15, radius * 0.14, 0.2, Math.PI - 0.2);
         context.stroke();
+        }
+        context.restore();
+      };
+      const drawBadgeEmblem = (
+        x: number,
+        y: number,
+        radius: number,
+        variant: ThemeBadge["id"] | "journey" | null
+      ) => {
+        const palette = variant === "level-20-pathfinder"
+          ? ["#fff1c4", "#ff9a75", "#c75148"]
+          : variant === "level-60-orbit-captain"
+            ? ["#f5edff", "#b7a4ef", "#67509c"]
+            : variant === "level-80-math-comet"
+              ? ["#eafff6", "#79d7bc", "#237b6e"]
+              : ["#fff9cf", "#f7c955", "#a8641f"];
+        const fill = context.createRadialGradient(x - radius * 0.32, y - radius * 0.34, radius * 0.08, x, y, radius);
+        fill.addColorStop(0, palette[0]);
+        fill.addColorStop(0.68, palette[1]);
+        fill.addColorStop(1, palette[2]);
+        context.save();
+        context.shadowColor = "rgba(29, 37, 104, .24)";
+        context.shadowBlur = 12;
+        context.shadowOffsetY = 6;
+        context.fillStyle = fill;
+        context.beginPath();
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fill();
+        context.shadowColor = "transparent";
+        context.lineWidth = Math.max(3, radius * 0.09);
+        context.strokeStyle = "rgba(255,255,255,.72)";
+        context.stroke();
+        context.translate(x, y);
+        context.strokeStyle = "#29316c";
+        context.fillStyle = "#29316c";
+        context.lineCap = "round";
+        context.lineJoin = "round";
+        if (variant === "level-20-pathfinder") {
+          context.beginPath();
+          for (let point = 0; point < 10; point += 1) {
+            const angle = -Math.PI / 2 + point * Math.PI / 5;
+            const r = point % 2 === 0 ? radius * 0.54 : radius * 0.23;
+            const pointX = Math.cos(angle) * r;
+            const pointY = Math.sin(angle) * r;
+            point ? context.lineTo(pointX, pointY) : context.moveTo(pointX, pointY);
+          }
+          context.closePath();
+          context.fill();
+        } else if (variant === "level-60-orbit-captain") {
+          context.lineWidth = Math.max(3, radius * 0.07);
+          context.beginPath();
+          context.ellipse(0, 0, radius * 0.56, radius * 0.23, -0.36, 0, Math.PI * 2);
+          context.stroke();
+          context.beginPath();
+          context.arc(0, 0, radius * 0.21, 0, Math.PI * 2);
+          context.fill();
+        } else if (variant === "level-80-math-comet") {
+          context.beginPath();
+          context.moveTo(-radius * 0.62, radius * 0.18);
+          context.lineTo(radius * 0.12, -radius * 0.12);
+          context.lineTo(-radius * 0.12, radius * 0.46);
+          context.closePath();
+          context.fill();
+          context.beginPath();
+          context.arc(radius * 0.28, -radius * 0.24, radius * 0.25, 0, Math.PI * 2);
+          context.fill();
+        } else if (variant === "journey") {
+          context.lineWidth = Math.max(3, radius * 0.09);
+          [-0.26, 0, 0.26].forEach((offset, index) => {
+            context.beginPath();
+            context.moveTo(-radius * (0.58 - index * 0.08), offset * radius);
+            context.lineTo(radius * 0.16, offset * radius - radius * 0.08);
+            context.stroke();
+          });
+          context.beginPath();
+          context.moveTo(radius * 0.08, -radius * 0.38);
+          context.lineTo(radius * 0.2, -radius * 0.12);
+          context.lineTo(radius * 0.48, 0);
+          context.lineTo(radius * 0.2, radius * 0.12);
+          context.lineTo(radius * 0.08, radius * 0.38);
+          context.lineTo(-radius * 0.02, radius * 0.12);
+          context.lineTo(-radius * 0.24, 0);
+          context.lineTo(-radius * 0.02, -radius * 0.12);
+          context.closePath();
+          context.fill();
+        } else {
+          context.beginPath();
+          context.moveTo(-radius * 0.52, radius * 0.18);
+          context.lineTo(-radius * 0.4, -radius * 0.38);
+          context.lineTo(-radius * 0.14, -radius * 0.05);
+          context.lineTo(0, -radius * 0.52);
+          context.lineTo(radius * 0.14, -radius * 0.05);
+          context.lineTo(radius * 0.4, -radius * 0.38);
+          context.lineTo(radius * 0.52, radius * 0.18);
+          context.closePath();
+          context.fill();
+          context.fillStyle = palette[0];
+          context.fillRect(-radius * 0.3, radius * 0.13, radius * 0.6, radius * 0.27);
+        }
         context.restore();
       };
       const background = context.createLinearGradient(0, 0, 1080, 1440);
@@ -4256,18 +4440,7 @@ export default function GameCanvas() {
       context.font = "800 17px Be Vietnam Pro, sans-serif";
       context.textAlign = "left";
       context.fillText(copy("PHẦN THƯỞNG CAO NHẤT", "HIGHEST REWARD"), 132, 944);
-      const rewardFill = context.createRadialGradient(190, 994, 8, 190, 994, 58);
-      rewardFill.addColorStop(0, "#fffbe0");
-      rewardFill.addColorStop(0.64, "#ffd66d");
-      rewardFill.addColorStop(1, "#ec9a48");
-      context.fillStyle = rewardFill;
-      context.beginPath();
-      context.arc(190, 994, 58, 0, Math.PI * 2);
-      context.fill();
-      context.fillStyle = "#8a4211";
-      context.font = "800 45px Baloo 2, sans-serif";
-      context.textAlign = "center";
-      context.fillText(highestReward?.symbol ?? "✦", 190, 1010);
+      drawBadgeEmblem(190, 994, 58, highestReward ? "journey" : null);
       context.fillStyle = "#29316c";
       context.font = "800 29px Baloo 2, sans-serif";
       context.textAlign = "left";
@@ -4299,15 +4472,7 @@ export default function GameCanvas() {
       context.fill();
       const progressBadge = newBadge ?? nextBadge;
       if (progressBadge) {
-        const accent = progressBadge.accent === "coral" ? "#ffae95" : progressBadge.accent === "lavender" ? "#cfc3ff" : progressBadge.accent === "mint" ? "#a8f1dc" : "#ffe27c";
-        context.fillStyle = accent;
-        context.beginPath();
-        context.arc(174, 1194, 48, 0, Math.PI * 2);
-        context.fill();
-        context.fillStyle = "#29316c";
-        context.font = "800 39px Baloo 2, sans-serif";
-        context.textAlign = "center";
-        context.fillText(progressBadge.symbol, 174, 1208);
+        drawBadgeEmblem(174, 1194, 48, progressBadge.id);
         context.textAlign = "left";
         context.fillStyle = newBadge ? "#277569" : "#66598c";
         context.font = "800 16px Be Vietnam Pro, sans-serif";
@@ -4329,14 +4494,7 @@ export default function GameCanvas() {
           1244
         );
       } else {
-        context.fillStyle = "#ffe27c";
-        context.beginPath();
-        context.arc(174, 1194, 48, 0, Math.PI * 2);
-        context.fill();
-        context.fillStyle = "#29316c";
-        context.font = "800 38px Baloo 2, sans-serif";
-        context.textAlign = "center";
-        context.fillText("✦", 174, 1208);
+        drawBadgeEmblem(174, 1194, 48, null);
         context.textAlign = "left";
         context.fillStyle = "#8a6d29";
         context.font = "800 16px Be Vietnam Pro, sans-serif";
@@ -4728,22 +4886,24 @@ export default function GameCanvas() {
             <span>★</span>
             <span>✦</span>
           </div>
-          <div className="summary-robot">
-            <div className="robot-fallback">
-              <span />
-              <span />
-              <i />
+          <div className="summary-support-line">
+            <div className="summary-robot" aria-hidden="true">
+              <div className="robot-fallback">
+                <span />
+                <span />
+                <i />
+              </div>
             </div>
+            <p className="summary-kicker">
+              {isTimedTestSummary
+                ? testTimedOut
+                  ? copy("HẾT GIỜ RỒI", "TIME IS UP")
+                  : copy("KẾT QUẢ BÀI KIỂM TRA", "TEST RESULTS")
+                : summaryTone === "strong"
+                  ? copy("HANA GHI NHẬN SỰ CỐ GẮNG", "HANA NOTICES YOUR EFFORT")
+                  : copy("ROBOT HANA ĐỒNG HÀNH", "ROBOT HANA IS WITH YOU")}
+            </p>
           </div>
-          <p className="summary-kicker">
-            {isTimedTestSummary
-              ? testTimedOut
-                ? copy("HẾT GIỜ RỒI", "TIME IS UP")
-                : copy("KẾT QUẢ BÀI KIỂM TRA", "TEST RESULTS")
-              : summaryTone === "strong"
-                ? copy("HANA GHI NHẬN SỰ CỐ GẮNG", "HANA NOTICES YOUR EFFORT")
-                : copy("ROBOT HANA ĐỒNG HÀNH", "ROBOT HANA IS WITH YOU")}
-          </p>
           <h2>
             <span>{summaryHeadline.lead}</span>
             <em>{summaryHeadline.tail}</em>

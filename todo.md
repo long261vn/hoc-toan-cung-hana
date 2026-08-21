@@ -31,6 +31,10 @@
 - [x] Bỏ số đánh dấu 1–4 trên các lựa chọn đáp án để không che số và ký hiệu toán học.
 - [x] Kiểm thử bảng làm bài Cộng/Trừ/Nhân/Chia, bảng nhân–chia và bài kiểm tra trên desktop/mobile; lưu checkpoint.
 - [x] Chụp xác nhận riêng màn Bài kiểm tra ở desktop và điện thoại sau khi bỏ nhãn Hành Tinh/Cấp và số thứ tự đáp án; lưu checkpoint mới.
+- [x] Thu gọn Robot Hana và avatar ở màn tổng kết, ưu tiên phân cấp cho kết quả học, thành tích và thao tác lưu ảnh.
+- [x] Thiết kế lại thẻ PNG ảnh kỷ niệm với avatar đúng dữ liệu, huy hiệu vector không méo và bố cục rõ ràng, giàu ý nghĩa.
+- [x] Kiểm thử tổng kết/PNG với avatar có sẵn và ảnh cá nhân trên desktop/mobile; xác nhận số liệu, avatar, huy hiệu và tải tệp trước checkpoint.
+- [x] Chụp xác nhận riêng avatar ảnh cá nhân trên màn tổng kết ở desktop và điện thoại, đồng thời xác minh ảnh PNG tương ứng giữ đúng tỷ lệ trước checkpoint.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 
