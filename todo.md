@@ -39,6 +39,7 @@
 - [x] Sửa trạng thái phần thưởng/huy hiệu theo điểm của chính lượt vừa kết thúc; lượt 0 điểm không được kế thừa huy hiệu hoặc tiến độ từ lượt trước.
 - [x] Thay cơ chế vẽ thẻ kỷ niệm bằng ảnh chụp sát vùng tổng kết đang hiển thị, bao gồm avatar, huy hiệu và bố cục thực tế.
 - [x] Kiểm thử lượt 0 điểm, lượt có huy hiệu, reset lượt, tên/avatar, ảnh chụp kỷ niệm desktop/mobile, TypeScript và production build; lưu checkpoint.
+- [x] Tái hiện và sửa lỗi Điểm hiện tại hiển thị huy hiệu đầu tiên đã mở ngay khi bắt đầu lượt mới; bảo đảm tiến độ huy hiệu của lượt luôn xuất phát từ 0/4.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 

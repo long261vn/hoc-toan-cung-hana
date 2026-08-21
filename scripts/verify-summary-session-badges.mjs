@@ -73,7 +73,18 @@ try {
     throw new Error(`Lượt mới chưa đặt lại điểm sau tổng kết: ${JSON.stringify(reset)}`);
   }
 
-  console.log(JSON.stringify({ zero, rewarded, reset, status: "session badges and new-session reset are valid" }));
+  await click(".current-score-button");
+  await waitFor(".score-card");
+  const currentPointsBadges = await evaluate(`(() => ({
+    counter: document.querySelector(".score-badge-board > div strong")?.textContent?.trim(),
+    earned: document.querySelectorAll(".score-badge-list .is-earned").length,
+    locked: document.querySelectorAll(".score-badge-list .is-locked").length,
+  }))()`);
+  if (currentPointsBadges.counter !== "0/4" || currentPointsBadges.earned !== 0 || currentPointsBadges.locked !== 4) {
+    throw new Error(`Điểm hiện tại đang kế thừa huy hiệu của lượt trước: ${JSON.stringify(currentPointsBadges)}`);
+  }
+
+  console.log(JSON.stringify({ zero, rewarded, reset, currentPointsBadges, status: "session badges and new-session reset are valid" }));
 } finally {
   socket.close();
 }

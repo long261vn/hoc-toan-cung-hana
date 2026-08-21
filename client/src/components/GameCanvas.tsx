@@ -115,7 +115,6 @@ const AVATAR_STORAGE_KEY = "hana-player-avatar-v2";
 const AVATAR_PHOTO_SESSION_KEY = "hana-session-avatar-photo-v1";
 const LEGACY_AVATAR_PHOTO_STORAGE_KEY = "hana-player-avatar-photo-v1";
 const LEGACY_AVATAR_STORAGE_KEY = "hana-astronaut-avatar-v1";
-const THEME_BADGE_STORAGE_KEY = "hana-theme-badges-v1";
 const DRAFT_SCREENS = [
   "menu",
   "activities",
@@ -405,23 +404,6 @@ async function prepareAvatarPhoto(file: File) {
     return canvas.toDataURL("image/jpeg", 0.84);
   } finally {
     URL.revokeObjectURL(objectUrl);
-  }
-}
-
-function readThemeBadgeCollection(): string[] {
-  try {
-    const stored = JSON.parse(
-      window.localStorage.getItem(THEME_BADGE_STORAGE_KEY) ?? "[]"
-    ) as unknown;
-    return Array.isArray(stored)
-      ? stored.filter(
-          id =>
-            typeof id === "string" &&
-            THEME_BADGES.some(badge => badge.id === id)
-        )
-      : [];
-  } catch {
-    return [];
   }
 }
 
@@ -2742,9 +2724,6 @@ export default function GameCanvas() {
   );
   const [avatarUploadError, setAvatarUploadError] = useState<string | null>(null);
   const [isPreparingAvatar, setIsPreparingAvatar] = useState(false);
-  const [collectedThemeBadgeIds, setCollectedThemeBadgeIds] = useState<string[]>(
-    readThemeBadgeCollection
-  );
   const [planetUnlock, setPlanetUnlock] = useState<PlanetUnlock | null>(() =>
     isUnlockDemo
       ? {
@@ -2925,14 +2904,6 @@ export default function GameCanvas() {
     audio.play(effect);
   }, []);
 
-  const collectThemeBadges = useCallback((points: number) => {
-    const unlockedIds = themeBadgesForSession(points);
-    if (unlockedIds.length === 0) return;
-    setCollectedThemeBadgeIds(current =>
-      Array.from(new Set([...current, ...unlockedIds]))
-    );
-  }, []);
-
   useEffect(() => {
     const previousPoints = previousSessionPointsRef.current;
     const newlyUnlocked = THEME_BADGES.find(
@@ -2944,10 +2915,9 @@ export default function GameCanvas() {
     previousSessionPointsRef.current = sessionPoints;
     if (!newlyUnlocked) return;
     unlockedBadgeIdsThisSessionRef.current.add(newlyUnlocked.id);
-    collectThemeBadges(sessionPoints);
     setPlanetUnlock({ operation, badge: newlyUnlocked });
     playSound("reward");
-  }, [collectThemeBadges, operation, playSound, sessionPoints]);
+  }, [operation, playSound, sessionPoints]);
 
   useEffect(() => {
     if (!planetUnlock) return;
@@ -3590,19 +3560,11 @@ export default function GameCanvas() {
     }
   }, [avatarPhotoUrl]);
 
-  useEffect(() => {
-    window.localStorage.setItem(
-      THEME_BADGE_STORAGE_KEY,
-      JSON.stringify(collectedThemeBadgeIds)
-    );
-  }, [collectedThemeBadgeIds]);
-
   const finishSession = () => {
     setShowEndSessionConfirm(false);
     testEndsAtRef.current = null;
     clearSessionDraft();
     setResumeDraft(null);
-    collectThemeBadges(sessionPoints);
     playSound("reward");
     setElapsedSeconds(currentDuration());
     setScreen("summary");
@@ -3775,12 +3737,6 @@ export default function GameCanvas() {
     themeBadgesForSession(sessionPoints).includes(badge.id)
   );
   const sessionThemeBadgeIds = sessionThemeBadges.map(badge => badge.id);
-  const displayedBadgeCollectionIds = Array.from(
-    new Set([
-      ...collectedThemeBadgeIds,
-      ...sessionThemeBadges.map(badge => badge.id),
-    ])
-  );
 
   useLayoutEffect(() => {
     window.localStorage.setItem("hana-language", language);
@@ -5915,7 +5871,7 @@ export default function GameCanvas() {
               <div>
                 <span>{copy("TIẾN ĐỘ HUY HIỆU", "BADGE PROGRESS")}</span>
                 <strong>
-                  {displayedBadgeCollectionIds.length}/{THEME_BADGES.length}
+                  {sessionThemeBadgeIds.length}/{THEME_BADGES.length}
                 </strong>
               </div>
               <p className="score-journey-note">
@@ -5926,7 +5882,7 @@ export default function GameCanvas() {
               <div className="score-badge-list">
                 {THEME_BADGES.map(badge => {
                   const badgeCopy = language === "en" ? badge.en : badge.vi;
-                  const isEarned = displayedBadgeCollectionIds.includes(badge.id);
+                  const isEarned = sessionThemeBadgeIds.includes(badge.id);
                   return (
                     <span className={isEarned ? "is-earned" : "is-locked"} key={badge.id}>
                       <b><i>{badge.symbol}</i>{!isEarned && <LockKeyhole className="score-badge-lock" size={12} />}</b>
