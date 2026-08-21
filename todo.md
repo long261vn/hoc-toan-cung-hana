@@ -40,6 +40,10 @@
 - [x] Thay cơ chế vẽ thẻ kỷ niệm bằng ảnh chụp sát vùng tổng kết đang hiển thị, bao gồm avatar, huy hiệu và bố cục thực tế.
 - [x] Kiểm thử lượt 0 điểm, lượt có huy hiệu, reset lượt, tên/avatar, ảnh chụp kỷ niệm desktop/mobile, TypeScript và production build; lưu checkpoint.
 - [x] Tái hiện và sửa lỗi Điểm hiện tại hiển thị huy hiệu đầu tiên đã mở ngay khi bắt đầu lượt mới; bảo đảm tiến độ huy hiệu của lượt luôn xuất phát từ 0/4.
+- [x] Chuẩn bị hướng dẫn cấu hình GitHub Pages và GitHub Actions phù hợp để xuất bản phiên bản tĩnh của game.
+- [x] Hướng dẫn xuất phiên bản Học Toán Cùng Hana đã kiểm thử sang repository GitHub được kết nối trong Manus.
+- [x] Hướng dẫn cấu hình GitHub Pages sau khi export repository, gồm base URL Vite, GitHub Actions, artifact `dist/public` và kiểm tra phát hành.
+- [ ] Tự cấu hình Vite, GitHub Actions và GitHub Pages cho repository `long261vn/hoc-toan-cung-hana`; xác minh URL phát hành hoạt động.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 
