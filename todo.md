@@ -1,5 +1,9 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Rà soát thiết kế mobile chuyên sâu
+
+- [x] Đánh giá nghiêm ngặt màn chào mừng, hồ sơ/avatar, bảng làm bài, tổng kết và ảnh kỷ niệm ở kích thước điện thoại; lập danh sách cải thiện theo mức ưu tiên.
+
 ## Gợi ý thực tế, huy hiệu rõ ràng và giao diện luyện tập chuyên nghiệp
 
 - [x] Đối chiếu cách diễn giải phép nhân–chia cơ bản của sách giáo khoa Việt Nam; viết lại gợi ý theo hướng “số phần tử mỗi nhóm × số nhóm”, dùng ngữ cảnh quen thuộc và đa dạng mà không lộ đáp án.
