@@ -3427,7 +3427,11 @@ export default function GameCanvas() {
     }
 
     try {
-      await document.fonts?.ready;
+      // Không để phông chữ mạng chậm làm nút lưu ảnh kỷ niệm bị chờ vô thời hạn.
+      await Promise.race([
+        document.fonts?.ready ?? Promise.resolve(),
+        new Promise<void>(resolve => window.setTimeout(resolve, 700)),
+      ]);
       const drawOrbit = (
         x: number,
         y: number,
@@ -3896,7 +3900,6 @@ export default function GameCanvas() {
         <AlertDialogContent
           className={`home-confirm-card ${hasSessionPoints ? "has-points" : "no-points"}`}
           data-i18n-direct
-          aria-describedby="home-confirm-description"
         >
           <div className="home-confirm-rocket" aria-hidden="true">
             {hasSessionPoints ? <Trophy size={30} fill="currentColor" /> : <Rocket size={30} fill="currentColor" />}
@@ -3917,7 +3920,7 @@ export default function GameCanvas() {
                   "Would you like to return to the beginning?"
                 )}
           </AlertDialogTitle>
-          <AlertDialogDescription id="home-confirm-description">
+          <AlertDialogDescription>
             {hasSessionPoints
               ? copy(
                   "Điểm và tiến độ của lượt này sẽ được làm mới. Hana sẽ đưa bạn về màn hình đầu tiên.",
@@ -3951,7 +3954,6 @@ export default function GameCanvas() {
       >
         <AlertDialogContent
           className="resume-session-card"
-          aria-describedby="resume-session-description"
         >
           <div className="resume-session-hana" aria-hidden="true">
             <div className="robot-fallback">
@@ -3969,7 +3971,7 @@ export default function GameCanvas() {
               "Your previous learning session is still here!"
             )}
           </AlertDialogTitle>
-          <AlertDialogDescription id="resume-session-description">
+          <AlertDialogDescription>
             {copy(
               "Bạn muốn tiếp tục đúng nơi mình đang học, hay bắt đầu một lượt mới?",
               "Would you like to continue where you were, or begin a new session?"
@@ -4116,16 +4118,15 @@ export default function GameCanvas() {
                 : copy("KẾT QUẢ BÀI KIỂM TRA", "TEST RESULTS")
               : language === "en"
                 ? "ROBOT HANA CONGRATULATES"
-                : "ROBOT HANA CHÚC MỪNG"}{" "}
-            {displayName.toUpperCase()}
+                : "ROBOT HANA CHÚC MỪNG"}
           </p>
           <h2>
             {isTimedTestSummary ? (
               language === "en" ? (
                 <>
-                  Your timed test,
+                  Your timed test
                   <br />
-                  <em>{displayName}, is complete!</em>
+                  <em>is complete!</em>
                 </>
               ) : (
                 <>
@@ -4136,9 +4137,9 @@ export default function GameCanvas() {
               )
             ) : language === "en" ? (
               <>
-                Your learning session, {displayName}
+                You did it!
                 <br />
-                <em>is something to be proud of!</em>
+                <em>What a great learning flight!</em>
               </>
             ) : (
               <>
@@ -4221,8 +4222,7 @@ export default function GameCanvas() {
                   <small>
                     {language === "en"
                       ? "HANA CONGRATULATES"
-                      : "HANA CHÚC MỪNG"}{" "}
-                    {displayName.toUpperCase()}
+                      : "HANA CHÚC MỪNG"}
                   </small>
                   <strong>{rewardLabel(highestReward)}</strong>
                   <em>{rewardDetail(highestReward)}</em>
@@ -5102,7 +5102,6 @@ export default function GameCanvas() {
       >
         <AlertDialogContent
           className="end-session-confirm-card"
-          aria-describedby="end-session-confirm-description"
         >
           <div className="end-session-confirm-hana" aria-hidden="true">
             <div className="robot-fallback">
@@ -5120,7 +5119,7 @@ export default function GameCanvas() {
               "Would you like to end this learning session?"
             )}
           </AlertDialogTitle>
-          <AlertDialogDescription id="end-session-confirm-description">
+          <AlertDialogDescription>
             {copy(
               "Hana sẽ lưu kết quả hiện tại và đưa bạn đến màn tổng kết.",
               "Hana will save your current results and take you to the session summary."

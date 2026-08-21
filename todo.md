@@ -1,5 +1,13 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## QA nghiêm ngặt toàn diện
+
+- [x] Kiểm thử tự động toàn bộ luồng câu hỏi, đáp án, bảng nhân/chia, bài kiểm tra, lưu phiên, ảnh kỷ niệm, VIE/ENG và xác nhận điều hướng.
+- [x] Kiểm tra giao diện desktop/điện thoại, các lớp phủ, khả năng đọc, nút thao tác, WebGL dự phòng và âm thanh/điều khiển âm thanh.
+- [x] Khắc phục và kiểm thử lại: chờ lưu ảnh kỷ niệm có giới hạn thời gian, điều khiển âm thanh/đổi ngôn ngữ trong Cài đặt, khung 320×568 và các hồi quy dùng selector đã bị thay thế.
+- [x] Khắc phục cảnh báo trợ năng AlertDialog để mọi hộp thoại xác nhận có liên kết mô tả hợp lệ, không phát sinh warning trong console.
+- [x] Lập báo cáo có bằng chứng, khắc phục mọi lỗi xác minh được, rồi chạy hồi quy TypeScript, production build và các kiểm thử liên quan.
+
 ## Wordmark bảng bài tập và chuẩn gợi ý Hana
 
 - [x] Bỏ wordmark Học Toán Cùng Hana dư trong bảng bài tập, giữ logo cố định làm nhận diện chính.

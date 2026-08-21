@@ -44,15 +44,19 @@ try {
   await command("Runtime.evaluate", {
     awaitPromise: true,
     expression: `(() => {
-      const button = [...document.querySelectorAll("button")].find((element) => element.textContent?.includes("Lưu ảnh kỷ niệm"));
+      const button = document.querySelector("button.save-memory");
       if (!button) throw new Error("Không tìm thấy nút Lưu ảnh kỷ niệm");
       button.click();
       return true;
     })()`,
   });
-  await sleep(2400);
-  const files = await readdir(downloadPath);
-  const pngFile = files.find((file) => file.endsWith(".png"));
+  let pngFile;
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    const files = await readdir(downloadPath);
+    pngFile = files.find((file) => file.endsWith(".png"));
+    if (pngFile) break;
+    await sleep(100);
+  }
   const status = await command("Runtime.evaluate", {
     returnByValue: true,
     expression: `document.querySelector(".image-save-status")?.textContent ?? ""`,

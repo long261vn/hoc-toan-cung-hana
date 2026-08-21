@@ -126,3 +126,5 @@ Các chế độ gồm **Luyện tập** theo chủ đề/cấp độ, **Thử t
 
 - Logo cố định ở góc trên là **wordmark Học Toán Cùng Hana duy nhất** trong màn làm bài. Không lặp lại tên ứng dụng trong bảng bài tập, để ưu tiên câu hỏi và tránh dư dòng chữ.
 - Dải hành trình mang các điểm sao và nét quỹ đạo rất nhẹ vào bề mặt buồng lái; Hana lớn hơn trong vai trò người dẫn đường, nhưng không cạnh tranh với biểu thức toán và các đáp án.
+- Trên màn thiết lập và tổng kết, logo cố định cùng dải bốn hành tinh là neo nhận diện; trong bảng bài tập không tạo wordmark thứ hai vì xung đột với ưu tiên tập trung vào câu hỏi.
+- Headline tổng kết English là lời chúc ngắn, tự nhiên và không chèn tên người chơi vào giữa câu; tên luôn hiển thị riêng trong huy hiệu Người chơi.
