@@ -6,7 +6,7 @@
 - [x] Đổi nhãn “Xem gợi ý Hana” thành “Xem gợi ý” và tăng phần nhắc kiểm tra kết quả bằng phương pháp phù hợp trong gợi ý.
 - [x] Chuẩn hóa quy tắc typography/ngắt dòng để tiêu đề, lời nhắc và nội dung phản hồi không xuất hiện dòng chỉ còn một từ rời rạc.
 - [x] Thiết kế lại toàn bộ màn tổng kết với phân cấp đồng bộ, khoảng cách tiêu đề hợp lý, lời chúc thay đổi theo điểm/số lỗi và avatar người chơi hiển thị tin cậy.
-- [ ] Kiểm thử đa người dùng/avatar riêng tư, VIE/ENG, tổng kết/ảnh kỷ niệm, desktop/mobile, TypeScript, hồi quy và production build; lưu checkpoint.
+- [x] Kiểm thử đa người dùng/avatar riêng tư, VIE/ENG, tổng kết/ảnh kỷ niệm, desktop/mobile, TypeScript, hồi quy và production build; lưu checkpoint.
 - [x] Áp dụng quy tắc chống dòng lẻ cho feedback banner, gợi ý Hana, hướng dẫn hồ sơ và các heading/action copy ngoài màn tổng kết.
 - [x] Bổ sung kiểm tra trực quan desktop/mobile cho ngắt dòng ở các vùng chữ quan trọng trước khi bàn giao.
 - [x] Rà soát và áp dụng chống dòng lẻ cho heading/nút/prompt quan trọng ở màn chào mừng, menu, hoạt động, thiết lập bài kiểm tra và bảng học.
@@ -18,7 +18,7 @@
 - [x] Thêm hồi quy đo line box thực tế, phát hiện dòng cuối chỉ một từ cho heading/prompt/action quan trọng ở các overlay desktop/mobile.
 - [x] Bổ sung hồi quy render orphan-line cho welcome, profile, start mode, activities, format, test setup, game và summary ở cả desktop/mobile.
 - [x] Ghi nhận kết quả pass/fail theo từng màn chính cho heading, prompt và action copy trước khi xác nhận typography toàn app.
-- [ ] Lưu checkpoint mới cho batch avatar riêng tư, tổng kết thích ứng và hồi quy typography; ghi lại mã checkpoint để đối chiếu bàn giao.
+- [x] Lưu checkpoint mới cho batch avatar riêng tư, tổng kết thích ứng và hồi quy typography; ghi lại mã checkpoint để đối chiếu bàn giao (775d6259).
 
 ## Hoàn thiện bảng học và phản hồi desktop
 
