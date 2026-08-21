@@ -6,11 +6,12 @@
 - [x] Thiết kế lại nền bảng bài tập để giữ họa tiết tròn ở các góc, không bị che bởi bo tròn hoặc lớp nội dung.
 - [x] Rút gọn phản hồi đáp án sai thành trạng thái ngang, gọn; tránh câu dài làm giãn chiều cao màn hình.
 - [x] Làm nổi bật đáp án sai học sinh đã chọn trong cửa sổ Hana bằng thẻ có màu, nhãn rõ và phân cấp thị giác tốt.
-- [ ] Thiết kế lại vùng kết quả sau trả lời để cân đối, dễ quét và nhất quán trên desktop/mobile; kiểm thử đầy đủ và lưu checkpoint.
+- [x] Thiết kế lại vùng kết quả sau trả lời để cân đối, dễ quét và nhất quán trên desktop/mobile; kiểm thử đầy đủ và lưu checkpoint.
 - [x] Chuẩn hóa năm thẻ nhiệm vụ trong màn Luyện tập để chiều cao và cấu trúc nhất quán, không tạo cảm giác nút to nhỏ tùy nội dung.
 - [x] Kiểm tra lại trực quan desktop/mobile màn Luyện tập sau khi chuẩn hóa thẻ, chỉ hoàn tất khi nhịp bố cục cân bằng.
 - [x] Chạy hồi quy đầy đủ sau batch giao diện desktop cuối: TypeScript, build, phản hồi đúng/sai, gợi ý Hana và song ngữ.
-- [ ] Xác nhận riêng trạng thái kết quả đúng/sai trên desktop/mobile rồi lưu checkpoint cho đợt hoàn thiện bảng học/phản hồi.
+- [x] Xác nhận riêng trạng thái kết quả đúng/sai trên desktop/mobile rồi lưu checkpoint cho đợt hoàn thiện bảng học/phản hồi.
+- [x] Mở rộng hồi quy phản hồi để đặt viewport desktop và mobile, xác nhận banner đúng/sai cùng thẻ đáp án Hana ở cả hai kích thước.
 
 ## Rà soát thiết kế mobile chuyên sâu
 

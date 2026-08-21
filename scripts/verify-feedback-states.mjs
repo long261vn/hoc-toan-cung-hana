@@ -37,7 +37,13 @@ const waitFor = async selector => {
   throw new Error(`Không tìm thấy ${selector}`);
 };
 
-try {
+const verifyAtViewport = async ({ label, width, height }) => {
+  await command("Emulation.setDeviceMetricsOverride", {
+    width,
+    height,
+    deviceScaleFactor: 1,
+    mobile: width <= 760,
+  });
   await command("Page.navigate", { url: "http://localhost:3000/?hanaguide&operation=multiply&difficulty=easy&lang=vi&nowebgl" });
   await waitFor(".hana-learning-card");
 
@@ -47,7 +53,7 @@ try {
     hasErrorCard: Boolean(document.querySelector(".hana-chosen-answer"))
   }))()`);
   if (!hanaContext.hasErrorCard || hanaContext.label !== "Bạn đã chọn" || !hanaContext.value) {
-    throw new Error(`Thẻ đáp án đã chọn trong Hana chưa rõ ràng: ${JSON.stringify(hanaContext)}`);
+    throw new Error(`${label}: thẻ đáp án đã chọn trong Hana chưa rõ ràng: ${JSON.stringify(hanaContext)}`);
   }
 
   await evaluate(`document.querySelector(".hana-retry-now")?.click()`);
@@ -69,17 +75,18 @@ try {
   const wrongFeedback = await evaluate(`(() => ({
     text: document.querySelector(".feedback-banner.is-wrong")?.textContent?.replace(/\\s+/g, " ").trim(),
     actionCount: document.querySelectorAll(".wrong-feedback-actions button").length,
-    display: getComputedStyle(document.querySelector(".wrong-feedback-actions")).display,
+    layout: getComputedStyle(document.querySelector(".wrong-feedback-actions")).display,
     selectedWrong: Boolean(document.querySelector(".answer-button.is-wrong"))
   }))()`);
+  const expectedLayout = width <= 760 ? "grid" : "flex";
   if (
     !wrongFeedback.text?.includes("Chưa đúng") ||
     !wrongFeedback.text?.includes("−2 điểm") ||
     wrongFeedback.actionCount !== 2 ||
-    wrongFeedback.display !== "flex" ||
+    wrongFeedback.layout !== expectedLayout ||
     !wrongFeedback.selectedWrong
   ) {
-    throw new Error(`Phản hồi sai không đạt phân cấp gọn và rõ: ${JSON.stringify(wrongFeedback)}`);
+    throw new Error(`${label}: phản hồi sai không đạt phân cấp gọn và rõ: ${JSON.stringify(wrongFeedback)}`);
   }
 
   await evaluate(`document.querySelector(".feedback-action.is-retry")?.click()`);
@@ -93,15 +100,24 @@ try {
   await waitFor(".feedback-banner.is-correct");
   const correctFeedback = await evaluate(`document.querySelector(".feedback-banner.is-correct")?.textContent?.replace(/\\s+/g, " ").trim()`);
   if (!correctFeedback?.includes("Đúng rồi") || !correctFeedback.includes("+10 điểm")) {
-    throw new Error(`Phản hồi đúng bị ảnh hưởng sau khi sửa banner: ${JSON.stringify(correctFeedback)}`);
+    throw new Error(`${label}: phản hồi đúng bị ảnh hưởng sau khi sửa banner: ${JSON.stringify(correctFeedback)}`);
   }
 
-  console.log(JSON.stringify({
-    status: "Đã xác nhận phản hồi đúng/sai và thẻ đáp án đã chọn của Hana",
+  return {
+    viewport: `${width}×${height}`,
     expression: answerState.expression,
     wrongChoice: answerState.wrong,
     correctChoice: answerState.correct,
-  }));
+    wrongLayout: wrongFeedback.layout,
+  };
+};
+
+try {
+  const reports = [];
+  reports.push(await verifyAtViewport({ label: "desktop", width: 1280, height: 720 }));
+  reports.push(await verifyAtViewport({ label: "mobile", width: 375, height: 812 }));
+  console.log(JSON.stringify({ status: "Đã xác nhận phản hồi đúng/sai và thẻ đáp án Hana trên desktop/mobile", reports }));
 } finally {
+  await command("Emulation.clearDeviceMetricsOverride").catch(() => undefined);
   socket.close();
 }
