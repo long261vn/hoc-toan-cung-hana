@@ -2588,6 +2588,7 @@ export default function GameCanvas() {
   const isMenuPreview = demoParams.has("menu");
   const isActivitiesPreview = demoParams.has("activities");
   const isTimedTestSummaryDemo = demoParams.has("testsummary");
+  const isTimedTestGameDemo = demoParams.has("testgame");
   const isLowSummaryDemo = demoParams.has("summarylow");
   const isSummaryDemo = demoParams.has("summary") || isLowSummaryDemo || isTimedTestSummaryDemo;
   const isProfileDemo = demoParams.has("profile");
@@ -2660,6 +2661,7 @@ export default function GameCanvas() {
             ? "testsetup"
             : isScoreDemo ||
                 isDemo ||
+                isTimedTestGameDemo ||
                 isHanaGuideDemo ||
                 isTableDemo ||
                 isMissingDemo ||
@@ -2672,12 +2674,12 @@ export default function GameCanvas() {
                   : "welcome"
   );
   const [mode, setMode] = useState<ExerciseMode>(
-    isTableDemo ? "tables" : isTestSetupDemo || isTimedTestSummaryDemo ? "test" : "practice"
+    isTableDemo ? "tables" : isTestSetupDemo || isTimedTestSummaryDemo || isTimedTestGameDemo ? "test" : "practice"
   );
   const [selectedActivity, setSelectedActivity] = useState<ActivityId>(
     isTableDemo
       ? "tables"
-      : isTestSetupDemo || isTimedTestSummaryDemo
+      : isTestSetupDemo || isTimedTestSummaryDemo || isTimedTestGameDemo
         ? "test"
           : isMissingDemo || isFormatDemo || isHanaGuideDemo
             ? initialOperation
@@ -4992,11 +4994,6 @@ export default function GameCanvas() {
             <span className="mission-orbit-node subtract">−</span>
             <span className="mission-orbit-node multiply">×</span>
             <span className="mission-orbit-node divide">÷</span>
-            <span className="mission-orbit-status">
-              {language === "en"
-                ? `${operationLabel(question.operation).toUpperCase()} PLANET`
-                : `HÀNH TINH ${operationLabel(question.operation).toUpperCase()}`}
-            </span>
           </div>
 
           <section
@@ -5065,32 +5062,6 @@ export default function GameCanvas() {
                   {copy("Chạm để xem", "Tap to view")} <ChevronRight size={13} aria-hidden="true" />
                 </small>
               </button>
-            </div>
-            <div className="mission-flight-rail" data-i18n-direct>
-              <span className={`mission-planet-chip operation-${question.operation}`}>
-                <b aria-hidden="true">
-                  {question.operation === "add"
-                    ? "+"
-                    : question.operation === "subtract"
-                      ? "−"
-                      : question.operation === "multiply"
-                        ? "×"
-                        : "÷"}
-                </b>
-                <span className="mission-planet-label">
-                  {language === "en"
-                    ? UNLOCKED_PLANET_NAMES[question.operation].en
-                    : UNLOCKED_PLANET_NAMES[question.operation].vi}
-                </span>
-              </span>
-              {!isTableMode && mode !== "test" && (
-                <span className="mission-journey-signal">
-                  <span aria-hidden="true">✦</span>
-                  <span>
-                    {language === "en" ? `Level ${journeyLevel}/100` : `Cấp ${journeyLevel}/100`}
-                  </span>
-                </span>
-              )}
             </div>
             {!isTableMode && mode === "practice" && (
               <div className="mission-study-controls" data-i18n-direct>
@@ -5350,7 +5321,6 @@ export default function GameCanvas() {
                             type="button"
                             onClick={() => answerQuestion(choice)}
                           >
-                            <span className="answer-index">{index + 1}</span>
                             <strong data-dynamic-text>{choice}</strong>
                             {feedback === "correct" && isCorrect && (
                               <Check className="answer-status" size={19} />

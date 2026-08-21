@@ -44,21 +44,18 @@ const navigate = async query => {
   await command("Page.navigate", { url: `${baseUrl}/${localizedQuery}` });
   await waitFor(".mission-control");
 };
-const planetMatchesExpression = async name => {
+const gameBoardIsMinimal = async name => {
   const result = await evaluate(`(() => {
     const expression = document.querySelector(".question-panel .math-expression")?.textContent?.replace(/\\s+/g, " ").trim() ?? "";
-    const label = document.querySelector(".mission-planet-label")?.textContent?.trim() ?? "";
-    const expected = expression.includes("×")
-      ? "Hành Tinh Phép Nhân"
-      : expression.includes("÷")
-        ? "Hành Tinh Phép Chia"
-        : expression.includes("−")
-          ? "Hành Tinh Phép Trừ"
-          : "Hành Tinh Phép Cộng";
-    return { expression, label, expected };
+    const obsoleteUiCount = document.querySelectorAll(".mission-flight-rail, .mission-planet-chip, .mission-planet-label, .mission-journey-signal, .mission-orbit-status, .answer-index").length;
+    const answers = Array.from(document.querySelectorAll(".answer-button")).map(button => ({
+      button: button.textContent?.replace(/\\s+/g, " ").trim() ?? "",
+      answer: button.querySelector("strong")?.textContent?.trim() ?? "",
+    }));
+    return { expression, obsoleteUiCount, answers };
   })()`);
-  if (!result.expression || result.label !== result.expected) {
-    throw new Error(`${name} sai nhãn Hành tinh: ${JSON.stringify(result)}`);
+  if (!result.expression || result.obsoleteUiCount !== 0 || result.answers.length !== 4 || result.answers.some(answer => answer.button !== answer.answer)) {
+    throw new Error(`${name} chưa tối giản đúng bảng học hoặc đáp án: ${JSON.stringify(result)}`);
   }
   return result;
 };
@@ -67,13 +64,13 @@ try {
   await command("Emulation.setDeviceMetricsOverride", { width: 375, height: 812, deviceScaleFactor: 1, mobile: true });
 
   await navigate("?demo&nowebgl");
-  const multiplication = await planetMatchesExpression("Nhiệm vụ Nhân");
+  const multiplication = await gameBoardIsMinimal("Nhiệm vụ Nhân");
 
   await navigate("?tables=divide&nowebgl");
-  const divisionTable = await planetMatchesExpression("Bảng Chia");
+  const divisionTable = await gameBoardIsMinimal("Bảng Chia");
 
   await navigate("?tables=mixed&nowebgl");
-  const mixedTable = await planetMatchesExpression("Bảng Nhân-Chia hỗn hợp");
+  const mixedTable = await gameBoardIsMinimal("Bảng Nhân-Chia hỗn hợp");
 
   await navigate("?demo&nowebgl");
   await evaluate(`document.querySelectorAll(".mission-format-options button")[1]?.click(); document.querySelectorAll(".mission-difficulty-options button")[2]?.click();`);
@@ -90,10 +87,10 @@ try {
     format: document.querySelector(".mission-format-options button.is-active")?.textContent?.trim(),
     difficulty: document.querySelector(".mission-difficulty-options button.is-active")?.textContent?.trim(),
     expression: document.querySelector(".question-panel .math-expression")?.textContent?.replace(/\\s+/g, " ").trim(),
-    planet: document.querySelector(".mission-planet-label")?.textContent?.trim(),
+    obsoleteUiCount: document.querySelectorAll(".mission-flight-rail, .mission-planet-chip, .mission-journey-signal, .mission-orbit-status, .answer-index").length,
   }))()`);
-  if (resetState.format !== "Bài bình thường" || resetState.difficulty !== "Làm quen" || resetState.planet !== "Hành Tinh Phép Chia" || !resetState.expression?.includes("÷")) {
-    throw new Error(`Đổi nhiệm vụ chưa đặt lại đúng trạng thái hoặc hành tinh: ${JSON.stringify(resetState)}`);
+  if (resetState.format !== "Bài bình thường" || resetState.difficulty !== "Làm quen" || resetState.obsoleteUiCount !== 0 || !resetState.expression?.includes("÷")) {
+    throw new Error(`Đổi nhiệm vụ chưa đặt lại đúng trạng thái hoặc bảng học còn chi tiết thừa: ${JSON.stringify(resetState)}`);
   }
 
   await command("Page.navigate", { url: `${baseUrl}/?hanaguide&operation=divide&difficulty=challenge&nowebgl&lang=vi` });
@@ -111,7 +108,7 @@ try {
     throw new Error(`Gợi ý chia khó hoặc bước tự kiểm tra chưa đúng: ${JSON.stringify(guide)}`);
   }
 
-  console.log(JSON.stringify({ multiplication, divisionTable, mixedTable, resetState, guide, status: "mission context stays synchronized" }));
+  console.log(JSON.stringify({ multiplication, divisionTable, mixedTable, resetState, guide, status: "minimal game board stays focused" }));
 } finally {
   await command("Emulation.clearDeviceMetricsOverride");
   socket.close();

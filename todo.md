@@ -27,6 +27,10 @@
 - [x] Kiểm thử các luồng sửa lỗi desktop/mobile, VIE/ENG, TypeScript, hồi quy và production build; lưu checkpoint.
 - [x] Phân tích và khắc phục việc production build bị dừng ở bước render chunks trong môi trường sandbox, sau đó xác nhận build hoàn tất.
 - [x] Chuẩn hóa giới hạn bộ nhớ cần thiết trong script build dự án và xác nhận `pnpm build` nguyên bản hoàn tất không cần biến môi trường ngoài.
+- [x] Bỏ toàn bộ nhãn Hành tinh Phép Cộng/Trừ/Nhân/Chia và hiển thị Cấp khỏi bảng làm bài, chỉ giữ nội dung cần cho câu toán.
+- [x] Bỏ số đánh dấu 1–4 trên các lựa chọn đáp án để không che số và ký hiệu toán học.
+- [x] Kiểm thử bảng làm bài Cộng/Trừ/Nhân/Chia, bảng nhân–chia và bài kiểm tra trên desktop/mobile; lưu checkpoint.
+- [x] Chụp xác nhận riêng màn Bài kiểm tra ở desktop và điện thoại sau khi bỏ nhãn Hành Tinh/Cấp và số thứ tự đáp án; lưu checkpoint mới.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 
