@@ -35,6 +35,10 @@
 - [x] Thiết kế lại thẻ PNG ảnh kỷ niệm với avatar đúng dữ liệu, huy hiệu vector không méo và bố cục rõ ràng, giàu ý nghĩa.
 - [x] Kiểm thử tổng kết/PNG với avatar có sẵn và ảnh cá nhân trên desktop/mobile; xác nhận số liệu, avatar, huy hiệu và tải tệp trước checkpoint.
 - [x] Chụp xác nhận riêng avatar ảnh cá nhân trên màn tổng kết ở desktop và điện thoại, đồng thời xác minh ảnh PNG tương ứng giữ đúng tỷ lệ trước checkpoint.
+- [x] Gộp avatar và tên người chơi vào một dòng cạnh câu chào tổng kết, bỏ tên lặp lại để tiết kiệm không gian.
+- [x] Sửa trạng thái phần thưởng/huy hiệu theo điểm của chính lượt vừa kết thúc; lượt 0 điểm không được kế thừa huy hiệu hoặc tiến độ từ lượt trước.
+- [x] Thay cơ chế vẽ thẻ kỷ niệm bằng ảnh chụp sát vùng tổng kết đang hiển thị, bao gồm avatar, huy hiệu và bố cục thực tế.
+- [x] Kiểm thử lượt 0 điểm, lượt có huy hiệu, reset lượt, tên/avatar, ảnh chụp kỷ niệm desktop/mobile, TypeScript và production build; lưu checkpoint.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 

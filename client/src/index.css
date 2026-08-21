@@ -2799,6 +2799,32 @@ html:lang(en) .mission-difficulty-options button {
   text-wrap: balance;
 }
 .summary-screen h2 > span { display: block; text-wrap: balance; }
+.summary-screen h2 > .summary-heading-player {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.32rem 0.46rem;
+}
+.summary-screen h2 > .summary-heading-player > span:first-child {
+  display: inline;
+}
+.summary-screen h2 .summary-heading-player .summary-player-identity {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.12rem 0.42rem 0.12rem 0.16rem;
+  vertical-align: middle;
+}
+.summary-screen h2 .summary-heading-player .summary-player-identity .player-avatar {
+  width: 1.48rem;
+  height: 1.48rem;
+  border-width: 1px;
+}
+.summary-screen h2 .summary-heading-player .summary-player-identity strong {
+  font-size: 0.68em;
+  letter-spacing: -0.025em;
+}
 .summary-screen h2 strong { color: #fff9df; font-weight: 900; }
 .summary-screen h2 em {
   display: block;

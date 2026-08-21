@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import html2canvas from "html2canvas";
 import type { Engine } from "@babylonjs/core/Engines/engine";
 import "./english-polish.css";
 import "./test-flow.css";
@@ -2590,7 +2591,8 @@ export default function GameCanvas() {
   const isTimedTestSummaryDemo = demoParams.has("testsummary");
   const isTimedTestGameDemo = demoParams.has("testgame");
   const isLowSummaryDemo = demoParams.has("summarylow");
-  const isSummaryDemo = demoParams.has("summary") || isLowSummaryDemo || isTimedTestSummaryDemo;
+  const isZeroSummaryDemo = demoParams.has("summaryzero");
+  const isSummaryDemo = demoParams.has("summary") || isLowSummaryDemo || isZeroSummaryDemo || isTimedTestSummaryDemo;
   const isProfileDemo = demoParams.has("profile");
   const isScoreDemo = demoParams.has("score");
   const isGuideDemo = demoParams.has("guide");
@@ -2755,20 +2757,52 @@ export default function GameCanvas() {
     ? { operation: unlockDemoOperation as Operation, badge: THEME_BADGES[0] }
     : planetUnlock;
   const [sessionPoints, setSessionPoints] = useState(
-    isMaxRewardDemo ? 1000 : isLowSummaryDemo ? 6 : isSummaryDemo || isScoreDemo ? 100 : 0
+    isMaxRewardDemo
+      ? 1000
+      : isLowSummaryDemo
+        ? 6
+        : isZeroSummaryDemo
+          ? 0
+          : isSummaryDemo || isScoreDemo
+            ? 100
+            : 0
   );
   const previousSessionPointsRef = useRef(sessionPoints);
   const unlockedBadgeIdsThisSessionRef = useRef<Set<string>>(new Set());
   const penalizedQuestionIdRef = useRef<string | null>(null);
   const pausedTimedTestAtRef = useRef<number | null>(null);
   const [correctCount, setCorrectCount] = useState(
-    isMaxRewardDemo ? 100 : isLowSummaryDemo ? 2 : isSummaryDemo || isScoreDemo ? 10 : 0
+    isMaxRewardDemo
+      ? 100
+      : isLowSummaryDemo
+        ? 2
+        : isZeroSummaryDemo
+          ? 0
+          : isSummaryDemo || isScoreDemo
+            ? 10
+            : 0
   );
   const [wrongCount, setWrongCount] = useState(
-    isMaxRewardDemo ? 5 : isLowSummaryDemo ? 8 : isSummaryDemo || isScoreDemo ? 2 : 0
+    isMaxRewardDemo
+      ? 5
+      : isLowSummaryDemo
+        ? 8
+        : isZeroSummaryDemo
+          ? 0
+          : isSummaryDemo || isScoreDemo
+            ? 2
+            : 0
   );
   const [elapsedSeconds, setElapsedSeconds] = useState(
-    isMaxRewardDemo ? 721 : isLowSummaryDemo ? 145 : isSummaryDemo || isScoreDemo ? 93 : 0
+    isMaxRewardDemo
+      ? 721
+      : isLowSummaryDemo
+        ? 145
+        : isZeroSummaryDemo
+          ? 0
+          : isSummaryDemo || isScoreDemo
+            ? 93
+            : 0
   );
   const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
   const [resumeDraft, setResumeDraft] = useState<SessionDraft | null>(() =>
@@ -2795,6 +2829,7 @@ export default function GameCanvas() {
   const pausedDurationRef = useRef(0);
   const testEndsAtRef = useRef<number | null>(null);
   const testFinalizedRef = useRef(false);
+  const summaryCaptureRef = useRef<HTMLElement | null>(null);
   const displayName =
     playerName.trim() ||
     (language === "en" ? "Young astronaut" : "Phi hành gia nhỏ");
@@ -3739,6 +3774,7 @@ export default function GameCanvas() {
   const sessionThemeBadges = THEME_BADGES.filter(badge =>
     themeBadgesForSession(sessionPoints).includes(badge.id)
   );
+  const sessionThemeBadgeIds = sessionThemeBadges.map(badge => badge.id);
   const displayedBadgeCollectionIds = Array.from(
     new Set([
       ...collectedThemeBadgeIds,
@@ -3837,7 +3873,7 @@ export default function GameCanvas() {
           : copy("Sẵn sàng cho chuyến học đầu tiên", "Ready for a first learning flight");
     const newBadge = sessionThemeBadges.at(-1);
     const nextBadge = THEME_BADGES.find(
-      badge => !displayedBadgeCollectionIds.includes(badge.id)
+      badge => !sessionThemeBadgeIds.includes(badge.id)
     );
     const pointsUntilSouvenirBadge = nextBadge
       ? Math.max(0, nextBadge.threshold - sessionPoints)
@@ -3903,6 +3939,63 @@ export default function GameCanvas() {
         )
       );
     };
+    const summaryCaptureTarget = summaryCaptureRef.current;
+    if (summaryCaptureTarget) {
+      try {
+        await Promise.race([
+          document.fonts?.ready ?? Promise.resolve(),
+          new Promise<void>(resolve => window.setTimeout(resolve, 700)),
+        ]);
+        const capture = await html2canvas(summaryCaptureTarget, {
+          backgroundColor: "#111b5a",
+          scale: Math.min(2, window.devicePixelRatio || 1),
+          useCORS: true,
+          logging: false,
+          imageTimeout: 0,
+          ignoreElements: element => element.hasAttribute("data-souvenir-exclude"),
+        });
+        const actionsTop = summaryCaptureTarget
+          .querySelector<HTMLElement>(".summary-actions")
+          ?.getBoundingClientRect().top;
+        const summaryTop = summaryCaptureTarget.getBoundingClientRect().top;
+        const captureScale = capture.width / Math.max(1, summaryCaptureTarget.clientWidth);
+        const croppedHeight = actionsTop
+          ? Math.min(
+              capture.height,
+              Math.ceil(Math.max(0, actionsTop - summaryTop + 20) * captureScale)
+            )
+          : capture.height;
+        const souvenirCanvas = document.createElement("canvas");
+        souvenirCanvas.width = capture.width;
+        souvenirCanvas.height = croppedHeight;
+        const souvenirContext = souvenirCanvas.getContext("2d");
+        if (!souvenirContext) throw new Error("Không thể tạo ảnh tổng kết");
+        souvenirContext.drawImage(
+          capture,
+          0,
+          0,
+          capture.width,
+          croppedHeight,
+          0,
+          0,
+          capture.width,
+          croppedHeight
+        );
+        const blob = await new Promise<Blob>((resolve, reject) => {
+          souvenirCanvas.toBlob(
+            imageBlob =>
+              imageBlob
+                ? resolve(imageBlob)
+                : reject(new Error("Không thể chụp ảnh tổng kết")),
+            "image/png"
+          );
+        });
+        await downloadSouvenirBlob(blob);
+        return;
+      } catch (error) {
+        console.warn("Không thể chụp vùng tổng kết, dùng ảnh kỷ niệm dự phòng.", error);
+      }
+    }
     const drawRoundedRectangle = (
       context: CanvasRenderingContext2D,
       x: number,
@@ -4566,8 +4659,8 @@ export default function GameCanvas() {
     ? {
         lead:
           language === "en"
-            ? `Timed test for ${displayName}`
-            : `Bài kiểm tra của ${displayName}`,
+            ? "Timed test for"
+            : "Bài kiểm tra của",
         tail:
           summaryTone === "strong"
             ? copy("Kết quả rất đáng ghi nhận!", "Great result!")
@@ -4578,8 +4671,8 @@ export default function GameCanvas() {
     : {
         lead:
           language === "en"
-            ? `Your learning flight, ${displayName}`
-            : `Lượt học của ${displayName}`,
+            ? "Learning session for"
+            : "Lượt học của",
         tail:
           summaryTone === "strong"
             ? copy("rất đáng khen!", "was a strong effort!")
@@ -4590,22 +4683,22 @@ export default function GameCanvas() {
   const summaryIntroCopy =
     attemptedQuestions === 0
       ? copy(
-          `${displayName}, hãy bắt đầu vài phép tính để Hana hiểu bạn hơn nhé.`,
-          `${displayName}, solve a few questions so Hana can learn with you.`
+          "Hãy bắt đầu vài phép tính để Hana hiểu bạn hơn nhé.",
+          "Solve a few questions so Hana can learn with you."
         )
       : summaryTone === "strong"
         ? copy(
-            `${displayName}, bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Khả năng tính toán của bạn đang rất vững!`,
-            `${displayName}, you got ${correctCount}/${attemptedQuestions} correct. Your maths skills are growing strong!`
+            `Bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Khả năng tính toán của bạn đang rất vững!`,
+            `You got ${correctCount}/${attemptedQuestions} correct. Your maths skills are growing strong!`
           )
         : summaryTone === "steady"
           ? copy(
-              `${displayName}, bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Hãy xem lại các câu sai rồi thử lại nhé.`,
-              `${displayName}, you got ${correctCount}/${attemptedQuestions} correct. Review the missed questions, then try again.`
+              `Bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Hãy xem lại các câu sai rồi thử lại nhé.`,
+              `You got ${correctCount}/${attemptedQuestions} correct. Review the missed questions, then try again.`
             )
           : copy(
-              `${displayName}, bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Không sao, Hana sẽ cùng bạn luyện từng bước.`,
-              `${displayName}, you got ${correctCount}/${attemptedQuestions} correct. That is okay—Hana will practise step by step with you.`
+              `Bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Không sao, Hana sẽ cùng bạn luyện từng bước.`,
+              `You got ${correctCount}/${attemptedQuestions} correct. That is okay—Hana will practise step by step with you.`
             );
 
   return (
@@ -4870,6 +4963,7 @@ export default function GameCanvas() {
       )}
       {screen === "summary" && (
         <section
+          ref={summaryCaptureRef}
           className="summary-screen"
           data-i18n-direct
           aria-label={copy("Tổng kết lượt chơi", "Learning session summary")}
@@ -4905,18 +4999,19 @@ export default function GameCanvas() {
             </p>
           </div>
           <h2>
-            <span>{summaryHeadline.lead}</span>
+            <span className="summary-heading-player">
+              <span>{summaryHeadline.lead}</span>
+              <span className="summary-player-identity">
+                <PlayerAvatar
+                  avatarId={selectedAvatar.id}
+                  photoUrl={avatarPhotoUrl}
+                  decorative
+                />
+                <strong>{displayName}</strong>
+              </span>
+            </span>
             <em>{summaryHeadline.tail}</em>
           </h2>
-          <div className="summary-player-identity">
-            <PlayerAvatar
-              avatarId={selectedAvatar.id}
-              photoUrl={avatarPhotoUrl}
-              decorative
-            />
-            <span>{copy("Người chơi", "Player")}</span>
-            <strong>{displayName}</strong>
-          </div>
           <p className="summary-intro">
             {summaryIntroCopy}
           </p>
@@ -4989,11 +5084,11 @@ export default function GameCanvas() {
               <p className="reward-empty">
                 {hasSessionPoints
                   ? language === "en"
-                    ? `${displayName}, you have ${sessionPoints}/10 points toward Journey Level 1. Keep going!`
+                    ? `You have ${sessionPoints}/10 points toward Journey Level 1. Keep going!`
                     : `${copy("Còn", "Only")} ${Math.max(1, 10 - (sessionPoints % 10))} ${copy("điểm để đạt Cấp hành trình 1.", "more points to reach Journey Level 1.")}`
                   : language === "en"
-                    ? `${displayName}, solve a few questions to begin your journey.`
-                    : `${displayName}, hãy làm vài phép tính để bắt đầu hành trình nhé.`}
+                    ? "Solve a few questions to begin your journey."
+                    : "Hãy làm vài phép tính để bắt đầu hành trình nhé."}
               </p>
             )}
           </section>
@@ -5010,7 +5105,7 @@ export default function GameCanvas() {
                 <small>{copy("Cấp 20 · 60 · 80 · 100", "Levels 20 · 60 · 80 · 100")}</small>
               </span>
               <strong>
-                {displayedBadgeCollectionIds.length}/{THEME_BADGES.length}
+                {sessionThemeBadgeIds.length}/{THEME_BADGES.length}
               </strong>
             </div>
             <div className="collectible-operation-route is-summary" aria-hidden="true">
@@ -5019,7 +5114,7 @@ export default function GameCanvas() {
             <div className="theme-badge-row" role="list">
               {THEME_BADGES.map(badge => {
                 const badgeCopy = language === "en" ? badge.en : badge.vi;
-                const isCollected = displayedBadgeCollectionIds.includes(badge.id);
+                const isCollected = sessionThemeBadgeIds.includes(badge.id);
                 const isEarnedThisSession = sessionThemeBadges.some(
                   earnedBadge => earnedBadge.id === badge.id
                 );
@@ -5053,7 +5148,7 @@ export default function GameCanvas() {
               })}
             </div>
           </section>
-          <div className="summary-actions">
+          <div className="summary-actions" data-souvenir-exclude>
             <button
               type="button"
               className="save-memory"
@@ -5079,7 +5174,7 @@ export default function GameCanvas() {
             </button>
           </div>
           {imageSaveStatus && (
-            <p className="image-save-status" data-dynamic-text role="status">
+            <p className="image-save-status" data-souvenir-exclude data-dynamic-text role="status">
               {imageSaveStatus}
             </p>
           )}

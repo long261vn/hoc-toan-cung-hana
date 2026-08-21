@@ -49,11 +49,18 @@ try {
   if (!avatar) throw new Error("Tổng kết không hiển thị avatar người chơi.");
   await command("Page.navigate", { url: `${baseUrl}/?testsummary&lang=vi&nowebgl` });
   await waitFor(".summary-screen");
-  const timed = await evaluate(`document.querySelector(".summary-screen")?.textContent?.replace(/\\s+/g, " ").trim()`);
-  if (!timed.includes("HẾT GIỜ RỒI") || !timed.includes("Bài kiểm tra của Minh Anh") || !timed.includes("Thời gian: 5:00") || !timed.includes("Cấp độ: Làm quen")) {
+  const timed = await evaluate(`document.querySelector(".summary-screen")?.textContent?.replace(/\s+/g, " ").trim()`);
+  const playerIdentity = await evaluate(`(() => {
+    const summary = document.querySelector(".summary-screen");
+    const identity = summary?.querySelector(".summary-heading-player .summary-player-identity strong")?.textContent?.trim();
+    const intro = summary?.querySelector(".summary-intro")?.textContent ?? "";
+    const nameCount = (summary?.innerText.match(/Minh Anh/g) ?? []).length;
+    return { identity, introIncludesName: intro.includes("Minh Anh"), nameCount };
+  })()`);
+  if (!timed.includes("HẾT GIỜ RỒI") || !timed.includes("Bài kiểm tra của") || !timed.includes("Thời gian: 5:00") || !timed.includes("Cấp độ: Làm quen") || playerIdentity?.identity !== "Minh Anh" || playerIdentity?.introIncludesName || playerIdentity?.nameCount !== 1) {
     throw new Error(`Tổng kết bài kiểm tra chưa hiển thị đủ ngữ cảnh: ${timed}`);
   }
-  console.log(JSON.stringify({ strong, practice, timed, avatar, status: "adaptive and timed summary copy with avatar are valid" }));
+  console.log(JSON.stringify({ strong, practice, timed, avatar, playerIdentity, status: "adaptive and timed summary copy with one player identity are valid" }));
 } finally {
   socket.close();
 }
