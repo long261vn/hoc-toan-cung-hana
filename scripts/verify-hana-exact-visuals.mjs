@@ -56,6 +56,30 @@ try {
     }
     reports.push({ operation, initialStep: initial.label, finalStep: finalStep.label });
   }
+  for (const operation of ["multiply", "divide"]) {
+    await command("Page.navigate", { url: `http://localhost:3000/?hanaguide&operation=${operation}&difficulty=easy&lang=vi&nowebgl` });
+    await waitFor(".hana-learning-card");
+    const contextualSteps = [];
+    for (let step = 0; step < 3; step += 1) {
+      contextualSteps.push(await evaluate(`(() => ({ equation: document.querySelector(".hana-learning-card")?.textContent?.match(/(\\d+) × (\\d+) = \\?/)?.slice(1), label: document.querySelector(".hana-learning-step > span")?.textContent?.trim(), text: document.querySelector(".hana-learning-step p")?.textContent?.trim() ?? "" }))()`));
+      if (step < 2) {
+        await evaluate(`document.querySelector(".hana-primary-action")?.click()`);
+        await sleep(55);
+      }
+    }
+    if (contextualSteps[0].label !== "Bước 1/3" || contextualSteps[2].label !== "Bước 3/3") {
+      throw new Error(`Gợi ý ${operation} cơ bản không có đúng ba bước: ${JSON.stringify(contextualSteps)}`);
+    }
+    if (operation === "multiply") {
+      const [factor, groups] = contextualSteps[0].equation ?? [];
+      if (!factor || !groups || !contextualSteps[0].text.includes(`có ${groups}`) || !contextualSteps[0].text.includes(`có ${factor}`) || !contextualSteps[1].text.includes(`lấy ${factor} lặp lại ${groups} lần`) || !contextualSteps[2].text.includes("Dùng bảng nhân")) {
+        throw new Error(`Gợi ý nhân cơ bản đảo vai trò số nhóm/số phần tử hoặc thiếu kiểm tra: ${JSON.stringify(contextualSteps)}`);
+      }
+    } else if (!contextualSteps[0].text.includes("được chia đều") || !contextualSteps[1].text.includes("số còn thiếu") || !contextualSteps[2].text.includes("Dùng bảng nhân")) {
+      throw new Error(`Gợi ý chia cơ bản chưa nêu chia đều theo nhóm và kiểm tra: ${JSON.stringify(contextualSteps)}`);
+    }
+    reports.push({ operation: `${operation}-equal-groups`, initialStep: contextualSteps[0].label, finalStep: contextualSteps[2].label });
+  }
   await command("Page.navigate", { url: "http://localhost:3000/?hanaguide&operation=multiply&difficulty=challenge&lang=vi&nowebgl" });
   await waitFor(".hana-learning-card");
   const challengeSteps = [];

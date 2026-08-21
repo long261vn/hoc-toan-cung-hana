@@ -1,5 +1,13 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Gợi ý thực tế, huy hiệu rõ ràng và giao diện luyện tập chuyên nghiệp
+
+- [x] Đối chiếu cách diễn giải phép nhân–chia cơ bản của sách giáo khoa Việt Nam; viết lại gợi ý theo hướng “số phần tử mỗi nhóm × số nhóm”, dùng ngữ cảnh quen thuộc và đa dạng mà không lộ đáp án.
+- [x] Phân biệt rõ huy hiệu đã đạt và huy hiệu còn khóa bằng trạng thái mờ, biểu tượng khóa, độ tương phản và thông tin tiến độ dễ hiểu.
+- [x] Thiết kế lại khu vực avatar: bốn lựa chọn minh họa đa dạng đặt ở hàng riêng, còn ảnh cá nhân là hành động tải lên tách biệt, rõ ràng và chuyên nghiệp.
+- [x] Rà soát và tinh chỉnh các bảng tính/câu hỏi thành hệ bố cục gọn, dễ đọc, có khoảng cách chuẩn và phân biệt rõ thành phần có thể bấm.
+- [ ] Kiểm thử toàn diện VIE/ENG, nội dung toán, huy hiệu, avatar, desktop/mobile, TypeScript, hồi quy và production build; lưu checkpoint.
+
 ## Gợi ý phép nhân và bố cục rõ ràng toàn diện
 
 - [x] Viết lại gợi ý phép nhân để giải thích ý nghĩa, quy trình làm và cách kiểm tra; cho phép nhiều bước hơn ở bài số lớn hoặc dạng khó.

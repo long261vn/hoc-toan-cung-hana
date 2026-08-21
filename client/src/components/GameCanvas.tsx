@@ -25,6 +25,7 @@ import {
   HelpCircle,
   ImagePlus,
   Languages,
+  LockKeyhole,
   LoaderCircle,
   Rocket,
   Settings,
@@ -151,11 +152,13 @@ const LEGACY_AVATAR_IDS: Record<string, AvatarId> = {
 };
 const AVATAR_OPTIONS: Array<{
   id: AvatarId;
+  vi: string;
+  en: string;
 }> = [
-  { id: "minh-khoa" },
-  { id: "ngoc-anh" },
-  { id: "gia-huy" },
-  { id: "linh-chi" },
+  { id: "minh-khoa", vi: "Phi hành gia bé trai", en: "Boy astronaut" },
+  { id: "ngoc-anh", vi: "Phi hành gia bé gái", en: "Girl astronaut" },
+  { id: "gia-huy", vi: "Mèo nhỏ đáng yêu", en: "Cute little cat" },
+  { id: "linh-chi", vi: "Bông hoa đáng yêu", en: "Cute little flower" },
 ];
 
 const PLAYER_AVATAR_STYLES: Record<
@@ -187,6 +190,43 @@ function PlayerAvatar({
         alt={decorative ? "" : "Player avatar"}
         aria-hidden={decorative}
       />
+    );
+  }
+  const accessibleLabel = {
+    "minh-khoa": "Boy astronaut avatar",
+    "ngoc-anh": "Girl astronaut avatar",
+    "gia-huy": "Cute cat avatar",
+    "linh-chi": "Cute flower avatar",
+  }[avatarId];
+  if (avatarId === "gia-huy") {
+    return (
+      <svg className={`player-avatar ${className}`} viewBox="0 0 120 120" aria-hidden={decorative} role={decorative ? undefined : "img"} aria-label={decorative ? undefined : accessibleLabel}>
+        <circle cx="60" cy="60" r="58" fill="#233875" />
+        <circle cx="60" cy="60" r="51" fill="#9de9d0" opacity="0.94" />
+        <path d="M25 106c6-22 19-33 35-33s29 11 35 33H25Z" fill="#4f90cb" />
+        <path d="M38 45 45 22l14 19-21 4ZM61 41l14-19 7 23-21-4Z" fill="#4b5c86" />
+        <circle cx="60" cy="58" r="31" fill="#ffd6af" />
+        <path d="M35 52c2-20 13-29 25-29s23 9 25 29c-8-6-16-8-25-8s-17 2-25 8Z" fill="#4b5c86" />
+        <path d="M49 56h5M66 56h5" stroke="#26345f" strokeWidth="4" strokeLinecap="round" />
+        <path d="M55 66 60 70l5-4" fill="#e98991" stroke="#9b5162" strokeWidth="2" strokeLinejoin="round" />
+        <path d="M49 74c7 4 15 4 22 0" fill="none" stroke="#9b5162" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M32 63h15m26 0h15M34 70h13m26 0h13" stroke="#4b5c86" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="60" cy="96" r="10" fill="#fff7d2" /><path d="M56 96h8M60 92v8" stroke="#4f90cb" strokeWidth="2.5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (avatarId === "linh-chi") {
+    return (
+      <svg className={`player-avatar ${className}`} viewBox="0 0 120 120" aria-hidden={decorative} role={decorative ? undefined : "img"} aria-label={decorative ? undefined : accessibleLabel}>
+        <circle cx="60" cy="60" r="58" fill="#233875" />
+        <circle cx="60" cy="60" r="51" fill="#cfc3ff" opacity="0.92" />
+        <path d="M56 115V81h8v34h-8Z" fill="#4aa484" />
+        <path d="M58 92c-15-2-23-12-24-25 15 2 23 12 24 25ZM62 101c15-2 23-12 24-25-15 2-23 12-24 25Z" fill="#67c7a0" />
+        <g fill="#ff9ba6"><ellipse cx="60" cy="31" rx="14" ry="23" /><ellipse cx="87" cy="51" rx="23" ry="14" transform="rotate(35 87 51)" /><ellipse cx="76" cy="82" rx="23" ry="14" transform="rotate(105 76 82)" /><ellipse cx="44" cy="82" rx="23" ry="14" transform="rotate(75 44 82)" /><ellipse cx="33" cy="51" rx="23" ry="14" transform="rotate(145 33 51)" /></g>
+        <circle cx="60" cy="59" r="22" fill="#ffd96c" /><circle cx="52" cy="57" r="3.5" fill="#26345f" /><circle cx="68" cy="57" r="3.5" fill="#26345f" />
+        <path d="M51 69c5 5 13 5 18 0" fill="none" stroke="#a65b57" strokeWidth="3" strokeLinecap="round" />
+        <circle cx="52" cy="67" r="3" fill="#f49a91" opacity="0.55" /><circle cx="68" cy="67" r="3" fill="#f49a91" opacity="0.55" />
+      </svg>
     );
   }
   const style = PLAYER_AVATAR_STYLES[avatarId];
@@ -1010,6 +1050,10 @@ function translateLearningText(text: string, language: Language) {
       "Check each place you multiplied and any regrouping before choosing an answer.",
     "Dùng bảng nhân để kiểm tra lại tích bạn vừa tìm.":
       "Use the times table to check the product you just worked out.",
+    "Hãy hình dung chia đều đồ vật vào các nhóm trước, rồi dùng phép nhân để kiểm tra.":
+      "Picture sharing objects equally into groups first, then use multiplication to check.",
+    "Hãy chia đều theo nhóm trước, rồi dùng bảng nhân để kiểm tra.":
+      "Share into equal groups first, then use the times table to check.",
     "Bạn hãy đổi phép chia thành phép nhân để kiểm tra đáp án.":
       "Turn division into multiplication to check your answer.",
     "Bạn hãy dùng phép nhân để tìm thương rồi kiểm tra lại.":
@@ -1058,6 +1102,74 @@ function translateLearningText(text: string, language: Language) {
     .replace(
       /^(\d+) × (\d+) nghĩa là lấy (\d+) nhóm(?: bằng nhau)?, mỗi nhóm có (\d+)\.$/,
       "$1 × $2 means $3 equal groups with $4 in each group."
+    )
+    .replace(
+      /^Hãy tưởng tượng có (\d+) bao kẹo bằng nhau, mỗi bao có (\d+) cục kẹo\.$/,
+      "Imagine $1 equal bags of candy with $2 candies in each bag."
+    )
+    .replace(
+      /^Hãy tưởng tượng có (\d+) hộp bút màu bằng nhau, mỗi hộp có (\d+) bút màu\.$/,
+      "Imagine $1 equal boxes of coloured pencils with $2 pencils in each box."
+    )
+    .replace(
+      /^Hãy tưởng tượng có (\d+) bình hoa bằng nhau, mỗi bình có (\d+) bông hoa\.$/,
+      "Imagine $1 equal vases with $2 flowers in each vase."
+    )
+    .replace(
+      /^Hãy tưởng tượng có (\d+) kệ sách bằng nhau, mỗi kệ có (\d+) quyển sách\.$/,
+      "Imagine $1 equal bookshelves with $2 books on each shelf."
+    )
+    .replace(
+      /^Hãy tưởng tượng có (\d+) khay bánh bằng nhau, mỗi khay có (\d+) chiếc bánh\.$/,
+      "Imagine $1 equal trays with $2 cakes on each tray."
+    )
+    .replace(
+      /^Vậy (\d+) × (\d+) là lấy (\d+) lặp lại (\d+) lần\. Hãy cộng (\d+) thêm (\d+) lần\.$/,
+      "So $1 × $2 means repeating $3, $4 times. Add $5 another $6 times."
+    )
+    .replace(
+      /^Hãy tưởng tượng (\d+) cục kẹo được chia đều vào (\d+) bao kẹo\.$/,
+      "Imagine sharing $1 candies equally into $2 bags."
+    )
+    .replace(
+      /^Hãy tưởng tượng (\d+) bút màu được chia đều vào (\d+) hộp bút màu\.$/,
+      "Imagine sharing $1 coloured pencils equally into $2 boxes."
+    )
+    .replace(
+      /^Hãy tưởng tượng (\d+) bông hoa được chia đều vào (\d+) bình hoa\.$/,
+      "Imagine sharing $1 flowers equally into $2 vases."
+    )
+    .replace(
+      /^Hãy tưởng tượng (\d+) quyển sách được chia đều vào (\d+) kệ sách\.$/,
+      "Imagine sharing $1 books equally across $2 bookshelves."
+    )
+    .replace(
+      /^Hãy tưởng tượng (\d+) chiếc bánh được chia đều vào (\d+) khay bánh\.$/,
+      "Imagine sharing $1 cakes equally onto $2 trays."
+    )
+    .replace(
+      /^Mỗi bao có mấy cục kẹo\? Hãy tìm số còn thiếu trong \? × (\d+) = (\d+)\.$/,
+      "How many candies are in each bag? Find the missing number in ? × $1 = $2."
+    )
+    .replace(
+      /^Mỗi hộp có mấy bút màu\? Hãy tìm số còn thiếu trong \? × (\d+) = (\d+)\.$/,
+      "How many coloured pencils are in each box? Find the missing number in ? × $1 = $2."
+    )
+    .replace(
+      /^Mỗi bình có mấy bông hoa\? Hãy tìm số còn thiếu trong \? × (\d+) = (\d+)\.$/,
+      "How many flowers are in each vase? Find the missing number in ? × $1 = $2."
+    )
+    .replace(
+      /^Mỗi kệ có mấy quyển sách\? Hãy tìm số còn thiếu trong \? × (\d+) = (\d+)\.$/,
+      "How many books are on each shelf? Find the missing number in ? × $1 = $2."
+    )
+    .replace(
+      /^Mỗi khay có mấy chiếc bánh\? Hãy tìm số còn thiếu trong \? × (\d+) = (\d+)\.$/,
+      "How many cakes are on each tray? Find the missing number in ? × $1 = $2."
+    )
+    .replace(
+      /^Dùng bảng nhân (\d+) để kiểm tra số phần trong mỗi (bao|hộp|bình|kệ|khay)\.$/,
+      "Use the $1 times table to check how many are in each group."
     )
     .replace(
       /^Hãy cộng (\d+) thêm (\d+) lần để (?:biết tất cả có bao nhiêu|tìm tổng số phần tử)\.$/,
@@ -1538,7 +1650,7 @@ function PlayerProfileScreen({
           </small>
         </div>
         <div className="avatar-option-grid" role="radiogroup">
-          {AVATAR_OPTIONS.map((avatar, index) => {
+          {AVATAR_OPTIONS.map(avatar => {
             const selected = !avatarPhotoUrl && avatar.id === avatarId;
             return (
               <button
@@ -1548,51 +1660,36 @@ function PlayerProfileScreen({
                 aria-checked={selected}
                 className={selected ? "is-selected" : ""}
                 onClick={() => onAvatarChange(avatar.id)}
-                aria-label={`${language === "en" ? "Player avatar" : "Avatar người chơi"} ${index + 1}`}
+                aria-label={language === "en" ? avatar.en : avatar.vi}
               >
                 <PlayerAvatar avatarId={avatar.id} decorative />
                 {selected && <Check className="avatar-selected-check" size={15} aria-hidden="true" />}
               </button>
             );
           })}
-          <label
-            className={`avatar-photo-option ${avatarPhotoUrl ? "is-selected" : ""}`}
-            role="radio"
-            aria-checked={Boolean(avatarPhotoUrl)}
-            aria-label={language === "en" ? "Use your own photo as avatar" : "Dùng ảnh của bạn làm avatar"}
-          >
-            {avatarPhotoUrl ? (
-              <PlayerAvatar avatarId={avatarId} photoUrl={avatarPhotoUrl} decorative />
-            ) : (
-              <ImagePlus size={31} aria-hidden="true" />
-            )}
+        </div>
+        <label className={`avatar-photo-upload ${avatarPhotoUrl ? "has-photo" : ""}`} aria-label={language === "en" ? "Upload your own avatar photo" : "Tải ảnh của bạn làm avatar"}>
+          <span className="avatar-photo-upload-icon" aria-hidden="true">
+            {avatarPhotoUrl ? <PlayerAvatar avatarId={avatarId} photoUrl={avatarPhotoUrl} decorative /> : <ImagePlus size={24} />}
             {avatarPhotoUrl && <Check className="avatar-selected-check" size={15} aria-hidden="true" />}
             {isUploadingAvatar && <LoaderCircle className="avatar-upload-spinner" size={19} aria-hidden="true" />}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              disabled={isUploadingAvatar}
-              onChange={event => {
-                const file = event.target.files?.[0];
-                if (file) onAvatarPhotoSelect(file);
-                event.currentTarget.value = "";
-              }}
-            />
-          </label>
-        </div>
-        <p className="avatar-photo-helper" data-i18n-direct>
-          {isUploadingAvatar
-            ? language === "en"
-              ? "Hana is preparing your round avatar..."
-              : "Hana đang chuẩn bị avatar tròn của bạn..."
-            : avatarPhotoUrl
-              ? language === "en"
-                ? "Tap a character anytime to switch back."
-                : "Chạm avatar có sẵn bất cứ lúc nào để đổi lại."
-              : language === "en"
-                ? "Tap the photo circle for JPG, PNG or WEBP · up to 8 MB."
-                : "Chạm vòng tròn ảnh để chọn JPG, PNG hoặc WEBP · tối đa 8 MB."}
-        </p>
+          </span>
+          <span className="avatar-photo-upload-copy">
+            <strong>{avatarPhotoUrl ? (language === "en" ? "Your photo is selected" : "Bạn đang dùng ảnh của mình") : (language === "en" ? "Use your own photo" : "Dùng ảnh của bạn")}</strong>
+            <small>{isUploadingAvatar ? (language === "en" ? "Hana is preparing your round avatar..." : "Hana đang chuẩn bị avatar tròn của bạn...") : avatarPhotoUrl ? (language === "en" ? "Tap here to choose a different photo." : "Chạm tại đây để chọn ảnh khác.") : (language === "en" ? "JPG, PNG or WEBP · up to 8 MB" : "JPG, PNG hoặc WEBP · tối đa 8 MB")}</small>
+          </span>
+          <ImagePlus className="avatar-photo-upload-action" size={20} aria-hidden="true" />
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            disabled={isUploadingAvatar}
+            onChange={event => {
+              const file = event.target.files?.[0];
+              if (file) onAvatarPhotoSelect(file);
+              event.currentTarget.value = "";
+            }}
+          />
+        </label>
         {avatarUploadError && <p className="avatar-upload-error" role="status">{avatarUploadError}</p>}
       </section>
       <label className="profile-name-field">
@@ -4613,7 +4710,10 @@ export default function GameCanvas() {
                     className={`theme-badge-item accent-${badge.accent} ${isCollected ? "is-collected" : "is-locked"}`}
                     role="listitem"
                   >
-                    <b aria-hidden="true">{badge.symbol}</b>
+                    <b className="theme-badge-medallion" aria-hidden="true">
+                      <i>{badge.symbol}</i>
+                      {!isCollected && <LockKeyhole className="theme-badge-lock" size={15} />}
+                    </b>
                     <span>
                       <small className="theme-badge-level">
                         {copy("Cấp", "Level")} {badge.threshold / 10}
@@ -4623,6 +4723,11 @@ export default function GameCanvas() {
                       </small>
                       <strong>{badgeCopy.label}</strong>
                       <small>{badgeCopy.detail}</small>
+                      <small className={`theme-badge-status ${isCollected ? "is-collected" : "is-locked"}`}>
+                        {isCollected
+                          ? copy("Đã mở khóa", "Unlocked")
+                          : `${copy("Đang khóa · còn", "Locked ·")} ${Math.max(0, badge.threshold - sessionPoints)} ${copy("điểm", "points")}`}
+                      </small>
                     </span>
                   </article>
                 );
@@ -5424,7 +5529,7 @@ export default function GameCanvas() {
               <div>
                 <span>{copy("TIẾN ĐỘ HUY HIỆU", "BADGE PROGRESS")}</span>
                 <strong>
-                  {sessionThemeBadges.length}/{THEME_BADGES.length}
+                  {displayedBadgeCollectionIds.length}/{THEME_BADGES.length}
                 </strong>
               </div>
               <p className="score-journey-note">
@@ -5435,12 +5540,10 @@ export default function GameCanvas() {
               <div className="score-badge-list">
                 {THEME_BADGES.map(badge => {
                   const badgeCopy = language === "en" ? badge.en : badge.vi;
-                  const isEarned = sessionThemeBadges.some(
-                    earnedBadge => earnedBadge.id === badge.id
-                  );
+                  const isEarned = displayedBadgeCollectionIds.includes(badge.id);
                   return (
-                    <span className={isEarned ? "is-earned" : ""} key={badge.id}>
-                      <b>{badge.symbol}</b>
+                    <span className={isEarned ? "is-earned" : "is-locked"} key={badge.id}>
+                      <b><i>{badge.symbol}</i>{!isEarned && <LockKeyhole className="score-badge-lock" size={12} />}</b>
                       <em>{copy("Cấp", "Level")} {badge.threshold / 10}</em>
                       <small>{badgeCopy.label}</small>
                     </span>

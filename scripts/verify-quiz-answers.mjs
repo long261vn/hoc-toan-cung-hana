@@ -65,9 +65,9 @@ const validate = (question, difficulty = null) => {
     if (
       question.operation === "multiply" &&
       difficulty !== "challenge" &&
-      (!/nghĩa là lấy/.test(steps) || !/Hãy cộng/.test(steps) || !/kiểm tra lại tích/.test(steps))
+      (!/Hãy tưởng tượng có/.test(steps) || !/mỗi/.test(steps) || !/Hãy cộng/.test(steps) || !/kiểm tra lại tích/.test(steps))
     ) {
-      throw new Error(`Phép nhân cơ bản cần giải thích nhóm bằng nhau, cộng lặp và bước kiểm tra: ${question.expression}`);
+      throw new Error(`Phép nhân cơ bản cần nêu số nhóm, số phần tử mỗi nhóm, cộng lặp và bước kiểm tra: ${question.expression}`);
     }
     if (
       question.operation === "multiply" &&
@@ -96,6 +96,25 @@ const validate = (question, difficulty = null) => {
       (!steps.includes("Đặt tính") || !steps.includes("Chia từ hàng lớn nhất") || !steps.includes("Kiểm tra"))
     ) {
       throw new Error(`Phép chia khó cần hướng dẫn đặt tính và kiểm tra: ${question.expression}`);
+    }
+    if (
+      question.operation === "divide" &&
+      difficulty !== "challenge" &&
+      (!/Hãy tưởng tượng \d+/.test(steps) || !/được chia đều/.test(steps) || !/số còn thiếu/.test(steps) || !/Dùng bảng nhân/.test(steps))
+    ) {
+      throw new Error(`Phép chia cơ bản cần giải thích chia đều theo nhóm và kiểm tra bằng phép nhân: ${question.expression}`);
+    }
+  }
+  if (question.kind === "table" && question.operation === "multiply") {
+    const steps = question.hintSteps.join(" ");
+    if (!/Hãy tưởng tượng có/.test(steps) || !/Hãy cộng/.test(steps) || !/kiểm tra lại tích/.test(steps)) {
+      throw new Error(`Bảng nhân cần nêu nhóm bằng nhau, cộng lặp và bước kiểm tra: ${question.expression}`);
+    }
+  }
+  if (question.kind === "table" && question.operation === "divide") {
+    const steps = question.hintSteps.join(" ");
+    if (!/được chia đều/.test(steps) || !/số còn thiếu/.test(steps) || !/Dùng bảng nhân/.test(steps)) {
+      throw new Error(`Bảng chia cần nêu chia đều theo nhóm và bước kiểm tra: ${question.expression}`);
     }
   }
 };

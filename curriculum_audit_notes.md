@@ -33,3 +33,10 @@ Mỗi gợi ý chỉ đưa một chiến lược phù hợp câu hiện tại, k
 ### Điều chỉnh sau phản hồi trải nghiệm
 
 Với phép nhân trong phạm vi bảng nhân, Hana không yêu cầu trẻ chỉ “đọc bảng nhân để tìm đáp án”. Gợi ý mới phải dẫn từ ý nghĩa: xác định số nhóm bằng nhau và số phần tử trong mỗi nhóm, liên hệ một phép cộng lặp **ngắn** để giải thích tích, rồi dùng bảng nhân như bước kiểm tra sau cùng. Với phép nhân số lớn, gợi ý được phép có bốn bước: đặt tính cùng hàng; nhân từ hàng đơn vị; ghi–nhớ đúng hàng; tiếp tục các hàng còn lại và kiểm tra tính hợp lý. Mọi bước vẫn dừng trước đáp số.
+
+### Bổ sung: ngữ cảnh gần gũi cho nhóm bằng nhau
+
+Các bài học bám SGK dùng phép cộng các số hạng bằng nhau để hình thành bảng nhân và các bối cảnh số nhóm như bạn–kẹo, hộp bánh, sách hoặc vật dụng học tập. Ví dụ tham khảo nêu `3 × 4 = 3 + 3 + 3 + 3`, tình huống mỗi bạn có số kẹo như nhau và các bài chia bánh/kẹo vào nhóm bằng nhau.[^sgk-multiply] [^sgk-divide] Vì vậy, Hana xoay vòng bao kẹo, hộp bút màu, bình hoa, kệ sách và khay bánh. Cấu trúc câu luôn giữ đúng thứ tự: “có **7 nhóm** bằng nhau, **mỗi nhóm có 4**” cho `4 × 7`, tránh đảo hai vai trò chỉ vì ngữ cảnh minh họa.
+
+[^sgk-multiply]: VietJack, *Bảng nhân 3 lớp 3*, https://vietjack.com/toan-3-cd/ly-thuyet-bang-nhan-3.jsp
+[^sgk-divide]: Lời Giải Hay, *Toán lớp 3 trang 53 – Phép chia hết và phép chia có dư*, https://loigiaihay.com/toan-lop-3-trang-53-phep-chia-het-va-phep-chia-co-du-sgk-chan-troi-sang-tao-a106616.html

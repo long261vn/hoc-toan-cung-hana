@@ -1195,14 +1195,22 @@ button:focus-visible {
   line-height: 1;
 }
 .question-panel {
+  position: relative;
   margin-top: 15px;
   padding: 14px 16px 12px;
   border: 1px solid #ebe4ce;
   border-radius: 17px;
   background: linear-gradient(135deg, #fffefa, #fff2c9);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 5px 14px rgba(48, 58, 105, 0.08);
 }
 .question-label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 6px;
   color: #9b7b3e;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.62);
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.13em;
@@ -1217,7 +1225,7 @@ button:focus-visible {
   line-height: 1;
 }
 .math-helper {
-  margin: 4px 0 0;
+  margin: 5px 0 0;
   color: #62658d;
   font-size: 10px;
   font-weight: 600;
@@ -1390,17 +1398,17 @@ button:focus-visible {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 .answer-button {
   position: relative;
   display: grid;
-  min-height: 54px;
+  min-height: 58px;
   place-items: center;
   padding: 8px;
   overflow: hidden;
   color: #293067;
-  border: 1px solid #dce0ef;
+  border: 2px solid #dce0ef;
   border-radius: 15px;
   background: #fff;
   box-shadow: 0 3px 0 #d2d6e8;
@@ -1416,6 +1424,7 @@ button:focus-visible {
   box-shadow: 0 5px 0 #c3c9e2;
   transform: translateY(-2px);
 }
+.answer-button:focus-visible { outline: 3px solid #ffcc6a; outline-offset: 3px; }
 .answer-button strong {
   font-family: "Baloo 2", cursive;
   font-size: 25px;
@@ -1426,7 +1435,13 @@ button:focus-visible {
   position: absolute;
   top: 6px;
   left: 7px;
-  color: #a1a9ca;
+  display: grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  color: #7b84ad;
+  border-radius: 50%;
+  background: #f0f2fb;
   font-size: 9px;
   font-weight: 800;
 }
@@ -3926,7 +3941,15 @@ button:focus-visible {
   background: linear-gradient(145deg, #fff8c8, #ffe19b);
   box-shadow: 0 3px 0 #cb8e2f;
 }
+.score-badge-list > span.is-locked {
+  opacity: 0.68;
+  border-style: dashed;
+  border-color: #b8bed0;
+  background: rgba(238, 240, 245, 0.82);
+  filter: grayscale(0.72) saturate(0.42);
+}
 .score-badge-list b {
+  position: relative;
   display: grid;
   grid-row: span 2;
   width: 23px;
@@ -3937,6 +3960,8 @@ button:focus-visible {
   background: #fff7c3;
   font-size: 14px;
 }
+.score-badge-list b i { font-style: normal; }
+.score-badge-lock { position: absolute; right: -4px; bottom: -4px; padding: 2px; color: #edf3ff; border-radius: 50%; background: #52617d; box-shadow: 0 1px 0 #35415a; }
 .score-badge-list em {
   color: #a86836;
   font-size: 8px;

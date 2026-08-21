@@ -40,6 +40,18 @@ const shuffle = <T>(items: T[]) => {
   return copy;
 };
 
+const EQUAL_GROUP_STORIES = [
+  { containers: "bao kẹo", container: "bao", item: "cục kẹo" },
+  { containers: "hộp bút màu", container: "hộp", item: "bút màu" },
+  { containers: "bình hoa", container: "bình", item: "bông hoa" },
+  { containers: "kệ sách", container: "kệ", item: "quyển sách" },
+  { containers: "khay bánh", container: "khay", item: "chiếc bánh" },
+] as const;
+
+function equalGroupStory() {
+  return EQUAL_GROUP_STORIES[rand(0, EQUAL_GROUP_STORIES.length - 1)];
+}
+
 /** A final runtime safeguard: only internally generated, numeric Grade 3 expressions are evaluated. */
 export function isQuestionConsistent(question: QuizQuestion) {
   if (
@@ -333,10 +345,11 @@ export function generateQuestion(
     if (difficulty === "easy") {
       a = rand(2, 5);
       b = rand(2, 10);
+      const story = equalGroupStory();
       hint = "Hãy hiểu mỗi nhóm có bao nhiêu phần tử trước, rồi dùng bảng nhân để kiểm tra.";
       hintSteps = [
-        `${a} × ${b} nghĩa là lấy ${a} nhóm, mỗi nhóm có ${b}.`,
-        `Hãy cộng ${b} thêm ${a - 1} lần để biết tất cả có bao nhiêu.`,
+        `Hãy tưởng tượng có ${b} ${story.containers} bằng nhau, mỗi ${story.container} có ${a} ${story.item}.`,
+        `Vậy ${a} × ${b} là lấy ${a} lặp lại ${b} lần. Hãy cộng ${a} thêm ${b - 1} lần.`,
         `Dùng bảng nhân ${a} để kiểm tra lại tích bạn vừa tìm.`,
       ];
       mission = "Khởi động bảng nhân quen thuộc.";
@@ -344,10 +357,11 @@ export function generateQuestion(
     } else if (difficulty === "medium") {
       a = rand(2, 9);
       b = rand(3, 9);
+      const story = equalGroupStory();
       hint = "Hãy hiểu phép nhân là các nhóm bằng nhau, rồi dùng bảng nhân để kiểm tra.";
       hintSteps = [
-        `${a} × ${b} nghĩa là lấy ${a} nhóm bằng nhau, mỗi nhóm có ${b}.`,
-        `Hãy cộng ${b} thêm ${a - 1} lần để tìm tổng số phần tử.`,
+        `Hãy tưởng tượng có ${b} ${story.containers} bằng nhau, mỗi ${story.container} có ${a} ${story.item}.`,
+        `Vậy ${a} × ${b} là lấy ${a} lặp lại ${b} lần. Hãy cộng ${a} thêm ${b - 1} lần.`,
         `Dùng bảng nhân ${a} để kiểm tra lại tích bạn vừa tìm.`,
       ];
       mission = "Xếp các nhóm bằng nhau để nhân.";
@@ -374,11 +388,12 @@ export function generateQuestion(
       b = rand(2, 5);
       answer = rand(2, 10);
       a = b * answer;
-      hint = `Bạn hãy nghĩ: ${b} nhân mấy thì được ${a}?`;
+      const story = equalGroupStory();
+      hint = "Hãy hình dung chia đều đồ vật vào các nhóm trước, rồi dùng phép nhân để kiểm tra.";
       hintSteps = [
-        `Đổi ${a} ÷ ${b} thành phép nhân ${b} × ? = ${a}.`,
-        `Dùng bảng nhân ${b} để tìm số còn thiếu.`,
-        "Số còn thiếu chính là kết quả phép chia.",
+        `Hãy tưởng tượng ${a} ${story.item} được chia đều vào ${b} ${story.containers}.`,
+        `Mỗi ${story.container} có mấy ${story.item}? Hãy tìm số còn thiếu trong ? × ${b} = ${a}.`,
+        `Dùng bảng nhân ${b} để kiểm tra số phần trong mỗi ${story.container}.`,
       ];
       mission = "Chia đều các nhóm số.";
       span = 4;
@@ -386,11 +401,12 @@ export function generateQuestion(
       b = rand(2, 9);
       answer = rand(3, 9);
       a = b * answer;
-      hint = `Bạn hãy dùng bảng nhân ${b} để tìm kết quả chia.`;
+      const story = equalGroupStory();
+      hint = "Hãy chia đều theo nhóm trước, rồi dùng bảng nhân để kiểm tra.";
       hintSteps = [
-        `Đổi ${a} ÷ ${b} thành ${b} × ? = ${a}.`,
-        `Đọc lần lượt bảng nhân ${b} để tìm tích ${a}.`,
-        "Số điền vào dấu hỏi là thương của phép chia.",
+        `Hãy tưởng tượng ${a} ${story.item} được chia đều vào ${b} ${story.containers}.`,
+        `Mỗi ${story.container} có mấy ${story.item}? Hãy tìm số còn thiếu trong ? × ${b} = ${a}.`,
+        `Dùng bảng nhân ${b} để kiểm tra số phần trong mỗi ${story.container}.`,
       ];
       mission = "Chia đều nhiên liệu cho các trạm sao.";
       span = 5;
@@ -458,6 +474,7 @@ export function generateTableQuestion(
   }
   const operation: Operation = isDivision ? "divide" : "multiply";
   const product = table * factor;
+  const story = equalGroupStory();
   const answer = isDivision ? factor : product;
   const expression = isDivision
     ? `${product} ÷ ${table} = ?`
@@ -472,17 +489,17 @@ export function generateTableQuestion(
     answer,
     options: choices(answer, 6),
     hint: isDivision
-      ? `Bạn hãy đổi phép chia thành phép nhân: ${table} × ? = ${product}.`
+      ? "Hãy hình dung chia đều đồ vật vào các nhóm trước, rồi dùng phép nhân để kiểm tra."
       : "Hãy hiểu số nhóm và số phần tử trong mỗi nhóm trước, rồi kiểm tra bằng bảng nhân.",
     hintSteps: isDivision
       ? [
-          `Đổi ${product} ÷ ${table} thành ${table} × ? = ${product}.`,
-          `Dùng bảng nhân ${table} để tìm số còn thiếu.`,
-          "Số còn thiếu là kết quả phép chia.",
+          `Hãy tưởng tượng ${product} ${story.item} được chia đều vào ${table} ${story.containers}.`,
+          `Mỗi ${story.container} có mấy ${story.item}? Hãy tìm số còn thiếu trong ? × ${table} = ${product}.`,
+          `Dùng bảng nhân ${table} để kiểm tra số phần trong mỗi ${story.container}.`,
         ]
       : [
-          `${table} × ${factor} nghĩa là lấy ${table} nhóm, mỗi nhóm có ${factor}.`,
-          `Hãy cộng ${factor} thêm ${table - 1} lần để biết tất cả có bao nhiêu.`,
+          `Hãy tưởng tượng có ${factor} ${story.containers} bằng nhau, mỗi ${story.container} có ${table} ${story.item}.`,
+          `Vậy ${table} × ${factor} là lấy ${table} lặp lại ${factor} lần. Hãy cộng ${table} thêm ${factor - 1} lần.`,
           `Dùng bảng nhân ${table} để kiểm tra lại tích bạn vừa tìm.`,
         ],
     mission: `Khởi động bảng ${kindLabel} ${table}.`,

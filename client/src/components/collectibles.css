@@ -172,6 +172,51 @@
 .avatar-upload-spinner { animation: avatar-upload-spin 800ms linear infinite; }
 .avatar-upload-error { margin: 0.42rem 0 0; color: #ffd0c8; font-size: 0.76rem; font-weight: 700; text-align: center; }
 
+/* Preset choices remain a compact, equal 4-up group; personal photos are a separate action below. */
+.profile-avatar-chooser .avatar-option-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.avatar-photo-upload {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.72rem;
+  width: min(100%, 24rem);
+  margin: 0.48rem auto 0;
+  padding: 0.52rem 0.68rem;
+  color: #eff8ff;
+  border: 1px solid rgba(176, 228, 218, 0.42);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(21, 72, 103, 0.65), rgba(18, 40, 92, 0.72));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.11), 0 0.32rem 0 rgba(4, 16, 52, 0.23);
+  cursor: pointer;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), border-color 160ms cubic-bezier(0.23, 1, 0.32, 1), background 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.avatar-photo-upload:hover { transform: translateY(-2px); border-color: #a8f1dc; background: linear-gradient(135deg, rgba(26, 104, 119, 0.78), rgba(25, 51, 112, 0.82)); }
+.avatar-photo-upload:active { transform: translateY(1px) scale(0.99); }
+.avatar-photo-upload:focus-within { outline: 3px solid #fff1a6; outline-offset: 3px; }
+.avatar-photo-upload.has-photo { border-color: #ffe580; background: linear-gradient(135deg, rgba(117, 83, 109, 0.74), rgba(25, 51, 112, 0.86)); }
+.avatar-photo-upload-icon { position: relative; display: grid; width: 2.65rem; height: 2.65rem; place-items: center; overflow: hidden; color: #d6fff3; border: 2px solid rgba(255, 249, 214, 0.85); border-radius: 50%; background: rgba(10, 28, 77, 0.42); }
+.avatar-photo-upload-icon .player-avatar { width: 100%; height: 100%; }
+.avatar-photo-upload .avatar-selected-check { position: absolute; right: -0.08rem; top: -0.08rem; padding: 0.18rem; color: #152662; border-radius: 50%; background: #fff0a3; }
+.avatar-photo-upload .avatar-upload-spinner { position: absolute; color: #fff0a3; }
+.avatar-photo-upload-copy { display: grid; min-width: 0; gap: 0.12rem; text-align: left; }
+.avatar-photo-upload-copy strong { color: #fff9df; font-family: "Baloo 2", cursive; font-size: 0.98rem; line-height: 1; }
+.avatar-photo-upload-copy small { color: #cbe3ff; font-size: 0.68rem; font-weight: 700; line-height: 1.25; }
+.avatar-photo-upload-action { color: #a8f1dc; }
+.avatar-photo-upload input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+
+/* A completed badge glows; a future badge stays recognizable but unmistakably locked. */
+.theme-badge-item { position: relative; }
+.theme-badge-item.is-locked { opacity: 0.68; border-style: dashed; border-color: rgba(184, 202, 231, 0.36); background: rgba(10, 24, 61, 0.66); filter: grayscale(0.72) saturate(0.45); }
+.theme-badge-item.is-collected { border-color: rgba(255, 230, 128, 0.86); background: radial-gradient(circle at 13% 12%, rgba(255, 234, 138, 0.26), transparent 30%), rgba(22, 51, 105, 0.82); box-shadow: inset 0 0 0 1px rgba(255, 245, 186, 0.26), 0 0.42rem 1rem rgba(255, 213, 104, 0.18); }
+.theme-badge-medallion { position: relative; }
+.theme-badge-medallion i { font-style: normal; }
+.theme-badge-lock { position: absolute; right: -0.15rem; bottom: -0.12rem; padding: 0.12rem; color: #ecf2ff; border-radius: 50%; background: #394a70; box-shadow: 0 0.1rem 0 #1c294a; }
+.theme-badge-item.is-locked .theme-badge-medallion { background: #64708a; color: #dce5fa; }
+.theme-badge-status { margin-top: 0.12rem; font-size: 0.61rem !important; font-weight: 800; letter-spacing: 0.02em; }
+.theme-badge-status.is-collected { color: #ffe99d; }
+.theme-badge-status.is-locked { color: #b7c9e9; }
+
 @keyframes avatar-upload-spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 360px) { .avatar-option-grid { gap: 0.35rem; } }
@@ -463,6 +508,7 @@
 
 @media (max-width: 31rem) {
   .avatar-option-grid { gap: 0.42rem; padding-inline: 0.04rem; }
+  .avatar-photo-upload { gap: 0.5rem; padding-inline: 0.55rem; }
   .avatar-option-grid button { width: 100%; min-height: 0; padding: 0.15rem; }
   .avatar-option-grid .player-avatar { width: 92%; height: 92%; }
   .theme-badge-row { grid-template-columns: 1fr; }

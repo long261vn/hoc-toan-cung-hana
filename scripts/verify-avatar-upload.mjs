@@ -46,24 +46,24 @@ const waitFor = async selector => {
 try {
   await command("Page.navigate", { url: previewUrl });
   await waitFor(".profile-avatar-chooser");
-  const hasStoredPhoto = await evaluate(`Boolean(document.querySelector(".avatar-photo-option.is-selected img.player-avatar-photo"))`);
+  const hasStoredPhoto = await evaluate(`Boolean(document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo"))`);
   if (hasStoredPhoto) {
     await evaluate(`document.querySelector(".avatar-option-grid button")?.click()`);
   }
-  await waitFor(".avatar-photo-option input");
+  await waitFor(".avatar-photo-upload input");
   const document = await command("DOM.getDocument", { depth: 1 });
   const node = await command("DOM.querySelector", {
     nodeId: document.root.nodeId,
-    selector: ".avatar-photo-option input",
+    selector: ".avatar-photo-upload input",
   });
   if (!node.nodeId) throw new Error("Không tìm thấy input tải avatar.");
   await command("DOM.setFileInputFiles", {
     nodeId: node.nodeId,
     files: [path.join(screenshotDirectory, screenshot)],
   });
-  await waitFor(".avatar-photo-option.is-selected img.player-avatar-photo");
+  await waitFor(".avatar-photo-upload.has-photo img.player-avatar-photo");
   const result = await evaluate(`(() => {
-    const image = document.querySelector(".avatar-photo-option.is-selected img.player-avatar-photo");
+    const image = document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo");
     return { src: image?.getAttribute("src") ?? "", error: document.querySelector(".avatar-upload-error")?.textContent?.trim() ?? "" };
   })()`);
   if (!/^\/manus-storage\/hana-avatars\/.+\.jpg$/i.test(result.src) || result.error) {
@@ -72,27 +72,27 @@ try {
   const storedBeforeReload = await evaluate(`localStorage.getItem("hana-player-avatar-photo-v1") ?? ""`);
   await command("Page.reload");
   await sleep(700);
-  await waitFor(".avatar-photo-option.is-selected img.player-avatar-photo");
-  const restored = await evaluate(`({ src: document.querySelector(".avatar-photo-option.is-selected img.player-avatar-photo")?.getAttribute("src") ?? "", stored: localStorage.getItem("hana-player-avatar-photo-v1") ?? "", selected: document.querySelector(".avatar-photo-option")?.className ?? "" })`);
+  await waitFor(".avatar-photo-upload.has-photo img.player-avatar-photo");
+  const restored = await evaluate(`({ src: document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo")?.getAttribute("src") ?? "", stored: localStorage.getItem("hana-player-avatar-photo-v1") ?? "", selected: document.querySelector(".avatar-photo-upload")?.className ?? "" })`);
   if (restored.src !== result.src) throw new Error(`Avatar ảnh không được giữ sau tải lại: ${JSON.stringify({ result, storedBeforeReload, restored })}`);
   await evaluate(`document.querySelector(".avatar-option-grid button")?.click()`);
   await waitFor(".avatar-option-grid button.is-selected");
-  const switchedBack = await evaluate(`({ photo: localStorage.getItem("hana-player-avatar-photo-v1"), selected: document.querySelector(".avatar-option-grid button.is-selected")?.getAttribute("aria-checked") ?? "", photoVisible: Boolean(document.querySelector(".avatar-photo-option.is-selected img.player-avatar-photo")) })`);
+  const switchedBack = await evaluate(`({ photo: localStorage.getItem("hana-player-avatar-photo-v1"), selected: document.querySelector(".avatar-option-grid button.is-selected")?.getAttribute("aria-checked") ?? "", photoVisible: Boolean(document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo")) })`);
   if (switchedBack.photo || switchedBack.selected !== "true" || switchedBack.photoVisible) throw new Error(`Không thể đổi về avatar có sẵn: ${JSON.stringify(switchedBack)}`);
   await command("Page.reload");
   await sleep(700);
-  await waitFor(".avatar-photo-option input");
+  await waitFor(".avatar-photo-upload input");
   const reloadedDocument = await command("DOM.getDocument", { depth: 1 });
   const reloadedNode = await command("DOM.querySelector", {
     nodeId: reloadedDocument.root.nodeId,
-    selector: ".avatar-photo-option input",
+    selector: ".avatar-photo-upload input",
   });
   await command("DOM.setFileInputFiles", {
     nodeId: reloadedNode.nodeId,
     files: [path.join(screenshotDirectory, screenshot)],
   });
-  await waitFor(".avatar-photo-option.is-selected img.player-avatar-photo");
-  const selectedAgain = await evaluate(`document.querySelector(".avatar-photo-option.is-selected img.player-avatar-photo")?.getAttribute("src") ?? ""`);
+  await waitFor(".avatar-photo-upload.has-photo img.player-avatar-photo");
+  const selectedAgain = await evaluate(`document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo")?.getAttribute("src") ?? ""`);
   if (!/^\/manus-storage\/hana-avatars\/.+\.jpg$/i.test(selectedAgain)) throw new Error(`Không thể chọn lại avatar ảnh: ${selectedAgain}`);
   console.log(JSON.stringify({ result, restored, selectedAgain, status: "custom avatar upload, reload and switching valid" }));
 } finally {
