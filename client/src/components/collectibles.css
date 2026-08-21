@@ -127,6 +127,15 @@
   overflow: visible;
 }
 
+.player-avatar-photo {
+  overflow: hidden;
+  border: 3px solid rgba(255, 249, 214, 0.9);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  background: #273970;
+}
+
 .avatar-option-grid .player-avatar {
   position: static;
   width: 92%;
@@ -142,6 +151,74 @@
   color: #152662;
   border-radius: 50%;
   background: #fff0a3;
+}
+
+.profile-avatar-photo {
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
+  margin: 0.25rem auto 0;
+  padding: 0.62rem 0.72rem;
+  color: #eff8ff;
+  border: 1px solid rgba(184, 216, 255, 0.32);
+  border-radius: 1rem;
+  background: rgba(12, 32, 84, 0.38);
+}
+
+.profile-avatar-photo .player-avatar-photo {
+  width: 3.3rem;
+  height: 3.3rem;
+  flex: none;
+}
+
+.profile-avatar-photo > div {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.profile-avatar-photo strong { font-size: 0.72rem; letter-spacing: 0.08em; }
+.profile-avatar-photo small { color: #b9d5ff; font-size: 0.72rem; font-weight: 600; line-height: 1.3; }
+
+.profile-avatar-photo > button {
+  flex: none;
+  padding: 0.45rem 0.52rem;
+  color: #253567;
+  border: 0;
+  border-radius: 0.65rem;
+  background: #fff0aa;
+  font-family: "Baloo 2", cursive;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.profile-avatar-upload {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.56rem;
+  width: 100%;
+  min-height: 3.9rem;
+  padding: 0.62rem 0.76rem;
+  color: #eff8ff;
+  border: 1px dashed rgba(184, 216, 255, 0.58);
+  border-radius: 1rem;
+  background: rgba(12, 32, 84, 0.38);
+  cursor: pointer;
+}
+
+.profile-avatar-upload > span { display: grid; gap: 0.08rem; }
+.profile-avatar-upload b { font-size: 0.82rem; }
+.profile-avatar-upload small { color: #b9d5ff; font-size: 0.7rem; font-weight: 600; }
+.profile-avatar-upload input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
+.avatar-upload-spinner { animation: avatar-upload-spin 800ms linear infinite; }
+.avatar-upload-error { margin: 0.42rem 0 0; color: #ffd0c8; font-size: 0.76rem; font-weight: 700; text-align: center; }
+
+@keyframes avatar-upload-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 430px) {
+  .profile-avatar-photo { align-items: flex-start; }
+  .profile-avatar-photo > button { align-self: center; font-size: 0.66rem; }
 }
 
 .summary-player-identity {

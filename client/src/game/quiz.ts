@@ -120,7 +120,9 @@ export function generateMissingComponentQuestion(
     hintSteps = [
       `Tổng là ${total}; số hạng đã biết là ${knownAddend}.`,
       "Muốn tìm số hạng, lấy tổng trừ số hạng đã biết.",
-      `${total} − ${knownAddend} = ?`,
+      difficulty === "easy"
+        ? `${total} − ${knownAddend} = ?`
+        : `Đặt tính ${total} − ${knownAddend} theo cột, rồi tìm số hạng chưa biết.`,
     ];
     span = difficulty === "easy" ? 5 : 25;
   }
@@ -152,12 +154,16 @@ export function generateMissingComponentQuestion(
       ? [
           `Hiệu là ${difference}; số trừ là ${subtrahend}.`,
           "Muốn tìm số bị trừ, lấy hiệu cộng số trừ.",
-          `${difference} + ${subtrahend} = ?`,
+          difficulty === "easy"
+            ? `${difference} + ${subtrahend} = ?`
+            : `Đặt tính ${difference} + ${subtrahend} theo cột, rồi tìm số bị trừ chưa biết.`,
         ]
       : [
           `Số bị trừ là ${minuend}; hiệu là ${difference}.`,
           "Muốn tìm số trừ, lấy số bị trừ trừ hiệu.",
-          `${minuend} − ${difference} = ?`,
+          difficulty === "easy"
+            ? `${minuend} − ${difference} = ?`
+            : `Đặt tính ${minuend} − ${difference} theo cột, rồi tìm số trừ chưa biết.`,
         ];
     span = difficulty === "easy" ? 5 : 25;
   }
@@ -260,13 +266,13 @@ export function generateQuestion(
       mission = "Gộp hai nhóm số lại với nhau.";
       span = 35;
     } else {
-      a = rand(420, 780);
-      b = rand(110, 210);
-      hint = "Bạn hãy cộng từng hàng và nhớ nếu cần.";
+      a = rand(1250, 7800);
+      b = rand(220, 1800);
+      hint = "Bạn hãy đặt tính rồi cộng từng hàng, nhớ khi cần.";
       hintSteps = [
         "Đặt các chữ số cùng hàng thẳng cột.",
-        "Cộng lần lượt từ phải sang trái.",
-        "Nếu một hàng được từ 10 trở lên, viết hàng đơn vị và nhớ 1 sang hàng bên trái.",
+        "Cộng từ hàng đơn vị sang hàng chục, hàng trăm rồi hàng nghìn.",
+        "Nếu tổng ở một hàng từ 10 trở lên, viết chữ số ở hàng đó và nhớ 1 sang hàng bên trái.",
       ];
       mission = "Hoàn thành phép cộng nhiều chữ số.";
       span = 50;
@@ -299,13 +305,13 @@ export function generateQuestion(
       mission = "Tìm số còn lại sau phép trừ.";
       span = 35;
     } else {
-      a = rand(650, 990);
-      b = rand(120, 540);
-      hint = "Nếu không đủ để trừ, bạn hãy đổi 1 chục hoặc 1 trăm nhé.";
+      a = rand(1800, 9000);
+      b = rand(240, Math.min(4200, a - 120));
+      hint = "Bạn hãy đặt tính rồi đổi một chục hoặc một trăm khi hàng đó không đủ để trừ.";
       hintSteps = [
         "Đặt các chữ số cùng hàng thẳng cột.",
-        "Trừ từ phải sang trái.",
-        "Nếu một hàng không đủ để trừ, mượn 1 ở hàng bên trái; đổi 1 chục thành 10 đơn vị hoặc 1 trăm thành 10 chục rồi tiếp tục.",
+        "Trừ từ hàng đơn vị sang trái, lần lượt đến các hàng lớn hơn.",
+        "Nếu một hàng không đủ để trừ, đổi 1 ở hàng bên trái: 1 chục thành 10 đơn vị hoặc 1 trăm thành 10 chục.",
       ];
       mission = "Mở lối đi qua vành đai thiên thạch.";
       span = 45;
@@ -320,25 +326,25 @@ export function generateQuestion(
       b = rand(2, 10);
       hint = `Bạn hãy nhớ lại bảng nhân ${a} nhé.`;
       hintSteps = [
-        `Có ${b} nhóm bằng nhau, mỗi nhóm có ${a}.`,
-        `Bạn có thể cộng ${a} lặp lại ${b} lần.`,
-        `Hoặc dùng bảng nhân ${a} để tìm kết quả.`,
+        `Đọc bảng nhân ${a} đến phép nhân với ${b}.`,
+        `Tìm dòng ${a} × ${b} trong bảng nhân.`,
+        "Chọn tích của phép nhân đó.",
       ];
       mission = "Khởi động bảng nhân quen thuộc.";
       span = 4;
     } else if (difficulty === "medium") {
       a = rand(2, 9);
       b = rand(3, 9);
-      hint = "Bạn có thể cộng lặp lại hoặc dùng bảng nhân.";
+      hint = `Bạn hãy dùng bảng nhân ${a} để tính thật chắc.`;
       hintSteps = [
-        `Xem ${a} × ${b} là ${b} nhóm, mỗi nhóm có ${a}.`,
-        `Cộng ${a} lặp lại ${b} lần nếu bạn chưa nhớ bảng nhân.`,
-        "Sau đó chọn kết quả vừa tìm được.",
+        `Đọc bảng nhân ${a} đến phép nhân với ${b}.`,
+        `Xác định phép tính ${a} × ${b}.`,
+        "Chọn tích bạn vừa đọc được trong bảng nhân.",
       ];
       mission = "Xếp các nhóm bằng nhau để nhân.";
       span = 7;
     } else {
-      a = rand(12, 89);
+      a = rand(120, 980);
       b = rand(2, 9);
       hint = "Bạn hãy nhân lần lượt với hàng đơn vị rồi hàng chục.";
       hintSteps = [
@@ -382,11 +388,11 @@ export function generateQuestion(
       b = rand(2, 9);
       answer = rand(12, 36);
       a = b * answer;
-      hint = "Bạn hãy dùng phép nhân để tìm thương rồi kiểm tra lại.";
+      hint = "Bạn hãy đặt tính chia theo từng hàng rồi dùng phép nhân để kiểm tra.";
       hintSteps = [
-        `Tìm thương bằng cách nghĩ ${b} × ? = ${a}.`,
-        `Dùng bảng nhân ${b} hoặc nhân nhẩm để tìm số còn thiếu.`,
-        `Kiểm tra: lấy số vừa tìm được nhân ${b}; nếu được ${a} thì đó là thương.`,
+        `Đặt tính ${a} ÷ ${b}.`,
+        `Chia từ hàng lớn nhất bên trái; viết từng chữ số của thương đúng hàng.`,
+        `Kiểm tra: lấy thương nhân ${b}; nếu được ${a} thì thương đúng.`,
       ];
       mission = "Tìm thương của phép chia.";
       span = 10;
@@ -457,7 +463,7 @@ export function generateTableQuestion(
     options: choices(answer, 6),
     hint: isDivision
       ? `Bạn hãy đổi phép chia thành phép nhân: ${table} × ? = ${product}.`
-      : `Bạn đang luyện bảng nhân ${table}. Hãy đếm ${table} thêm ${factor} lần nhé.`,
+      : `Bạn đang luyện bảng nhân ${table}. Hãy đọc đến phép nhân với ${factor}.`,
     hintSteps: isDivision
       ? [
           `Đổi ${product} ÷ ${table} thành ${table} × ? = ${product}.`,
@@ -465,9 +471,9 @@ export function generateTableQuestion(
           "Số còn thiếu là kết quả phép chia.",
         ]
       : [
-          `Có ${factor} nhóm bằng nhau, mỗi nhóm có ${table}.`,
-          `Bạn có thể cộng ${table} lặp lại ${factor} lần.`,
-          `Hoặc dùng bảng nhân ${table} để tìm kết quả.`,
+          `Đọc bảng nhân ${table} đến phép nhân với ${factor}.`,
+          `Tìm dòng ${table} × ${factor} trong bảng nhân.`,
+          "Chọn tích của phép nhân đó.",
         ],
     mission: `Khởi động bảng ${kindLabel} ${table}.`,
   };

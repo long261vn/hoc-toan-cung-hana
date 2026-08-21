@@ -17,3 +17,15 @@
 Phần Lớp 3 của Chương trình môn Toán nêu việc vận dụng bảng nhân và bảng chia 2–9; thực hiện phép nhân với số có một chữ số, phép chia cho số có một chữ số; nhận biết mối quan hệ cộng–trừ và nhân–chia trong thực hành tính. Chương trình cũng yêu cầu xác định thành phần chưa biết của phép tính thông qua các giá trị đã biết.
 
 Vì vậy, gợi ý trong game được chuẩn hóa theo ba bước: nêu các thành phần đã biết, nhắc đúng quy tắc/quan hệ phép tính ngược hoặc thao tác theo cột, rồi cho học sinh tự hoàn tất phép tính. Với phép chia, bước cuối dùng phép nhân ngược để kiểm tra thương, không đưa đáp số.
+
+## Ma trận thiết kế lại gợi ý Hana
+
+| Nội dung | Làm quen | Tự tin | Thám hiểm |
+|---|---|---|---|
+| Cộng | Đếm thêm hoặc tách để làm tròn chục khi số nhỏ. | Đặt tính thẳng cột; đi từ đơn vị, nhắc nhớ khi tổng từ 10. | Cộng theo cột nhiều hàng; nêu rõ ghi chữ số hàng đang tính và nhớ sang hàng kế tiếp. |
+| Trừ | Đếm lùi/tách số nhỏ. | Đặt tính; khi không đủ ở một hàng, đổi một chục thành mười đơn vị. | Đặt tính theo cột; đổi một trăm thành mười chục hoặc một chục thành mười đơn vị đúng hàng cần trừ. |
+| Nhân | Ưu tiên đọc bảng nhân 2–9; chỉ nêu nhóm bằng nhau như một cách hiểu ban đầu. | Dùng bảng nhân và tách số thuận tiện; không bắt cộng lặp khi đã là bảng nhân quen thuộc. | Đặt tính nhân số có hai chữ số với số có một chữ số: nhân đơn vị, nhớ nếu cần, rồi nhân hàng chục. |
+| Chia | Dùng bảng chia/bảng nhân ngược 2–9. | Tìm thương qua quan hệ số chia × thương = số bị chia, rồi tự kiểm tra. | Chia số có nhiều chữ số cho số có một chữ số theo hàng; chia từ trái sang phải, viết thương đúng hàng và kiểm tra bằng phép nhân. |
+| Tìm thành phần chưa biết | Gọi đúng tên thành phần, dùng quan hệ phép tính ngược, không thay bằng ký hiệu đại số phức tạp. | Nêu số đã biết, chọn quy tắc phù hợp và hướng dẫn đặt tính nếu phép tính ngược có nhiều chữ số. | Tách riêng các bước tính theo cột của phép tính ngược; không đưa đáp số. |
+
+Mỗi gợi ý chỉ đưa một chiến lược phù hợp câu hiện tại, không yêu cầu học sinh đi qua nhiều cách làm khi không cần thiết. Học sinh luôn được chọn thử lại ngay hoặc chủ động xem gợi ý.

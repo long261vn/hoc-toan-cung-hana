@@ -1,5 +1,13 @@
 # Việc cần làm — Robot Hana hướng dẫn học tập
 
+## Trợ giúp Hana tự chọn và avatar ảnh cá nhân
+
+- [x] Đổi phản hồi sai thành lựa chọn Thử lại ngay hoặc Xem gợi ý Hana; không tự động bắt học sinh đi qua từng bước.
+- [x] Thiết kế lại ngân hàng gợi ý theo phép tính, dạng thường/tìm thành phần và độ khó; ưu tiên chiến lược phù hợp Toán lớp 3 GDPT 2018 thay vì một khuôn mẫu chung.
+- [x] Bổ sung avatar ảnh cá nhân với giới hạn định dạng/kích thước, xem trước, cắt khung tròn và giữ nguyên bốn avatar có sẵn.
+- [x] Kiểm thử VIE/ENG, thao tác sai–thử lại–xem gợi ý, các mức toán, lưu/đổi avatar, TypeScript, build và lưu checkpoint.
+- [x] Hồi quy avatar ảnh cá nhân qua tải lại trang, đổi qua avatar có sẵn rồi chọn lại ảnh; sau đó lưu checkpoint cuối.
+
 ## QA nghiêm ngặt toàn diện
 
 - [x] Kiểm thử tự động toàn bộ luồng câu hỏi, đáp án, bảng nhân/chia, bài kiểm tra, lưu phiên, ảnh kỷ niệm, VIE/ENG và xác nhận điều hướng.

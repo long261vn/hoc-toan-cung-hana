@@ -36,8 +36,20 @@ try {
   await waitFor(".math-expression");
   const nextAnswer = await getAnswer();
   await evaluate(`Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) !== ${nextAnswer})?.click()`);
+  await waitFor(".feedback-banner.is-wrong");
+  const choiceState = await evaluate(`({ hasGuide: Boolean(document.querySelector(".hana-learning-card")), retry: document.querySelector(".feedback-action.is-retry")?.textContent?.trim() ?? "", help: document.querySelector(".feedback-action.is-hana-help")?.textContent?.trim() ?? "" })`);
+  if (choiceState.hasGuide || !choiceState.retry.includes("Try again now") || !choiceState.help.includes("Ask Hana for a clue")) throw new Error(`Phản hồi sai chưa cho học sinh quyền chọn: ${JSON.stringify(choiceState)}`);
+  await evaluate(`document.querySelector(".feedback-action.is-hana-help")?.click()`);
+  await waitFor(".hana-primary-action");
+  await evaluate(`document.querySelector(".hana-retry-now")?.click()`);
+  await sleep(80);
+  const stoppedGuide = await evaluate(`!document.querySelector(".hana-learning-card") && document.querySelectorAll(".answer-button").length === 4`);
+  if (!stoppedGuide) throw new Error("Học sinh chưa thể thử lại ngay khi đang xem gợi ý Hana.");
+  await evaluate(`Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) !== ${nextAnswer})?.click()`);
+  await waitFor(".feedback-action.is-hana-help");
+  await evaluate(`document.querySelector(".feedback-action.is-hana-help")?.click()`);
   await waitFor(".hana-primary-action");
   const retry = await evaluate(`(() => { const button = document.querySelector(".hana-primary-action"); const style = button ? getComputedStyle(button) : null; const rect = button?.getBoundingClientRect(); return { label: button?.textContent?.trim() ?? "", height: rect?.height ?? 0, minHeight: style ? Number.parseFloat(style.minHeight) : 0, background: style?.backgroundImage ?? style?.backgroundColor ?? "" }; })()`);
   if (retry.height < 40 || retry.minHeight < 40 || !retry.label.includes("Next step")) throw new Error(`Nút hướng dẫn Hana chưa đủ nổi bật: ${JSON.stringify(retry)}`);
-  console.log(JSON.stringify({ next, retry, status: "feedback action buttons valid" }));
+  console.log(JSON.stringify({ next, choiceState, stoppedGuide, retry, status: "feedback action buttons valid" }));
 } finally { socket.close(); }

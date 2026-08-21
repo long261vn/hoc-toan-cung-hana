@@ -57,6 +57,9 @@ try {
   })()`);
   if (!wrongResult.wrongAnswerFound) throw new Error(`Không tìm thấy đáp án sai để kiểm thử gợi ý: ${JSON.stringify(wrongResult)}`);
   await sleep(180);
+  const helpChoice = await evaluate(`({ guideOpen: Boolean(document.querySelector(".hana-learning-card")), retry: document.querySelector(".feedback-action.is-retry")?.textContent?.trim() ?? "", help: document.querySelector(".feedback-action.is-hana-help")?.textContent?.trim() ?? "" })`);
+  if (helpChoice.guideOpen || !helpChoice.retry.includes("Try again now") || !helpChoice.help.includes("Ask Hana for a clue")) throw new Error(`Phản hồi sai English chưa cho phép lựa chọn: ${JSON.stringify(helpChoice)}`);
+  await evaluate(`document.querySelector(".feedback-action.is-hana-help")?.click()`);
   await waitFor(".hana-learning-card", "cửa sổ Hana English");
   const hanaGuide = await evaluate(`document.querySelector(".hana-learning-card")?.textContent?.replace(/\\s+/g, " ").trim()`);
   if (!hanaGuide?.includes("Let’s work it out, Linh!") || !hanaGuide.includes("Step 1 of") || !hanaGuide.includes("Next step") || /Robot Hana cùng bạn|Bước tiếp|Thử lại câu này|Bạn đã chọn/.test(hanaGuide)) throw new Error(`Cửa sổ Hana chưa dùng English math đúng chuẩn: ${hanaGuide}`);
@@ -72,5 +75,5 @@ try {
   await sleep(100);
   const retryReady = await evaluate(`!document.querySelector(".hana-learning-card") && document.querySelectorAll(".answer-button").length === 4`);
   if (!retryReady) throw new Error("Câu hỏi không mở lại sau hướng dẫn Hana.");
-  console.log(JSON.stringify({ result, feedback, wrongResult, hanaGuide, retryLabel, status: "english feedback and Hana guide valid" }));
+  console.log(JSON.stringify({ result, feedback, wrongResult, helpChoice, hanaGuide, retryLabel, status: "english feedback and Hana guide valid" }));
 } finally { socket.close(); }

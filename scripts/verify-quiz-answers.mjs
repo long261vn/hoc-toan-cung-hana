@@ -31,7 +31,7 @@ const calculate = (expression) => {
   return Function(`"use strict"; return (${normalized});`)();
 };
 
-const validate = (question) => {
+const validate = (question, difficulty = null) => {
   if (!quiz.isQuestionConsistent(question)) throw new Error(`Lớp bảo vệ nhất quán từ chối câu hỏi: ${question.expression}`);
   if (question.options.length !== 4 || new Set(question.options).size !== 4) throw new Error(`Số lựa chọn không hợp lệ: ${question.expression}`);
   if (!question.options.includes(question.answer)) throw new Error(`Thiếu đáp án đúng: ${question.expression} → ${question.answer}`);
@@ -60,14 +60,52 @@ const validate = (question) => {
       throw new Error(`Gợi ý tìm thành phần chưa nêu đúng quan hệ phép tính: ${question.expression}`);
     }
   }
+  if (question.kind === "standard" && difficulty) {
+    const steps = question.hintSteps.join(" ");
+    if (
+      question.operation === "multiply" &&
+      difficulty !== "challenge" &&
+      (!/bảng nhân/.test(steps) || /Có \d+ nhóm|cộng \d+ lặp lại/.test(steps))
+    ) {
+      throw new Error(`Phép nhân cơ bản cần ưu tiên bảng nhân, không khuôn nhóm/cộng lặp: ${question.expression}`);
+    }
+    if (
+      question.operation === "multiply" &&
+      difficulty === "challenge" &&
+      (!steps.includes("Đặt tính") || !steps.includes("Nhân") || Number(question.expression.split(" ")[0]) < 100)
+    ) {
+      throw new Error(`Phép nhân khó cần dùng đặt tính với số lớn: ${question.expression}`);
+    }
+    if (
+      question.operation === "add" &&
+      difficulty === "challenge" &&
+      (!steps.includes("hàng nghìn") || !steps.includes("nhớ 1"))
+    ) {
+      throw new Error(`Phép cộng khó cần hướng dẫn theo cột có nhớ: ${question.expression}`);
+    }
+    if (
+      question.operation === "subtract" &&
+      difficulty === "challenge" &&
+      (!steps.includes("Đặt các chữ số") || !steps.includes("đổi 1 ở hàng bên trái"))
+    ) {
+      throw new Error(`Phép trừ khó cần hướng dẫn đổi chục/trăm theo cột: ${question.expression}`);
+    }
+    if (
+      question.operation === "divide" &&
+      difficulty === "challenge" &&
+      (!steps.includes("Đặt tính") || !steps.includes("Chia từ hàng lớn nhất") || !steps.includes("Kiểm tra"))
+    ) {
+      throw new Error(`Phép chia khó cần hướng dẫn đặt tính và kiểm tra: ${question.expression}`);
+    }
+  }
 };
 
 let checks = 0;
 for (const operation of operations) {
   for (const difficulty of difficulties) {
     for (let index = 0; index < 1000; index += 1) {
-      validate(quiz.generateQuestion(operation, difficulty));
-      validate(quiz.generateMissingComponentQuestion(operation, difficulty));
+      validate(quiz.generateQuestion(operation, difficulty), difficulty);
+      validate(quiz.generateMissingComponentQuestion(operation, difficulty), difficulty);
       checks += 2;
     }
   }

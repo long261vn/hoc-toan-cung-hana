@@ -23,7 +23,9 @@ import {
   ClipboardCheck,
   Gem,
   HelpCircle,
+  ImagePlus,
   Languages,
+  LoaderCircle,
   Rocket,
   Settings,
   Sparkles,
@@ -75,6 +77,7 @@ import {
   sessionRewards,
   type PracticeFormat,
 } from "@/game/session";
+import { trpc } from "@/lib/trpc";
 
 type AppScreen =
   | "welcome"
@@ -108,6 +111,7 @@ type PlanetUnlock = { operation: Operation; badge: ThemeBadge };
 
 const SESSION_DRAFT_KEY = "hana-active-session-v1";
 const AVATAR_STORAGE_KEY = "hana-player-avatar-v2";
+const AVATAR_PHOTO_STORAGE_KEY = "hana-player-avatar-photo-v1";
 const LEGACY_AVATAR_STORAGE_KEY = "hana-astronaut-avatar-v1";
 const THEME_BADGE_STORAGE_KEY = "hana-theme-badges-v1";
 const DRAFT_SCREENS = [
@@ -166,13 +170,25 @@ const PLAYER_AVATAR_STYLES: Record<
 
 function PlayerAvatar({
   avatarId,
+  photoUrl,
   className = "",
   decorative = false,
 }: {
   avatarId: AvatarId;
+  photoUrl?: string | null;
   className?: string;
   decorative?: boolean;
 }) {
+  if (photoUrl) {
+    return (
+      <img
+        className={`player-avatar player-avatar-photo ${className}`}
+        src={photoUrl}
+        alt={decorative ? "" : "Player avatar"}
+        aria-hidden={decorative}
+      />
+    );
+  }
   const style = PLAYER_AVATAR_STYLES[avatarId];
   const pigtails = style.hairstyle === "pigtails";
   const bob = style.hairstyle === "bob";
@@ -247,6 +263,7 @@ type SessionDraft = {
   testDurationSeconds?: TestDurationSeconds;
   testSecondsRemaining?: number;
   avatarId?: AvatarId;
+  avatarPhotoUrl?: string | null;
 };
 
 function isFiniteWholeNumber(
@@ -280,6 +297,13 @@ function isAvatarId(value: unknown): value is AvatarId {
   return normalizeAvatarId(value) !== null;
 }
 
+function isAvatarPhotoUrl(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    /^\/manus-storage\/hana-avatars\/.+\.jpg$/i.test(value)
+  );
+}
+
 function readAvatarPreference(): AvatarId {
   try {
     const stored =
@@ -288,6 +312,54 @@ function readAvatarPreference(): AvatarId {
     return normalizeAvatarId(stored) ?? "minh-khoa";
   } catch {
     return "minh-khoa";
+  }
+}
+
+function readAvatarPhotoPreference() {
+  try {
+    const stored = window.localStorage.getItem(AVATAR_PHOTO_STORAGE_KEY);
+    return isAvatarPhotoUrl(stored) ? stored : null;
+  } catch {
+    return null;
+  }
+}
+
+async function prepareAvatarPhoto(file: File) {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error("avatar-file-type");
+  }
+  if (file.size > 8 * 1024 * 1024) {
+    throw new Error("avatar-file-size");
+  }
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const image = new Image();
+    image.src = objectUrl;
+    await image.decode();
+    if (image.naturalWidth < 80 || image.naturalHeight < 80) {
+      throw new Error("avatar-file-resolution");
+    }
+    const canvas = document.createElement("canvas");
+    canvas.width = 320;
+    canvas.height = 320;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("avatar-file-canvas");
+    const cropSize = Math.min(image.naturalWidth, image.naturalHeight);
+    context.drawImage(
+      image,
+      (image.naturalWidth - cropSize) / 2,
+      (image.naturalHeight - cropSize) / 2,
+      cropSize,
+      cropSize,
+      0,
+      0,
+      320,
+      320
+    );
+    return canvas.toDataURL("image/jpeg", 0.84);
+  } finally {
+    URL.revokeObjectURL(objectUrl);
   }
 }
 
@@ -359,6 +431,9 @@ function isValidSessionDraft(
     durationIsValid &&
     remainingIsValid &&
     (value.avatarId === undefined || isAvatarId(value.avatarId)) &&
+    (value.avatarPhotoUrl === undefined ||
+      value.avatarPhotoUrl === null ||
+      isAvatarPhotoUrl(value.avatarPhotoUrl)) &&
     Boolean(value.question) &&
     isQuestionConsistent(value.question as QuizQuestion)
   );
@@ -376,6 +451,12 @@ function readSessionDraft(): SessionDraft | null {
         draft.avatarId === undefined
           ? undefined
           : normalizeAvatarId(draft.avatarId) ?? "minh-khoa",
+      avatarPhotoUrl:
+        draft.avatarPhotoUrl === undefined
+          ? undefined
+          : isAvatarPhotoUrl(draft.avatarPhotoUrl)
+            ? draft.avatarPhotoUrl
+            : null,
     } as SessionDraft;
   } catch {
     return null;
@@ -900,6 +981,8 @@ function translateLearningText(text: string, language: Language) {
       "Line up the numbers and add from the ones place.",
     "Bạn hãy cộng từng hàng và nhớ nếu cần.":
       "Add each place value and regroup when needed.",
+    "Bạn hãy đặt tính rồi cộng từng hàng, nhớ khi cần.":
+      "Set up the addition in columns and regroup when needed.",
     "Đặt các chữ số cùng hàng thẳng cột.":
       "Line up digits with the same place value.",
     "Cộng lần lượt từ phải sang trái.":
@@ -911,6 +994,8 @@ function translateLearningText(text: string, language: Language) {
       "Line up the numbers and subtract from the ones place.",
     "Nếu không đủ để trừ, bạn hãy đổi 1 chục hoặc 1 trăm nhé.":
       "Regroup a ten or hundred when needed.",
+    "Bạn hãy đặt tính rồi đổi một chục hoặc một trăm khi hàng đó không đủ để trừ.":
+      "Set up the subtraction in columns and regroup a ten or hundred when a place is not enough.",
     "Bạn có thể cộng lặp lại hoặc dùng bảng nhân.":
       "Use repeated addition or a times table.",
     "Bạn hãy nhân lần lượt với hàng đơn vị rồi hàng chục.":
@@ -919,6 +1004,8 @@ function translateLearningText(text: string, language: Language) {
       "Turn division into multiplication to check your answer.",
     "Bạn hãy dùng phép nhân để tìm thương rồi kiểm tra lại.":
       "Use multiplication to find the quotient, then check it.",
+    "Bạn hãy đặt tính chia theo từng hàng rồi dùng phép nhân để kiểm tra.":
+      "Set up the division by place value, then use multiplication to check it.",
     "Số còn thiếu chính là kết quả phép chia.":
       "The missing number is the division answer.",
     "Số điền vào dấu hỏi là thương của phép chia.":
@@ -955,6 +1042,10 @@ function translateLearningText(text: string, language: Language) {
       "Use the $1 times table to solve the division."
     )
     .replace(
+      /^Bạn hãy dùng bảng nhân (\d+) để tính thật chắc\.$/,
+      "Use the $1 times table to calculate carefully."
+    )
+    .replace(
       /^Bạn hãy nghĩ: (\d+) nhân mấy thì được (\d+)\?$/,
       "Think: $1 times what equals $2?"
     )
@@ -969,6 +1060,23 @@ function translateLearningText(text: string, language: Language) {
     .replace(
       /^Hoặc dùng bảng nhân (\d+) để tìm kết quả\.$/,
       "Or use the $1 times table to find the answer."
+    )
+    .replace(
+      /^Đọc bảng nhân (\d+) đến phép nhân với (\d+)\.$/,
+      "Read the $1 times table up to the fact with $2."
+    )
+    .replace(
+      /^Tìm dòng (\d+) × (\d+) trong bảng nhân\.$/,
+      "Find the $1 × $2 fact in the times table."
+    )
+    .replace(
+      /^Xác định phép tính (\d+) × (\d+)\.$/,
+      "Find the $1 × $2 fact."
+    )
+    .replace(/^Chọn tích của phép nhân đó\.$/, "Choose the product of that fact.")
+    .replace(
+      /^Chọn tích bạn vừa đọc được trong bảng nhân\.$/,
+      "Choose the product you just found in the times table."
     )
     .replace(/^Bắt đầu từ (\d+)\.$/, "Start from $1.")
     .replace(
@@ -1013,6 +1121,18 @@ function translateLearningText(text: string, language: Language) {
       "The product is $1 and the known factor is $2."
     )
     .replace(
+      /^Đặt tính (\d+) − (\d+) theo cột, rồi tìm số hạng chưa biết\.$/,
+      "Set up $1 − $2 in columns, then find the missing addend."
+    )
+    .replace(
+      /^Đặt tính (\d+) \+ (\d+) theo cột, rồi tìm số bị trừ chưa biết\.$/,
+      "Set up $1 + $2 in columns, then find the missing minuend."
+    )
+    .replace(
+      /^Đặt tính (\d+) − (\d+) theo cột, rồi tìm số trừ chưa biết\.$/,
+      "Set up $1 − $2 in columns, then find the missing subtrahend."
+    )
+    .replace(
       /^Thương là (\d+); số chia là (\d+)\.$/,
       "The quotient is $1 and the divisor is $2."
     )
@@ -1053,6 +1173,22 @@ function translateLearningText(text: string, language: Language) {
       "If a column totals 10 or more, write the ones digit and carry 1 to the place on the left."
     )
     .replace(
+      /^Cộng từ hàng đơn vị sang hàng chục, hàng trăm rồi hàng nghìn\.$/,
+      "Add from the ones place to the tens, hundreds, then thousands places."
+    )
+    .replace(
+      /^Nếu tổng ở một hàng từ 10 trở lên, viết chữ số ở hàng đó và nhớ 1 sang hàng bên trái\.$/,
+      "If a place-value sum is 10 or more, write the digit for that place and carry 1 to the place on the left."
+    )
+    .replace(
+      /^Trừ từ hàng đơn vị sang trái, lần lượt đến các hàng lớn hơn\.$/,
+      "Subtract from the ones place to the larger places on the left."
+    )
+    .replace(
+      /^Nếu một hàng không đủ để trừ, đổi 1 ở hàng bên trái: 1 chục thành 10 đơn vị hoặc 1 trăm thành 10 chục\.$/,
+      "If a place is not enough to subtract, regroup 1 from the place to its left: 1 ten becomes 10 ones or 1 hundred becomes 10 tens."
+    )
+    .replace(
       /^Đặt tính (\d+) × (\d+)\.$/,
       "Set up $1 × $2 in columns."
     )
@@ -1063,6 +1199,15 @@ function translateLearningText(text: string, language: Language) {
     .replace(
       /^Nếu tích ở một hàng từ 10 trở lên, viết hàng đơn vị và nhớ sang hàng tiếp theo\.$/,
       "If a place-value product is 10 or more, write the ones digit and regroup to the next place."
+    )
+    .replace(/^Đặt tính (\d+) ÷ (\d+)\.$/, "Set up $1 ÷ $2 in columns.")
+    .replace(
+      /^Chia từ hàng lớn nhất bên trái; viết từng chữ số của thương đúng hàng\.$/,
+      "Divide from the largest place on the left and write each quotient digit in the correct place."
+    )
+    .replace(
+      /^Kiểm tra: lấy thương nhân (\d+); nếu được (\d+) thì thương đúng\.$/,
+      "Check: multiply the quotient by $1. If the result is $2, the quotient is correct."
     );
   return /[À-ỹ]/.test(translated)
     ? "Follow Hana's step-by-step clue, then choose your answer."
@@ -1275,7 +1420,12 @@ function PlayerProfileScreen({
   name,
   onNameChange,
   avatarId,
+  avatarPhotoUrl,
   onAvatarChange,
+  onAvatarPhotoSelect,
+  onRemoveAvatarPhoto,
+  isUploadingAvatar,
+  avatarUploadError,
   onBack,
   onContinue,
   language,
@@ -1283,7 +1433,12 @@ function PlayerProfileScreen({
   name: string;
   onNameChange: (name: string) => void;
   avatarId: AvatarId;
+  avatarPhotoUrl: string | null;
   onAvatarChange: (avatarId: AvatarId) => void;
+  onAvatarPhotoSelect: (file: File) => void;
+  onRemoveAvatarPhoto: () => void;
+  isUploadingAvatar: boolean;
+  avatarUploadError: string | null;
   onBack: () => void;
   onContinue: () => void;
   language: Language;
@@ -1369,6 +1524,52 @@ function PlayerProfileScreen({
             );
           })}
         </div>
+        <div className="profile-avatar-photo" data-i18n-direct>
+          {avatarPhotoUrl ? (
+            <>
+              <PlayerAvatar avatarId={avatarId} photoUrl={avatarPhotoUrl} decorative />
+              <div>
+                <strong>{language === "en" ? "YOUR PHOTO" : "ẢNH CỦA BẠN"}</strong>
+                <small>
+                  {language === "en"
+                    ? "This photo is cropped into a round avatar."
+                    : "Ảnh được cắt giữa thành avatar hình tròn."}
+                </small>
+              </div>
+              <button type="button" onClick={onRemoveAvatarPhoto}>
+                {language === "en" ? "Use a character" : "Dùng avatar có sẵn"}
+              </button>
+            </>
+          ) : (
+            <label className="profile-avatar-upload">
+              <ImagePlus size={18} />
+              <span>
+                <b>{language === "en" ? "Use your own photo" : "Dùng ảnh của bạn"}</b>
+                <small>
+                  {isUploadingAvatar
+                    ? language === "en"
+                      ? "Preparing your avatar..."
+                      : "Hana đang chuẩn bị avatar..."
+                    : language === "en"
+                      ? "JPG, PNG or WEBP · up to 8 MB"
+                      : "JPG, PNG hoặc WEBP · tối đa 8 MB"}
+                </small>
+              </span>
+              {isUploadingAvatar ? <LoaderCircle className="avatar-upload-spinner" size={19} /> : <ChevronRight size={18} />}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={isUploadingAvatar}
+                onChange={event => {
+                  const file = event.target.files?.[0];
+                  if (file) onAvatarPhotoSelect(file);
+                  event.currentTarget.value = "";
+                }}
+              />
+            </label>
+          )}
+        </div>
+        {avatarUploadError && <p className="avatar-upload-error" role="status">{avatarUploadError}</p>}
       </section>
       <label className="profile-name-field">
         <span>{language === "en" ? "ASTRONAUT NAME" : "TÊN PHI HÀNH GIA"}</span>
@@ -2180,6 +2381,9 @@ function HanaLearningDialog({
           <p>{pageText}</p>
         </div>
         <div className="hana-learning-actions">
+          <button type="button" className="hana-retry-now" onClick={onRetry}>
+            {language === "en" ? "Try again now" : "Thử lại ngay"}
+          </button>
           {step > 0 ? (
             <button type="button" className="hana-secondary-action" onClick={onPrevious}>
               {language === "en" ? "Back" : "Quay lại"}
@@ -2341,6 +2545,11 @@ export default function GameCanvas() {
       : ""
   );
   const [avatarId, setAvatarId] = useState<AvatarId>(readAvatarPreference);
+  const [avatarPhotoUrl, setAvatarPhotoUrl] = useState<string | null>(
+    readAvatarPhotoPreference
+  );
+  const [avatarUploadError, setAvatarUploadError] = useState<string | null>(null);
+  const uploadAvatar = trpc.avatar.upload.useMutation();
   const [collectedThemeBadgeIds, setCollectedThemeBadgeIds] = useState<string[]>(
     readThemeBadgeCollection
   );
@@ -2918,9 +3127,6 @@ export default function GameCanvas() {
           setSessionPoints(current => Math.max(0, current - 2));
         }
         setHanaLearningStep(0);
-        setShowHanaLearningGuide(true);
-        if (mode === "test" && pausedTimedTestAtRef.current === null)
-          pausedTimedTestAtRef.current = Date.now();
       }
     },
     [
@@ -2932,6 +3138,14 @@ export default function GameCanvas() {
       testComplete,
     ]
   );
+
+  const openHanaLearningGuide = () => {
+    setHanaLearningStep(0);
+    setShowHanaLearningGuide(true);
+    if (mode === "test" && pausedTimedTestAtRef.current === null) {
+      pausedTimedTestAtRef.current = Date.now();
+    }
+  };
 
   const retryQuestionAfterHanaGuide = () => {
     if (
@@ -3091,6 +3305,7 @@ export default function GameCanvas() {
       recentExpressions: recentQuestionExpressionsRef.current,
       playerName,
       avatarId,
+      avatarPhotoUrl,
       sessionPoints,
       correctCount,
       wrongCount,
@@ -3103,6 +3318,7 @@ export default function GameCanvas() {
     window.localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify(draft));
   }, [
     avatarId,
+    avatarPhotoUrl,
     correctCount,
     difficulty,
     elapsedSeconds,
@@ -3127,6 +3343,14 @@ export default function GameCanvas() {
   useEffect(() => {
     window.localStorage.setItem(AVATAR_STORAGE_KEY, avatarId);
   }, [avatarId]);
+
+  useEffect(() => {
+    if (avatarPhotoUrl) {
+      window.localStorage.setItem(AVATAR_PHOTO_STORAGE_KEY, avatarPhotoUrl);
+    } else {
+      window.localStorage.removeItem(AVATAR_PHOTO_STORAGE_KEY);
+    }
+  }, [avatarPhotoUrl]);
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -3217,6 +3441,11 @@ export default function GameCanvas() {
         : null;
     setPlayerName(resumeDraft.playerName);
     setAvatarId(resumeDraft.avatarId ?? readAvatarPreference());
+    setAvatarPhotoUrl(
+      resumeDraft.avatarPhotoUrl === undefined
+        ? readAvatarPhotoPreference()
+        : resumeDraft.avatarPhotoUrl
+    );
     setSessionPoints(resumeDraft.sessionPoints);
     setCorrectCount(resumeDraft.correctCount);
     setWrongCount(resumeDraft.wrongCount);
@@ -3269,6 +3498,40 @@ export default function GameCanvas() {
     : 0;
   const selectedAvatar =
     AVATAR_OPTIONS.find(avatar => avatar.id === avatarId) ?? AVATAR_OPTIONS[0];
+
+  const selectAvatarPhoto = useCallback(
+    async (file: File) => {
+      setAvatarUploadError(null);
+      try {
+        const dataUrl = await prepareAvatarPhoto(file);
+        const uploaded = await uploadAvatar.mutateAsync({ dataUrl });
+        setAvatarPhotoUrl(uploaded.url);
+        window.localStorage.setItem(AVATAR_PHOTO_STORAGE_KEY, uploaded.url);
+        playSound("reward");
+      } catch (error) {
+        const code = error instanceof Error ? error.message : "avatar-upload";
+        const messages = language === "en"
+          ? {
+              "avatar-file-type": "Choose a JPG, PNG or WEBP image.",
+              "avatar-file-size": "Choose an image smaller than 8 MB.",
+              "avatar-file-resolution": "Choose a clearer image, at least 80 × 80 px.",
+              "avatar-file-canvas": "This device cannot prepare that image yet.",
+              "avatar-upload": "Hana cannot use this photo yet. Please try again.",
+            }
+          : {
+              "avatar-file-type": "Hãy chọn ảnh JPG, PNG hoặc WEBP nhé.",
+              "avatar-file-size": "Ảnh cần nhỏ hơn 8 MB nhé.",
+              "avatar-file-resolution": "Ảnh cần rõ hơn, ít nhất 80 × 80 px nhé.",
+              "avatar-file-canvas": "Thiết bị chưa thể xử lý ảnh này.",
+              "avatar-upload": "Hana chưa thể dùng ảnh này. Bạn thử lại nhé.",
+            };
+        setAvatarUploadError(
+          messages[code as keyof typeof messages] ?? messages["avatar-upload"]
+        );
+      }
+    },
+    [language, playSound, uploadAvatar]
+  );
   const sessionThemeBadges = THEME_BADGES.filter(badge =>
     themeBadgesForSession(sessionPoints).includes(badge.id)
   );
@@ -3290,7 +3553,6 @@ export default function GameCanvas() {
     screen,
     showGuide,
     showScorePanel,
-    feedback,
     question,
     tableKind,
     selectedTables.length,
@@ -3432,6 +3694,15 @@ export default function GameCanvas() {
         document.fonts?.ready ?? Promise.resolve(),
         new Promise<void>(resolve => window.setTimeout(resolve, 700)),
       ]);
+      const avatarPhotoImage = avatarPhotoUrl
+        ? await new Promise<HTMLImageElement | null>(resolve => {
+            const image = new Image();
+            image.crossOrigin = "anonymous";
+            image.onload = () => resolve(image);
+            image.onerror = () => resolve(null);
+            image.src = avatarPhotoUrl;
+          })
+        : null;
       const drawOrbit = (
         x: number,
         y: number,
@@ -3555,6 +3826,24 @@ export default function GameCanvas() {
         context.beginPath();
         context.arc(x, y, radius, 0, Math.PI * 2);
         context.clip();
+        if (avatarPhotoImage) {
+          context.drawImage(
+            avatarPhotoImage,
+            x - radius,
+            y - radius,
+            radius * 2,
+            radius * 2
+          );
+          context.restore();
+          context.save();
+          context.strokeStyle = "rgba(255, 245, 185, .95)";
+          context.lineWidth = 7;
+          context.beginPath();
+          context.arc(x, y, radius - 3.5, 0, Math.PI * 2);
+          context.stroke();
+          context.restore();
+          return;
+        }
         context.fillStyle = style.accent;
         context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
         context.fillStyle = style.suit;
@@ -4032,7 +4321,15 @@ export default function GameCanvas() {
           name={playerName}
           onNameChange={setPlayerName}
           avatarId={avatarId}
-          onAvatarChange={setAvatarId}
+          avatarPhotoUrl={avatarPhotoUrl}
+          onAvatarChange={nextAvatarId => {
+            setAvatarId(nextAvatarId);
+            setAvatarPhotoUrl(null);
+          }}
+          onAvatarPhotoSelect={selectAvatarPhoto}
+          onRemoveAvatarPhoto={() => setAvatarPhotoUrl(null)}
+          isUploadingAvatar={uploadAvatar.isPending}
+          avatarUploadError={avatarUploadError}
           onBack={() => setScreen("welcome")}
           onContinue={() => {
             playSound("launch");
@@ -4150,7 +4447,11 @@ export default function GameCanvas() {
             )}
           </h2>
           <div className="summary-player-identity">
-            <PlayerAvatar avatarId={selectedAvatar.id} decorative />
+            <PlayerAvatar
+              avatarId={selectedAvatar.id}
+              photoUrl={avatarPhotoUrl}
+              decorative
+            />
             <span>{copy("Người chơi", "Player")}</span>
             <strong>{displayName}</strong>
           </div>
@@ -4775,10 +5076,12 @@ export default function GameCanvas() {
                     {feedback === "correct" && (
                       <div
                         className="feedback-banner is-correct"
+                        data-i18n-direct
+                        key={`correct-feedback-${question.id}-${language}`}
                       >
                         <div>
                           <Check size={18} />
-                          <span>
+                          <span data-dynamic-text>
                             {language === "en"
                               ? `Correct, ${displayName}! +10 points.`
                               : `Đúng rồi, ${displayName}! +10 điểm.`}
@@ -4795,6 +5098,39 @@ export default function GameCanvas() {
                           <ChevronRight size={17} />
                         </button>
                       </div>
+                    )}
+                    {feedback === "wrong" && !showHanaLearningGuide && (
+                      <section
+                        className="feedback-banner is-wrong"
+                        data-i18n-direct
+                        key={`wrong-feedback-${question.id}-${language}`}
+                      >
+                        <div>
+                          <X size={18} />
+                          <span data-dynamic-text>
+                            {language === "en"
+                              ? `Not quite, ${displayName}. This try loses 2 points.`
+                              : `Chưa đúng rồi, ${displayName}. Lượt này giảm 2 điểm.`}
+                          </span>
+                        </div>
+                        <div className="wrong-feedback-actions">
+                          <button
+                            type="button"
+                            className="feedback-action is-retry"
+                            onClick={retryQuestionAfterHanaGuide}
+                          >
+                            {copy("Thử lại ngay", "Try again now")}
+                          </button>
+                          <button
+                            type="button"
+                            className="feedback-action is-hana-help"
+                            onClick={openHanaLearningGuide}
+                          >
+                            <HelpCircle size={17} />
+                            {copy("Xem gợi ý Hana", "Ask Hana for a clue")}
+                          </button>
+                        </div>
+                      </section>
                     )}
                   </>
                 ) : (

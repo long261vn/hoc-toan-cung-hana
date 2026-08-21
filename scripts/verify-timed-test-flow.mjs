@@ -181,6 +181,10 @@ try {
     const answer = Function('"use strict"; return (' + expression.split("=")[0].replace("×", "*").replace("÷", "/").replace("−", "-") + ')')();
     Array.from(document.querySelectorAll(".answer-button")).find(button => Number(button.querySelector("strong")?.textContent) !== answer)?.click();
   })()`);
+  await waitFor(".feedback-action.is-hana-help");
+  const guideWasAutomatic = await evaluate(`Boolean(document.querySelector(".hana-learning-card"))`);
+  if (guideWasAutomatic) throw new Error("Hana tự mở gợi ý trong bài kiểm tra thay vì chờ học sinh chọn.");
+  await evaluate(`document.querySelector(".feedback-action.is-hana-help")?.click()`);
   await waitFor(".hana-learning-card");
   const pausedTimer = await evaluate(`document.querySelector(".mission-counter strong")?.textContent`);
   await sleep(1200);

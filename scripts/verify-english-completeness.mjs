@@ -230,6 +230,14 @@ try {
   await evaluate(
     `Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) === ${wrongAnswer})?.click()`
   );
+  await waitFor(".feedback-action.is-hana-help");
+  const helpChoice = await evaluate(
+    `document.querySelector(".feedback-banner.is-wrong")?.textContent?.replace(/\\s+/g, " ").trim()`
+  );
+  noVietnamese(helpChoice, "Lựa chọn trợ giúp Hana sau đáp án sai");
+  if (!helpChoice.includes("Try again now") || !helpChoice.includes("Ask Hana for a clue"))
+    throw new Error(`Phản hồi sai English chưa đúng: ${helpChoice}`);
+  await evaluate(`document.querySelector(".feedback-action.is-hana-help")?.click()`);
   await waitFor(".hana-learning-card");
   const hint = await evaluate(
     `document.querySelector(".hana-learning-card")?.textContent?.replace(/\\s+/g, " ").trim()`
@@ -249,6 +257,7 @@ try {
       testSummary,
       tables,
       tableAriaLabels,
+      helpChoice,
       hint,
       status: "English content complete",
     })
