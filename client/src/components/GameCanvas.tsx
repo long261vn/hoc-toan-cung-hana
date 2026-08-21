@@ -2486,10 +2486,9 @@ function HanaLearningDialog({
         </div>
         <div className="hana-learning-context">
           <strong>{question.expression}</strong>
-          <span>
-            {language === "en"
-              ? `You chose ${chosenAnswer ?? "?"}`
-              : `Bạn đã chọn ${chosenAnswer ?? "?"}`}
+          <span className="hana-chosen-answer">
+            <small>{language === "en" ? "You chose" : "Bạn đã chọn"}</small>
+            <b>{chosenAnswer ?? "?"}</b>
           </span>
         </div>
         <div className="hana-learning-step" aria-live="polite">
@@ -5237,12 +5236,15 @@ export default function GameCanvas() {
                         data-i18n-direct
                         key={`wrong-feedback-${question.id}-${language}`}
                       >
-                        <div>
+                        <div className="feedback-message">
                           <X size={18} />
-                          <span data-dynamic-text>
-                            {language === "en"
-                              ? `Not quite, ${displayName}. This try loses 2 points.`
-                              : `Chưa đúng rồi, ${displayName}. Lượt này giảm 2 điểm.`}
+                          <span>
+                            <strong data-dynamic-text>
+                              {copy("Chưa đúng", "Not quite")}
+                            </strong>
+                            <small data-dynamic-text>
+                              {copy("−2 điểm", "−2 points")}
+                            </small>
                           </span>
                         </div>
                         <div className="wrong-feedback-actions">

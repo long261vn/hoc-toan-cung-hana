@@ -27,3 +27,17 @@ Sản phẩm đã có **nhận diện mạnh, màu sắc nhất quán và luồn
 2. Tại bảng nhân–chia, rút gọn nhãn hành động thành “Chọn hết” và “Bỏ hết”, đồng thời dùng một hàng chọn chế độ có biểu tượng; chỉ hiện câu hỏi sau khi trẻ đóng phần cấu hình hoặc bấm nút “Bắt đầu luyện”.
 3. Tại tổng kết, dùng thanh hành động dính đáy chỉ gồm “Lưu ảnh” và “Lượt mới”; phần huy hiệu tiếp tục cuộn bên dưới. Tăng cỡ biểu tượng khóa và giảm mô tả huy hiệu khóa còn một dòng.
 4. Tại ảnh kỷ niệm, bỏ thông tin cấp lặp, tăng khoảng 12–16% kích thước vùng huy hiệu và thêm preview crop tròn trước khi học sinh xác nhận ảnh đại diện.
+
+## Bổ sung: xác minh phản hồi desktop
+
+Sau khi đối chiếu trực tiếp ở **1280 × 720 px**, các phản ánh về thẻ chọn nhiệm vụ và bảng làm bài là có cơ sở. Màn Luyện tập dùng lưới ba thẻ ở hàng đầu, hai thẻ ở hàng sau; thẻ Bảng Nhân và Bảng Chia có nội dung xuống dòng nhiều hơn nên tạo cảm giác kích thước/khối lượng không đồng đều. Đây là vấn đề nhịp bố cục, dù vùng chạm của các thẻ vẫn hợp lệ.
+
+Nút **Điểm hiện tại** nằm sát dải hành trình bên dưới; hai thẻ có màu và bóng khác nhau nhưng thiếu một khoảng “thở” rõ ràng. Nền bảng làm bài sử dụng một thẻ bo góc lớn và các hình tròn trang trí nằm phía sau, vì vậy các họa tiết ở góc bị cắt/chỉ lộ một phần, làm nền giống một lớp trang trí bị kẹt thay vì một sân chơi có chủ đích.
+
+Phản hồi sai hiện là một banner chứa câu dài và hai nút trong cùng chiều ngang. Khi tên người chơi dài hoặc màn hẹp, câu “Chưa đúng rồi… giảm 2 điểm” có thể buộc các nút xuống dòng và kéo cao khối bài. Lý do hoàn toàn đúng như phản ánh: banner đang gộp thông báo, hậu quả điểm và hai lựa chọn trong một thành phần co giãn.
+
+Đáp án sai đã chọn ở bảng câu hỏi có viền/nền đỏ và dấu X nên nhận ra được, nhưng ở **cửa sổ Hana** nó chỉ xuất hiện như dòng chữ nhỏ “Bạn đã chọn 60” cạnh biểu thức. Thông tin phản hồi quan trọng này chưa có màu lỗi, nhãn, biểu tượng hay thẻ riêng, nên chưa đủ nổi bật. Màn tổng kết có nhận diện tốt hơn bảng học nhưng vẫn quá nhiều vùng thẻ cùng viền trên desktop; phần thưởng cao nhất cạnh tranh với bộ sưu tập huy hiệu thay vì tạo một điểm kết thúc duy nhất.
+
+### Kết luận đánh giá
+
+Tôi **đồng ý với toàn bộ năm nhận xét**. Những lỗi này không phải chi tiết lặt vặt mà đều liên quan trực tiếp đến nhịp thị giác, mức ưu tiên và khả năng tập trung của học sinh. Hướng sửa đúng là: chuẩn hóa lưới thẻ nhiệm vụ; tách Điểm hiện tại khỏi dải hành trình; thay nền bảng học bằng một khung có họa tiết góc được “cắt” có chủ đích; biến phản hồi sai thành hàng trạng thái ngắn + hai hành động độc lập; và dùng thẻ lỗi rõ ràng cho đáp án đã chọn trong Hana.

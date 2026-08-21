@@ -106,7 +106,7 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  margin: -0.05rem 0 0.7rem;
+  margin: 0.18rem 0 0.78rem;
   padding: 0.42rem 0.55rem;
   overflow: hidden;
   color: #4e618d;
@@ -190,9 +190,32 @@
 .table-number-grid button { box-shadow: 0 3px 0 rgba(72, 96, 136, 0.12); }
 .table-kind-switch button.is-active,
 .table-number-grid button.is-selected { box-shadow: 0 4px 0 rgba(227, 122, 90, 0.33); }
-.summary-stats { border-top: 4px solid #7bd9c8; box-shadow: 0 10px 22px rgba(1, 9, 49, 0.2); }
+.summary-stats { border-top: 0; box-shadow: 0 7px 18px rgba(1, 9, 49, 0.16); }
 .highest-reward-card,
-.summary-reward-card { border-top: 5px solid #f1ca61; box-shadow: 0 10px 0 rgba(178, 117, 34, 0.17), 0 19px 29px rgba(2, 8, 40, 0.18); }
+.summary-reward-card { border-top: 0; box-shadow: 0 6px 18px rgba(2, 8, 40, 0.16); }
+
+/* Desktop menu: four core operations form an even grid; the table mission is intentionally a full-width destination. */
+@media (min-width: 761px) {
+  .activity-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .activity-card { min-height: 104px; }
+  .activity-card.tables { grid-column: 1 / -1; order: 5; min-height: 96px; }
+}
+
+/* Feedback carries one brief fact; the child then chooses the next action without a layout jump. */
+.feedback-banner.is-wrong { border: 1px solid #f0b3ad; background: linear-gradient(90deg, #fff1ef, #fff8f3); }
+.feedback-banner.is-wrong .feedback-message > svg { flex: 0 0 auto; padding: 5px; color: #fff; border-radius: 50%; background: #d96869; }
+.feedback-banner.is-wrong .wrong-feedback-actions { gap: 7px; }
+.hana-learning-context { align-items: stretch; }
+.hana-chosen-answer { display: inline-grid !important; min-width: 78px; place-items: center; gap: 1px; padding: 4px 7px; color: #9f4e55 !important; border: 1px solid #efaaa5; border-radius: 10px; background: #fff0ef; text-align: center !important; }
+.hana-chosen-answer small { color: #a35a61; font-size: 8px; font-weight: 900; line-height: 1; }
+.hana-chosen-answer b { color: #bd4852; font-family: "Baloo 2", cursive; font-size: 21px; line-height: 0.95; }
+
+@media (max-width: 760px) {
+  .feedback-banner { grid-template-columns: 1fr; }
+  .feedback-banner.is-wrong .wrong-feedback-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  .feedback-banner .feedback-action { min-width: 0; }
+  .activity-card.tables { grid-column: 1 / -1; }
+}
 @media (max-width: 760px) {
   .activity-card { border-left-width: 5px; box-shadow: 0 6px 0 rgba(15, 29, 82, 0.16), 0 12px 22px rgba(1, 8, 44, 0.14); }
   .activity-card::after { width: 58px; height: 58px; right: -23px; bottom: -29px; }

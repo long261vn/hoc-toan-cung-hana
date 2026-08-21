@@ -1068,6 +1068,7 @@ button:focus-visible {
   grid-template-columns: 56px 1fr auto;
   align-items: center;
   gap: 10px;
+  margin-bottom: 10px;
 }
 .mascot-wrap {
   position: relative;
@@ -1463,7 +1464,8 @@ button:focus-visible {
   box-shadow: 0 3px 0 #e8b3b3;
 }
 .feedback-banner {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
@@ -1479,6 +1481,9 @@ button:focus-visible {
   gap: 7px;
   line-height: 1.45;
 }
+.feedback-message > span { display: inline-flex; align-items: baseline; gap: 7px; }
+.feedback-message strong { color: currentColor; font-family: "Baloo 2", cursive; font-size: 15px; line-height: 1; }
+.feedback-message small { padding: 3px 6px; border-radius: 999px; color: #9b4e56; background: rgba(255, 255, 255, 0.72); font-size: 9px; font-weight: 900; }
 .feedback-banner button {
   display: inline-flex;
   flex: none;
@@ -1502,12 +1507,12 @@ button:focus-visible {
   background: #fff1eb;
 }
 .feedback-banner.is-wrong {
-  align-items: flex-start;
+  align-items: center;
 }
 .wrong-feedback-actions {
   display: flex;
   flex: none;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
   gap: 5px;
 }
@@ -5508,34 +5513,36 @@ button:focus-visible {
 .question-panel {
   position: relative;
   overflow: hidden;
+  border-color: color-mix(in srgb, var(--mission-tone, #f0c75e) 42%, #e7d9ae);
+  background:
+    radial-gradient(circle at 8% 82%, color-mix(in srgb, var(--mission-tone, #f0c75e) 12%, transparent) 0 5px, transparent 5.5px),
+    radial-gradient(circle at 91% 17%, color-mix(in srgb, var(--mission-tone, #f0c75e) 14%, transparent) 0 4px, transparent 4.5px),
+    linear-gradient(135deg, #fffefa, #fff2c9);
 }
 .question-panel::before,
 .question-panel::after {
   content: "";
   position: absolute;
-  width: 13px;
-  height: 13px;
-  border-color: currentColor;
-  opacity: 0.28;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid color-mix(in srgb, var(--mission-tone, #f0c75e) 68%, white);
+  border-radius: 50%;
+  opacity: 0.72;
   pointer-events: none;
 }
 .question-panel::before {
-  top: 9px;
-  left: 9px;
-  border-top: 2px solid;
-  border-left: 2px solid;
+  top: 10px;
+  right: 12px;
 }
 .question-panel::after {
-  right: 9px;
-  bottom: 9px;
-  border-right: 2px solid;
-  border-bottom: 2px solid;
+  bottom: 10px;
+  left: 12px;
 }
 .console-topline {
   position: relative;
 }
 .console-topline::after {
-  content: "HANA • FLIGHT CONSOLE";
+  content: none;
   position: absolute;
   right: 92px;
   bottom: -2px;
@@ -5546,9 +5553,7 @@ button:focus-visible {
   letter-spacing: 0.13em;
   pointer-events: none;
 }
-html[lang="vi"] .console-topline::after {
-  content: "HANA • BẢNG ĐIỀU KHIỂN";
-}
+html[lang="vi"] .console-topline::after { content: none; }
 @media (max-width: 760px) {
   .console-topline::after {
     right: 78px;
@@ -5680,6 +5685,26 @@ html[lang="vi"] .console-topline::after {
 .activity-grid {
   width: min(870px, 100%);
   gap: 10px;
+}
+@media (min-width: 761px) {
+  .activity-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .activity-card {
+    grid-column: span 2;
+    min-height: 106px;
+  }
+  .activity-card.add { order: 1; grid-column: span 2; }
+  .activity-card.subtract { order: 2; grid-column: span 2; }
+  .activity-card.tables {
+    grid-column: span 2;
+    order: 3;
+    min-height: 106px;
+  }
+  .activity-card.tables .activity-copy strong { font-size: 15px; }
+  .activity-card.tables .activity-copy small { font-size: 9px; }
+  .activity-card.multiply { order: 4; grid-column: 2 / span 2; }
+  .activity-card.divide { order: 5; grid-column: 4 / span 2; }
 }
 .activity-card {
   grid-template-columns: 38px minmax(0, 1fr) 18px;
