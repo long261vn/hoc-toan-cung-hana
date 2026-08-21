@@ -1170,6 +1170,30 @@ button:focus-visible {
   border-color: #ffb090;
   background: #fff0e8;
 }
+@media (max-width: 560px) {
+  .mission-study-controls {
+    grid-template-columns: 1fr;
+  }
+  .mission-format-options button,
+  .mission-difficulty-options button {
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+  .score-badge-list > span {
+    grid-template-columns: 19px minmax(0, 1fr);
+    gap: 3px 4px;
+    padding: 5px;
+  }
+  .score-badge-list b {
+    width: 19px;
+    height: 19px;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .score-badge-list small {
+    font-size: 8px;
+  }
+}
 .console-title h3 {
   margin: 0;
   color: #262a63;
@@ -1480,8 +1504,10 @@ button:focus-visible {
   align-items: center;
   gap: 7px;
   line-height: 1.45;
+  min-width: 0;
+  text-wrap: pretty;
 }
-.feedback-message > span { display: inline-flex; align-items: baseline; gap: 7px; }
+.feedback-message > span { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 7px; text-wrap: pretty; }
 .feedback-message strong { color: currentColor; font-family: "Baloo 2", cursive; font-size: 15px; line-height: 1; }
 .feedback-message small { padding: 3px 6px; border-radius: 999px; color: #9b4e56; background: rgba(255, 255, 255, 0.72); font-size: 9px; font-weight: 900; }
 .feedback-banner button {
@@ -2765,7 +2791,7 @@ button:focus-visible {
   transform-origin: center;
 }
 .summary-kicker {
-  margin: 2px 0 -4px;
+  margin: 4px 0 0;
   color: #83e0cf;
   font-size: 10px;
   font-weight: 800;
@@ -2773,30 +2799,45 @@ button:focus-visible {
 }
 .summary-screen h2 {
   margin: 0;
-  max-width: min(680px, 94vw);
+  max-width: min(620px, 92vw);
   color: #fff9df;
   font-family: "Be Vietnam Pro", sans-serif;
-  font-size: clamp(29px, 5vw, 54px);
+  font-size: clamp(28px, 4.55vw, 48px);
   font-weight: 900;
   letter-spacing: -0.045em;
-  line-height: 1.12;
+  line-height: 1.08;
   text-shadow: 0 4px 0 rgba(16, 24, 77, 0.28);
+  text-wrap: balance;
 }
-.summary-screen h2 > span { display: block; }
+.summary-screen h2 > span { display: block; text-wrap: balance; }
 .summary-screen h2 strong { color: #fff9df; font-weight: 900; }
 .summary-screen h2 em {
   display: block;
-  margin-top: 0.28em;
+  margin-top: 0.12em;
   color: #ffb086;
   font-style: normal;
 }
 .summary-intro {
-  max-width: 510px;
+  max-width: min(54ch, 92vw);
   margin: 0;
   color: #cbd8ff;
   font-size: 12px;
   font-weight: 600;
   line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.hana-learning-check-note {
+  margin: 12px 0 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(101, 206, 186, 0.34);
+  border-radius: 12px;
+  color: #28766c;
+  background: rgba(218, 255, 242, 0.66);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-wrap: pretty;
 }
 .summary-stats {
   display: grid;
@@ -3166,6 +3207,7 @@ button:focus-visible {
   font-family: "Baloo 2", cursive;
   font-size: 23px;
   line-height: 1;
+  white-space: nowrap;
 }
 .format-option > small {
   position: relative;
@@ -3435,6 +3477,7 @@ button:focus-visible {
   font-family: "Baloo 2", cursive;
   font-size: clamp(38px, 5.2vw, 60px);
   line-height: 0.9;
+  text-wrap: balance;
   text-shadow: 0 6px 0 rgba(16, 24, 77, 0.3);
 }
 .profile-screen h2 em {
@@ -3448,6 +3491,20 @@ button:focus-visible {
   font-size: 12px;
   font-weight: 600;
   line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* Keep meaningful phrases together across every high-traffic screen. */
+:where(.welcome-screen, .profile-screen, .start-mode-screen, .activity-screen, .format-screen, .test-setup-screen, .mission-control, .hana-learning-card, .summary-screen)
+  :is(h1, h2, h3, .activity-copy strong, .start-mode-card strong, .format-option-copy strong, .feedback-message, .feedback-action, .summary-actions button) {
+  hyphens: manual;
+  text-wrap: balance;
+}
+
+:where(.welcome-screen, .profile-screen, .start-mode-screen, .activity-screen, .format-screen, .test-setup-screen, .mission-control, .hana-learning-card, .summary-screen)
+  :is(p, small, .activity-copy span, .start-mode-card span, .format-option-copy span, .feedback-message small) {
+  hyphens: manual;
+  text-wrap: pretty;
 }
 .profile-name-field {
   display: grid;
@@ -3800,7 +3857,7 @@ button:focus-visible {
 }
 .hana-learning-step > span { color: #5c7897; font-size: 9px; font-weight: 900; letter-spacing: 0.06em; }
 .hana-learning-step strong { margin-top: 2px; color: #2d4176; font-family: "Baloo 2", cursive; font-size: 17px; line-height: 1; }
-.hana-learning-step p { margin: 4px 0 0; color: #5d6788; font-size: 11px; font-weight: 700; line-height: 1.35; }
+.hana-learning-step p { margin: 4px 0 0; color: #5d6788; font-size: 11px; font-weight: 700; line-height: 1.35; text-wrap: pretty; }
 .hana-learning-actions {
   display: grid;
   grid-template-columns: minmax(82px, auto) minmax(62px, auto) 1fr;
@@ -4256,6 +4313,27 @@ button:focus-visible {
   }
   html[lang="en"] .brand-lockup .eyebrow::after {
     content: "WITH HANA";
+  }
+}
+
+@media (max-width: 560px) {
+  .score-badge-list {
+    grid-template-columns: 1fr;
+  }
+  .score-badge-list > span {
+    grid-template-columns: 24px minmax(0, 1fr);
+    min-height: 42px;
+  }
+  .score-badge-list b {
+    width: 22px;
+    height: 22px;
+  }
+  .score-badge-list small {
+    overflow: visible;
+    font-size: 9px;
+    line-height: 1.1;
+    text-overflow: clip;
+    white-space: nowrap;
   }
 }
 

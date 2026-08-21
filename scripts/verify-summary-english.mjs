@@ -18,7 +18,7 @@ try {
   const summary = await evaluate(`document.querySelector(".summary-screen")?.textContent?.replace(/\\s+/g, " ").trim()`);
   const vietnamese = /[ăâđêôơưáàảãạấầẩẫậắằẳẵặéèẻẽẹếềểễệíìỉĩịóòỏõọốồổỗộớờởỡợúùủũụứừửữựýỳỷỹỵ]/i.test(summary) || /Phi Hành|Phép Tính|Điểm|Đúng|Sai|Thời gian|Phần thưởng|Cấp|Chưa mở|Lượt học|thật đáng/i.test(summary);
   if (vietnamese) throw new Error(`Màn tổng kết ENG còn tiếng Việt: ${summary}`);
-  for (const expected of ["ROBOT HANA CONGRATULATES", "Points", "Correct", "Incorrect", "Time", "HIGHEST JOURNEY LEVEL", "Level", "Save souvenir image", "Start a new session"]) {
+  for (const expected of ["HANA NOTICES YOUR EFFORT", "Points", "Correct", "Incorrect", "Time", "HIGHEST JOURNEY LEVEL", "Level", "Save souvenir image", "Start a new session"]) {
     if (!summary.includes(expected)) throw new Error(`Thiếu nhãn English “${expected}”: ${summary}`);
   }
   console.log(JSON.stringify({ summary, status: "summary English complete" }));

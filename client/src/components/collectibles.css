@@ -200,8 +200,8 @@
 .avatar-photo-upload .avatar-selected-check { position: absolute; right: -0.08rem; top: -0.08rem; padding: 0.18rem; color: #152662; border-radius: 50%; background: #fff0a3; }
 .avatar-photo-upload .avatar-upload-spinner { position: absolute; color: #fff0a3; }
 .avatar-photo-upload-copy { display: grid; min-width: 0; gap: 0.12rem; text-align: left; }
-.avatar-photo-upload-copy strong { color: #fff9df; font-family: "Baloo 2", cursive; font-size: 0.98rem; line-height: 1; }
-.avatar-photo-upload-copy small { color: #cbe3ff; font-size: 0.68rem; font-weight: 700; line-height: 1.25; }
+.avatar-photo-upload-copy strong { color: #fff9df; font-family: "Baloo 2", cursive; font-size: 0.98rem; line-height: 1; text-wrap: balance; }
+.avatar-photo-upload-copy small { color: #cbe3ff; font-size: 0.68rem; font-weight: 700; line-height: 1.25; text-wrap: pretty; }
 .avatar-photo-upload-action { color: #a8f1dc; }
 .avatar-photo-upload input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
 

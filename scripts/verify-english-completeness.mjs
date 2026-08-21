@@ -235,7 +235,7 @@ try {
     `document.querySelector(".feedback-banner.is-wrong")?.textContent?.replace(/\\s+/g, " ").trim()`
   );
   noVietnamese(helpChoice, "Lựa chọn trợ giúp Hana sau đáp án sai");
-  if (!helpChoice.includes("Try again now") || !helpChoice.includes("Ask Hana for a clue"))
+  if (!helpChoice.includes("Try again now") || !helpChoice.includes("See hint"))
     throw new Error(`Phản hồi sai English chưa đúng: ${helpChoice}`);
   await evaluate(`document.querySelector(".feedback-action.is-hana-help")?.click()`);
   await waitFor(".hana-learning-card");

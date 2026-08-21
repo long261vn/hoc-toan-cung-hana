@@ -66,18 +66,18 @@ try {
     const image = document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo");
     return { src: image?.getAttribute("src") ?? "", error: document.querySelector(".avatar-upload-error")?.textContent?.trim() ?? "" };
   })()`);
-  if (!/^\/manus-storage\/hana-avatars\/.+\.jpg$/i.test(result.src) || result.error) {
+  if (!/^data:image\/jpeg;base64,/i.test(result.src) || result.error) {
     throw new Error(`Avatar ảnh chưa được lưu/hiển thị đúng: ${JSON.stringify(result)}`);
   }
-  const storedBeforeReload = await evaluate(`localStorage.getItem("hana-player-avatar-photo-v1") ?? ""`);
+  const storedBeforeReload = await evaluate(`sessionStorage.getItem("hana-session-avatar-photo-v1") ?? ""`);
   await command("Page.reload");
   await sleep(700);
   await waitFor(".avatar-photo-upload.has-photo img.player-avatar-photo");
-  const restored = await evaluate(`({ src: document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo")?.getAttribute("src") ?? "", stored: localStorage.getItem("hana-player-avatar-photo-v1") ?? "", selected: document.querySelector(".avatar-photo-upload")?.className ?? "" })`);
+  const restored = await evaluate(`({ src: document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo")?.getAttribute("src") ?? "", stored: sessionStorage.getItem("hana-session-avatar-photo-v1") ?? "", selected: document.querySelector(".avatar-photo-upload")?.className ?? "" })`);
   if (restored.src !== result.src) throw new Error(`Avatar ảnh không được giữ sau tải lại: ${JSON.stringify({ result, storedBeforeReload, restored })}`);
   await evaluate(`document.querySelector(".avatar-option-grid button")?.click()`);
   await waitFor(".avatar-option-grid button.is-selected");
-  const switchedBack = await evaluate(`({ photo: localStorage.getItem("hana-player-avatar-photo-v1"), selected: document.querySelector(".avatar-option-grid button.is-selected")?.getAttribute("aria-checked") ?? "", photoVisible: Boolean(document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo")) })`);
+  const switchedBack = await evaluate(`({ photo: sessionStorage.getItem("hana-session-avatar-photo-v1"), selected: document.querySelector(".avatar-option-grid button.is-selected")?.getAttribute("aria-checked") ?? "", photoVisible: Boolean(document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo")) })`);
   if (switchedBack.photo || switchedBack.selected !== "true" || switchedBack.photoVisible) throw new Error(`Không thể đổi về avatar có sẵn: ${JSON.stringify(switchedBack)}`);
   await command("Page.reload");
   await sleep(700);
@@ -93,8 +93,20 @@ try {
   });
   await waitFor(".avatar-photo-upload.has-photo img.player-avatar-photo");
   const selectedAgain = await evaluate(`document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo")?.getAttribute("src") ?? ""`);
-  if (!/^\/manus-storage\/hana-avatars\/.+\.jpg$/i.test(selectedAgain)) throw new Error(`Không thể chọn lại avatar ảnh: ${selectedAgain}`);
-  console.log(JSON.stringify({ result, restored, selectedAgain, status: "custom avatar upload, reload and switching valid" }));
+  if (!/^data:image\/jpeg;base64,/i.test(selectedAgain)) throw new Error(`Không thể chọn lại avatar ảnh: ${selectedAgain}`);
+  await command("Page.navigate", { url: "http://localhost:3000/?summary&nowebgl" });
+  await waitFor(".summary-screen");
+  const summaryAvatar = await evaluate(`document.querySelector(".summary-player-identity img.player-avatar-photo")?.getAttribute("src") ?? ""`);
+  if (summaryAvatar !== selectedAgain) throw new Error("Avatar ảnh không hiển thị đúng trong màn tổng kết.");
+  await command("Page.navigate", { url: previewUrl });
+  await waitFor(".avatar-photo-upload input");
+  await evaluate(`sessionStorage.clear(); localStorage.removeItem("hana-player-avatar-photo-v1")`);
+  await command("Page.reload");
+  await sleep(700);
+  await waitFor(".avatar-photo-upload input");
+  const isolatedForNewTabSession = await evaluate(`({ visible: Boolean(document.querySelector(".avatar-photo-upload.has-photo img.player-avatar-photo")), legacy: localStorage.getItem("hana-player-avatar-photo-v1") })`);
+  if (isolatedForNewTabSession.visible || isolatedForNewTabSession.legacy) throw new Error(`Avatar riêng tư còn lộ sang phiên mới: ${JSON.stringify(isolatedForNewTabSession)}`);
+  console.log(JSON.stringify({ firstPhotoLength: result.src.length, restored: restored.src === result.src, summaryAvatar: summaryAvatar === selectedAgain, isolatedForNewTabSession, status: "custom avatar stays private to the active browser tab" }));
 } finally {
   socket.close();
 }

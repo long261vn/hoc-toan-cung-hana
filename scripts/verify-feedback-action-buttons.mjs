@@ -38,7 +38,7 @@ try {
   await evaluate(`Array.from(document.querySelectorAll(".answer-button")).find((button) => Number(button.querySelector("strong")?.textContent) !== ${nextAnswer})?.click()`);
   await waitFor(".feedback-banner.is-wrong");
   const choiceState = await evaluate(`({ hasGuide: Boolean(document.querySelector(".hana-learning-card")), retry: document.querySelector(".feedback-action.is-retry")?.textContent?.trim() ?? "", help: document.querySelector(".feedback-action.is-hana-help")?.textContent?.trim() ?? "" })`);
-  if (choiceState.hasGuide || !choiceState.retry.includes("Try again now") || !choiceState.help.includes("Ask Hana for a clue")) throw new Error(`Phản hồi sai chưa cho học sinh quyền chọn: ${JSON.stringify(choiceState)}`);
+  if (choiceState.hasGuide || !choiceState.retry.includes("Try again now") || !choiceState.help.includes("See hint")) throw new Error(`Phản hồi sai chưa cho học sinh quyền chọn: ${JSON.stringify(choiceState)}`);
   await evaluate(`document.querySelector(".feedback-action.is-hana-help")?.click()`);
   await waitFor(".hana-primary-action");
   await evaluate(`document.querySelector(".hana-retry-now")?.click()`);

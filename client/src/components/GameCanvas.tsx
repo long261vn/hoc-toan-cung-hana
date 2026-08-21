@@ -78,7 +78,6 @@ import {
   sessionRewards,
   type PracticeFormat,
 } from "@/game/session";
-import { trpc } from "@/lib/trpc";
 
 type AppScreen =
   | "welcome"
@@ -112,7 +111,8 @@ type PlanetUnlock = { operation: Operation; badge: ThemeBadge };
 
 const SESSION_DRAFT_KEY = "hana-active-session-v1";
 const AVATAR_STORAGE_KEY = "hana-player-avatar-v2";
-const AVATAR_PHOTO_STORAGE_KEY = "hana-player-avatar-photo-v1";
+const AVATAR_PHOTO_SESSION_KEY = "hana-session-avatar-photo-v1";
+const LEGACY_AVATAR_PHOTO_STORAGE_KEY = "hana-player-avatar-photo-v1";
 const LEGACY_AVATAR_STORAGE_KEY = "hana-astronaut-avatar-v1";
 const THEME_BADGE_STORAGE_KEY = "hana-theme-badges-v1";
 const DRAFT_SCREENS = [
@@ -340,7 +340,8 @@ function isAvatarId(value: unknown): value is AvatarId {
 function isAvatarPhotoUrl(value: unknown): value is string {
   return (
     typeof value === "string" &&
-    /^\/manus-storage\/hana-avatars\/.+\.jpg$/i.test(value)
+    value.length <= 700_000 &&
+    /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/i.test(value)
   );
 }
 
@@ -357,7 +358,10 @@ function readAvatarPreference(): AvatarId {
 
 function readAvatarPhotoPreference() {
   try {
-    const stored = window.localStorage.getItem(AVATAR_PHOTO_STORAGE_KEY);
+    // Personal photos intentionally live only in the active browser tab.
+    // Remove a legacy public URL so one learner never inherits another's image.
+    window.localStorage.removeItem(LEGACY_AVATAR_PHOTO_STORAGE_KEY);
+    const stored = window.sessionStorage.getItem(AVATAR_PHOTO_SESSION_KEY);
     return isAvatarPhotoUrl(stored) ? stored : null;
   } catch {
     return null;
@@ -1676,7 +1680,7 @@ function PlayerProfileScreen({
           </span>
           <span className="avatar-photo-upload-copy">
             <strong>{avatarPhotoUrl ? (language === "en" ? "Your photo is selected" : "Bạn đang dùng ảnh của mình") : (language === "en" ? "Use your own photo" : "Dùng ảnh của bạn")}</strong>
-            <small>{isUploadingAvatar ? (language === "en" ? "Hana is preparing your round avatar..." : "Hana đang chuẩn bị avatar tròn của bạn...") : avatarPhotoUrl ? (language === "en" ? "Tap here to choose a different photo." : "Chạm tại đây để chọn ảnh khác.") : (language === "en" ? "JPG, PNG or WEBP · up to 8 MB" : "JPG, PNG hoặc WEBP · tối đa 8 MB")}</small>
+            <small>{isUploadingAvatar ? (language === "en" ? "Hana is preparing your round avatar..." : "Hana đang chuẩn bị avatar tròn của bạn...") : avatarPhotoUrl ? (language === "en" ? "Only this browser tab can use this photo. Tap to change it." : "Ảnh này chỉ được dùng trong tab đang học. Chạm để đổi ảnh.") : (language === "en" ? "Private in this tab · JPG/PNG/WEBP · 8 MB max" : "Riêng tư trong tab này · JPG/PNG/WEBP · dưới 8 MB")}</small>
           </span>
           <ImagePlus className="avatar-photo-upload-action" size={20} aria-hidden="true" />
           <input
@@ -2178,11 +2182,11 @@ function PracticeFormatScreen({
       <h2>
         {activity}
         <br />
-        <em>
-          {language === "en"
-            ? "How would you like to learn?"
-            : "Bạn muốn học thế nào?"}
-        </em>
+          <em>
+            {language === "en"
+              ? "Choose your learning path."
+              : "Chọn cách học nhé."}
+          </em>
       </h2>
       <p className="format-intro">
         {language === "en"
@@ -2499,6 +2503,13 @@ function HanaLearningDialog({
               : "Làm theo gợi ý của Hana"}
           </strong>
           <p>{pageText}</p>
+          {isLastStep && (
+            <p className="hana-learning-check-note">
+              {language === "en"
+                ? "Before you choose again, check with the inverse operation or the matching multiplication/division table."
+                : "Trước khi chọn lại, hãy kiểm tra bằng phép tính ngược hoặc bảng nhân/chia phù hợp nhé."}
+            </p>
+          )}
         </div>
         <div className="hana-learning-actions">
           <button type="button" className="hana-retry-now" onClick={onRetry}>
@@ -2536,7 +2547,9 @@ export default function GameCanvas() {
   const isTableDemo = demoParams.has("tables");
   const isMenuPreview = demoParams.has("menu");
   const isActivitiesPreview = demoParams.has("activities");
-  const isSummaryDemo = demoParams.has("summary");
+  const isTimedTestSummaryDemo = demoParams.has("testsummary");
+  const isLowSummaryDemo = demoParams.has("summarylow");
+  const isSummaryDemo = demoParams.has("summary") || isLowSummaryDemo || isTimedTestSummaryDemo;
   const isProfileDemo = demoParams.has("profile");
   const isScoreDemo = demoParams.has("score");
   const isGuideDemo = demoParams.has("guide");
@@ -2619,12 +2632,12 @@ export default function GameCanvas() {
                   : "welcome"
   );
   const [mode, setMode] = useState<ExerciseMode>(
-    isTableDemo ? "tables" : isTestSetupDemo ? "test" : "practice"
+    isTableDemo ? "tables" : isTestSetupDemo || isTimedTestSummaryDemo ? "test" : "practice"
   );
   const [selectedActivity, setSelectedActivity] = useState<ActivityId>(
     isTableDemo
       ? "tables"
-      : isTestSetupDemo
+      : isTestSetupDemo || isTimedTestSummaryDemo
         ? "test"
           : isMissingDemo || isFormatDemo || isHanaGuideDemo
             ? initialOperation
@@ -2660,11 +2673,11 @@ export default function GameCanvas() {
   );
   const [testStep, setTestStep] = useState(0);
   const [testCorrect, setTestCorrect] = useState(0);
-  const [testComplete, setTestComplete] = useState(false);
+  const [testComplete, setTestComplete] = useState(isTimedTestSummaryDemo);
   const [testDurationSeconds, setTestDurationSeconds] =
-    useState<TestDurationSeconds>(120);
-  const [testSecondsRemaining, setTestSecondsRemaining] = useState(120);
-  const [testTimedOut, setTestTimedOut] = useState(false);
+    useState<TestDurationSeconds>(isTimedTestSummaryDemo ? 300 : 120);
+  const [testSecondsRemaining, setTestSecondsRemaining] = useState(isTimedTestSummaryDemo ? 0 : 120);
+  const [testTimedOut, setTestTimedOut] = useState(isTimedTestSummaryDemo);
   const [showHanaLearningGuide, setShowHanaLearningGuide] =
     useState(isHanaGuideDemo);
   const [hanaLearningStep, setHanaLearningStep] = useState(0);
@@ -2684,7 +2697,7 @@ export default function GameCanvas() {
     readAvatarPhotoPreference
   );
   const [avatarUploadError, setAvatarUploadError] = useState<string | null>(null);
-  const uploadAvatar = trpc.avatar.upload.useMutation();
+  const [isPreparingAvatar, setIsPreparingAvatar] = useState(false);
   const [collectedThemeBadgeIds, setCollectedThemeBadgeIds] = useState<string[]>(
     readThemeBadgeCollection
   );
@@ -2700,20 +2713,20 @@ export default function GameCanvas() {
     ? { operation: unlockDemoOperation as Operation, badge: THEME_BADGES[0] }
     : planetUnlock;
   const [sessionPoints, setSessionPoints] = useState(
-    isMaxRewardDemo ? 1000 : isSummaryDemo || isScoreDemo ? 100 : 0
+    isMaxRewardDemo ? 1000 : isLowSummaryDemo ? 6 : isSummaryDemo || isScoreDemo ? 100 : 0
   );
   const previousSessionPointsRef = useRef(sessionPoints);
   const unlockedBadgeIdsThisSessionRef = useRef<Set<string>>(new Set());
   const penalizedQuestionIdRef = useRef<string | null>(null);
   const pausedTimedTestAtRef = useRef<number | null>(null);
   const [correctCount, setCorrectCount] = useState(
-    isMaxRewardDemo ? 100 : isSummaryDemo || isScoreDemo ? 10 : 0
+    isMaxRewardDemo ? 100 : isLowSummaryDemo ? 2 : isSummaryDemo || isScoreDemo ? 10 : 0
   );
   const [wrongCount, setWrongCount] = useState(
-    isMaxRewardDemo ? 5 : isSummaryDemo || isScoreDemo ? 2 : 0
+    isMaxRewardDemo ? 5 : isLowSummaryDemo ? 8 : isSummaryDemo || isScoreDemo ? 2 : 0
   );
   const [elapsedSeconds, setElapsedSeconds] = useState(
-    isMaxRewardDemo ? 721 : isSummaryDemo || isScoreDemo ? 93 : 0
+    isMaxRewardDemo ? 721 : isLowSummaryDemo ? 145 : isSummaryDemo || isScoreDemo ? 93 : 0
   );
   const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
   const [resumeDraft, setResumeDraft] = useState<SessionDraft | null>(() =>
@@ -3440,7 +3453,6 @@ export default function GameCanvas() {
       recentExpressions: recentQuestionExpressionsRef.current,
       playerName,
       avatarId,
-      avatarPhotoUrl,
       sessionPoints,
       correctCount,
       wrongCount,
@@ -3453,7 +3465,6 @@ export default function GameCanvas() {
     window.localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify(draft));
   }, [
     avatarId,
-    avatarPhotoUrl,
     correctCount,
     difficulty,
     elapsedSeconds,
@@ -3481,9 +3492,9 @@ export default function GameCanvas() {
 
   useEffect(() => {
     if (avatarPhotoUrl) {
-      window.localStorage.setItem(AVATAR_PHOTO_STORAGE_KEY, avatarPhotoUrl);
+      window.sessionStorage.setItem(AVATAR_PHOTO_SESSION_KEY, avatarPhotoUrl);
     } else {
-      window.localStorage.removeItem(AVATAR_PHOTO_STORAGE_KEY);
+      window.sessionStorage.removeItem(AVATAR_PHOTO_SESSION_KEY);
     }
   }, [avatarPhotoUrl]);
 
@@ -3551,6 +3562,8 @@ export default function GameCanvas() {
     setTestComplete(false);
     setAnswered(null);
     setFeedback("idle");
+    setAvatarPhotoUrl(null);
+    window.sessionStorage.removeItem(AVATAR_PHOTO_SESSION_KEY);
     setShowGuide(false);
     setShowScorePanel(false);
     setShowHomeConfirm(false);
@@ -3576,11 +3589,7 @@ export default function GameCanvas() {
         : null;
     setPlayerName(resumeDraft.playerName);
     setAvatarId(resumeDraft.avatarId ?? readAvatarPreference());
-    setAvatarPhotoUrl(
-      resumeDraft.avatarPhotoUrl === undefined
-        ? readAvatarPhotoPreference()
-        : resumeDraft.avatarPhotoUrl
-    );
+    setAvatarPhotoUrl(readAvatarPhotoPreference());
     setSessionPoints(resumeDraft.sessionPoints);
     setCorrectCount(resumeDraft.correctCount);
     setWrongCount(resumeDraft.wrongCount);
@@ -3637,11 +3646,12 @@ export default function GameCanvas() {
   const selectAvatarPhoto = useCallback(
     async (file: File) => {
       setAvatarUploadError(null);
+      setIsPreparingAvatar(true);
       try {
         const dataUrl = await prepareAvatarPhoto(file);
-        const uploaded = await uploadAvatar.mutateAsync({ dataUrl });
-        setAvatarPhotoUrl(uploaded.url);
-        window.localStorage.setItem(AVATAR_PHOTO_STORAGE_KEY, uploaded.url);
+        if (!isAvatarPhotoUrl(dataUrl)) throw new Error("avatar-file-canvas");
+        setAvatarPhotoUrl(dataUrl);
+        window.sessionStorage.setItem(AVATAR_PHOTO_SESSION_KEY, dataUrl);
         playSound("reward");
       } catch (error) {
         const code = error instanceof Error ? error.message : "avatar-upload";
@@ -3663,9 +3673,11 @@ export default function GameCanvas() {
         setAvatarUploadError(
           messages[code as keyof typeof messages] ?? messages["avatar-upload"]
         );
+      } finally {
+        setIsPreparingAvatar(false);
       }
     },
-    [language, playSound, uploadAvatar]
+    [language, playSound]
   );
   const sessionThemeBadges = THEME_BADGES.filter(badge =>
     themeBadgesForSession(sessionPoints).includes(badge.id)
@@ -3707,6 +3719,28 @@ export default function GameCanvas() {
 
   const saveSessionImage = async () => {
     if (isSavingImage) return;
+    const answeredQuestions = correctCount + wrongCount;
+    const imageAccuracy = answeredQuestions ? correctCount / answeredQuestions : 0;
+    const souvenirMessage =
+      answeredQuestions === 0
+        ? copy(
+            "Hãy bắt đầu vài phép tính để Hana đồng hành cùng bạn nhé!",
+            "Solve a few questions so Hana can learn with you!"
+          )
+        : imageAccuracy >= 0.8
+          ? copy(
+              `Bạn làm đúng ${correctCount}/${answeredQuestions} câu. Hãy tiếp tục kiểm tra lại trước khi chọn đáp án nhé!`,
+              `You got ${correctCount}/${answeredQuestions} correct. Keep checking your work before choosing an answer!`
+            )
+          : imageAccuracy >= 0.5
+            ? copy(
+                `Bạn làm đúng ${correctCount}/${answeredQuestions} câu. Xem lại câu sai rồi thử lại nhé!`,
+                `You got ${correctCount}/${answeredQuestions} correct. Review the missed questions, then try again!`
+              )
+            : copy(
+                `Bạn làm đúng ${correctCount}/${answeredQuestions} câu. Hana sẽ cùng bạn luyện từng bước nhé!`,
+                `You got ${correctCount}/${answeredQuestions} correct. Hana will practise step by step with you!`
+              );
     setIsSavingImage(true);
     setImageSaveStatus(
       copy(
@@ -4082,15 +4116,7 @@ export default function GameCanvas() {
       context.font = "700 20px Be Vietnam Pro, sans-serif";
       drawWrappedText(
         context,
-        isTimedTestSummary
-          ? copy(
-              "Bạn đã hoàn thành Bài kiểm tra tính giờ.",
-              "You completed the timed test."
-            )
-          : copy(
-              "Bạn đã hoàn thành một chuyến học thật chăm chỉ cùng Hana!",
-              "You completed a thoughtful learning mission with Hana!"
-            ),
+        souvenirMessage,
         360,
         510,
         540,
@@ -4256,6 +4282,61 @@ export default function GameCanvas() {
           } as const
         )[difficulty]
       : difficultyMeta[difficulty].label;
+  const attemptedQuestions = correctCount + wrongCount;
+  const summaryAccuracy = attemptedQuestions ? correctCount / attemptedQuestions : 0;
+  const summaryTone =
+    attemptedQuestions === 0
+      ? "start"
+      : summaryAccuracy >= 0.8
+        ? "strong"
+        : summaryAccuracy >= 0.5
+          ? "steady"
+          : "practice";
+  const summaryHeadline = isTimedTestSummary
+    ? {
+        lead:
+          language === "en"
+            ? `Timed test for ${displayName}`
+            : `Bài kiểm tra của ${displayName}`,
+        tail:
+          summaryTone === "strong"
+            ? copy("Kết quả rất đáng ghi nhận!", "A result worth celebrating!")
+            : summaryTone === "steady"
+              ? copy("Cùng xem lại để tiến bộ hơn nhé!", "Review it and grow even more!")
+              : copy("Hãy luyện thêm từng bước nhé!", "Let’s practise one step at a time!"),
+      }
+    : {
+        lead:
+          language === "en"
+            ? `Your learning flight, ${displayName}`
+            : `Lượt học của ${displayName}`,
+        tail:
+          summaryTone === "strong"
+            ? copy("rất đáng khen!", "was a strong effort!")
+            : summaryTone === "steady"
+              ? copy("bạn đã cố gắng thật tốt!", "showed real perseverance!")
+              : copy("cùng luyện thêm để tiến bộ nhé!", "let’s keep practising together!"),
+      };
+  const summaryIntroCopy =
+    attemptedQuestions === 0
+      ? copy(
+          `${displayName}, hãy bắt đầu vài phép tính để Hana hiểu bạn hơn nhé.`,
+          `${displayName}, solve a few questions so Hana can learn with you.`
+        )
+      : summaryTone === "strong"
+        ? copy(
+            `${displayName}, bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Hãy giữ thói quen kiểm tra lại trước khi chọn đáp án.`,
+            `${displayName}, you got ${correctCount}/${attemptedQuestions} correct. Keep checking your work before choosing an answer.`
+          )
+        : summaryTone === "steady"
+          ? copy(
+              `${displayName}, bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Hãy xem lại các câu sai rồi thử lại nhé.`,
+              `${displayName}, you got ${correctCount}/${attemptedQuestions} correct. Review the missed questions, then try again.`
+            )
+          : copy(
+              `${displayName}, bạn làm đúng ${correctCount}/${attemptedQuestions} câu. Không sao, Hana sẽ cùng bạn luyện từng bước.`,
+              `${displayName}, you got ${correctCount}/${attemptedQuestions} correct. That is okay—Hana will practise step by step with you.`
+            );
 
   return (
     <main className="game-shell">
@@ -4340,8 +4421,8 @@ export default function GameCanvas() {
                   `Are you sure you want to discard this session's ${sessionPoints} points?`
                 )
               : copy(
-                  "Bạn muốn trở lại từ đầu không?",
-                  "Would you like to return to the beginning?"
+                  "Quay lại từ đầu?",
+                  "Return to the beginning?"
                 )}
           </AlertDialogTitle>
           <AlertDialogDescription>
@@ -4462,7 +4543,7 @@ export default function GameCanvas() {
             setAvatarPhotoUrl(null);
           }}
           onAvatarPhotoSelect={selectAvatarPhoto}
-          isUploadingAvatar={uploadAvatar.isPending}
+          isUploadingAvatar={isPreparingAvatar}
           avatarUploadError={avatarUploadError}
           onBack={() => setScreen("welcome")}
           onContinue={() => {
@@ -4547,40 +4628,13 @@ export default function GameCanvas() {
               ? testTimedOut
                 ? copy("HẾT GIỜ RỒI", "TIME IS UP")
                 : copy("KẾT QUẢ BÀI KIỂM TRA", "TEST RESULTS")
-              : language === "en"
-                ? "ROBOT HANA CONGRATULATES"
-                : "ROBOT HANA CHÚC MỪNG"}
+              : summaryTone === "strong"
+                ? copy("HANA GHI NHẬN SỰ CỐ GẮNG", "HANA NOTICES YOUR EFFORT")
+                : copy("ROBOT HANA ĐỒNG HÀNH", "ROBOT HANA IS WITH YOU")}
           </p>
           <h2>
-            {isTimedTestSummary ? (
-              language === "en" ? (
-                <>
-                  Your timed test
-                  <br />
-                  <em>is complete!</em>
-                </>
-              ) : (
-                <>
-                  Bài kiểm tra của
-                  <br />
-                  <em>{displayName} đã hoàn thành!</em>
-                </>
-              )
-            ) : language === "en" ? (
-              <>
-                You did it!
-                <br />
-                <em>What a great learning flight!</em>
-              </>
-            ) : (
-              <>
-                <span>
-                  Lượt học của <strong>{displayName}</strong>
-                </span>
-                <br />
-                <em>thật đáng tự hào!</em>
-              </>
-            )}
+            <span>{summaryHeadline.lead}</span>
+            <em>{summaryHeadline.tail}</em>
           </h2>
           <div className="summary-player-identity">
             <PlayerAvatar
@@ -4592,13 +4646,7 @@ export default function GameCanvas() {
             <strong>{displayName}</strong>
           </div>
           <p className="summary-intro">
-            {isTimedTestSummary
-              ? language === "en"
-                ? `${displayName}, you kept working until the timer reached zero. Great focus!`
-                : `${displayName}, bạn đã kiên trì làm bài đến khi đồng hồ về 0. Thật tập trung!`
-              : language === "en"
-                ? `${displayName}, whether right or wrong, you kept going through a session with Hana.`
-                : `${displayName}, dù đúng hay sai, bạn đã kiên trì hoàn thành một chuyến luyện cùng Hana.`}
+            {summaryIntroCopy}
           </p>
           {isTimedTestSummary && (
             <div
@@ -4670,7 +4718,7 @@ export default function GameCanvas() {
                 {hasSessionPoints
                   ? language === "en"
                     ? `${displayName}, you have ${sessionPoints}/10 points toward Journey Level 1. Keep going!`
-                    : `${displayName}, bạn đã có ${sessionPoints}/10 điểm để đạt Cấp hành trình 1. Cố lên!`
+                    : `${copy("Còn", "Only")} ${Math.max(1, 10 - (sessionPoints % 10))} ${copy("điểm để đạt Cấp hành trình 1.", "more points to reach Journey Level 1.")}`
                   : language === "en"
                     ? `${displayName}, solve a few questions to begin your journey.`
                     : `${displayName}, hãy làm vài phép tính để bắt đầu hành trình nhé.`}
@@ -5261,7 +5309,7 @@ export default function GameCanvas() {
                             onClick={openHanaLearningGuide}
                           >
                             <HelpCircle size={17} />
-                            {copy("Xem gợi ý Hana", "Ask Hana for a clue")}
+                            {copy("Xem gợi ý", "See hint")}
                           </button>
                         </div>
                       </section>
@@ -5422,8 +5470,8 @@ export default function GameCanvas() {
                   </strong>
                   <p>
                     {copy(
-                      "Mỗi 10 điểm giúp bạn tăng 1 Cấp hành trình. Bốn huy hiệu đặc biệt mở ở Cấp 20, 60, 80 và 100 — tương ứng 200, 600, 800 và 1.000 điểm. Khi chạm một mốc mới, Hana mở khóa một Hành Tinh Phép Tính.",
-                      "Every 10 points move you forward by 1 Journey Level. Four special badges unlock at Levels 20, 60, 80 and 100 — 200, 600, 800 and 1,000 points. When you reach a new milestone, Hana unlocks a Math Operation Planet."
+                      "Cứ 10 điểm, bạn tăng 1 Cấp. Huy hiệu mở ở Cấp 20, 60, 80 và 100 (200, 600, 800, 1.000 điểm). Mỗi mốc mới mở một hành tinh.",
+                      "Every 10 points raises your Journey Level. Badges unlock at Levels 20, 60, 80 and 100 (200, 600, 800 and 1,000 points). Each new milestone opens a planet."
                     )}
                   </p>
                 </div>
@@ -5583,8 +5631,8 @@ export default function GameCanvas() {
           </p>
           <AlertDialogTitle>
             {copy(
-              "Bạn muốn kết thúc lượt học không?",
-              "Would you like to end this learning session?"
+              "Kết thúc lượt học?",
+              "End this learning session?"
             )}
           </AlertDialogTitle>
           <AlertDialogDescription>
