@@ -11,8 +11,19 @@ export type SoundEffect =
   | "next"
   | "reward";
 
+const BACKGROUND_TRACK_PATH =
+  "/manus-storage/hana-gentle-orbit-background_2257ff98.mp3";
+const MANUS_ASSET_ORIGIN = "https://toan3game-yka3ffqo.manus.space";
+
+/**
+ * GitHub Pages has no `/manus-storage` proxy, so a root-relative track URL
+ * becomes a 404 there. Keep the short project-relative path for Manus while
+ * using the same public asset through an absolute URL on GitHub Pages.
+ */
 const BACKGROUND_TRACK =
-  "/manus-storage/hana-gentle-orbit-background_1ffb574e.mp3";
+  typeof window !== "undefined" && window.location.hostname.endsWith("github.io")
+    ? `${MANUS_ASSET_ORIGIN}${BACKGROUND_TRACK_PATH}`
+    : BACKGROUND_TRACK_PATH;
 const STORAGE_KEY = "hana-sound-enabled";
 const MUSIC_VOLUME_STORAGE_KEY = "hana-music-volume";
 const EFFECTS_VOLUME_STORAGE_KEY = "hana-effects-volume";
@@ -151,6 +162,9 @@ export class HanaAudio {
       this.music.addEventListener("pause", () => {
         if (this.music && !this.music.ended)
           this.music.dataset.hanaPlaybackState = "paused";
+      });
+      this.music.addEventListener("error", () => {
+        if (this.music) this.music.dataset.hanaPlaybackState = "unavailable";
       });
       document.body.appendChild(this.music);
     }
