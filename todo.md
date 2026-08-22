@@ -44,7 +44,7 @@
 - [x] Hướng dẫn xuất phiên bản Học Toán Cùng Hana đã kiểm thử sang repository GitHub được kết nối trong Manus.
 - [x] Hướng dẫn cấu hình GitHub Pages sau khi export repository, gồm base URL Vite, GitHub Actions, artifact `dist/public` và kiểm tra phát hành.
 - [x] Tự cấu hình Vite, GitHub Actions và GitHub Pages cho repository `long261vn/hoc-toan-cung-hana`; xác minh URL phát hành hoạt động.
-- [ ] Tái hiện và sửa lỗi nhạc nền không phát trên bản GitHub Pages; xác minh thao tác Bắt đầu kích hoạt được âm thanh trên link công khai.
+- [x] Tái hiện và sửa lỗi nhạc nền không phát trên bản GitHub Pages; xác minh thao tác Bắt đầu kích hoạt được âm thanh trên link công khai.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 
