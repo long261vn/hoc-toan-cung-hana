@@ -2886,6 +2886,29 @@ export default function GameCanvas() {
   }, []);
 
   useEffect(() => {
+    const addGentleTapFeedback = (event: MouseEvent) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (!target) return;
+      if (
+        !target.closest(
+          "button, [role=button], a[href], [data-hana-sound-interactive]"
+        )
+      )
+        return;
+      if (target.closest("[data-hana-sound-silent]")) return;
+
+      const audio = audioRef.current;
+      // Custom actions such as correct, wrong and launch play a richer sound
+      // in their own handlers. Do not layer a second tap over them.
+      if (!audio || audio.hasRecentEffect()) return;
+      audio.activate();
+      audio.play("tap");
+    };
+    document.addEventListener("click", addGentleTapFeedback);
+    return () => document.removeEventListener("click", addGentleTapFeedback);
+  }, []);
+
+  useEffect(() => {
     audioRef.current?.setEnabled(soundEnabled);
   }, [soundEnabled]);
 

@@ -124,6 +124,7 @@ export class HanaAudio {
   private musicVolume: number;
   private effectsVolume: number;
   private musicPrimed = false;
+  private lastEffectAt = 0;
 
   constructor(
     initiallyEnabled: boolean,
@@ -172,20 +173,34 @@ export class HanaAudio {
   }
 
   /**
-   * Browsers permit a muted media element to begin buffering/playing before the
-   * first gesture. Later, activate() only needs to unmute it in the gesture flow.
+   * First try audible autoplay for browsers that explicitly allow it. When a
+   * browser blocks audible autoplay, keep a muted track ready so the first
+   * child/parent gesture can immediately unmute the same buffered track.
    */
   prime() {
     if (!this.enabled || this.musicPrimed) return;
     const music = this.getMusic();
     if (!music) return;
     this.musicPrimed = true;
-    music.muted = true;
-    void music.play().catch(() => {
-      this.musicPrimed = false;
-      music.muted = false;
-      music.dataset.hanaPlaybackState = "awaiting-gesture";
-    });
+    music.muted = false;
+    void music.play().then(
+      () => {
+        music.dataset.hanaPlaybackState = "playing";
+      },
+      () => {
+        music.muted = true;
+        void music.play().then(
+          () => {
+            music.dataset.hanaPlaybackState = "awaiting-gesture";
+          },
+          () => {
+            this.musicPrimed = false;
+            music.muted = false;
+            music.dataset.hanaPlaybackState = "awaiting-gesture";
+          }
+        );
+      }
+    );
   }
 
   activate() {
@@ -242,10 +257,15 @@ export class HanaAudio {
       window.localStorage.setItem(EFFECTS_VOLUME_STORAGE_KEY, String(volume));
   }
 
+  hasRecentEffect(windowMs = 110) {
+    return performance.now() - this.lastEffectAt < windowMs;
+  }
+
   play(effect: SoundEffect) {
-    if (!this.enabled || this.effectsVolume === 0) return;
+    if (!this.enabled || this.effectsVolume === 0) return false;
     const context = this.getContext();
-    if (!context) return;
+    if (!context) return false;
+    this.lastEffectAt = performance.now();
     if (context.state !== "running") {
       void context
         .resume()
@@ -253,9 +273,10 @@ export class HanaAudio {
           if (context.state === "running") this.scheduleEffect(effect, context);
         })
         .catch(() => undefined);
-      return;
+      return true;
     }
     this.scheduleEffect(effect, context);
+    return true;
   }
 
   private scheduleEffect(effect: SoundEffect, context: AudioContext) {
