@@ -46,7 +46,8 @@
 - [x] Tự cấu hình Vite, GitHub Actions và GitHub Pages cho repository `long261vn/hoc-toan-cung-hana`; xác minh URL phát hành hoạt động.
 - [x] Tái hiện và sửa lỗi nhạc nền không phát trên bản GitHub Pages; xác minh thao tác Bắt đầu kích hoạt được âm thanh trên link công khai.
 - [x] Cải thiện khởi động nhạc nền khi mở game theo chính sách trình duyệt và rà soát/bổ sung hiệu ứng nhẹ nhàng cho bấm nút, đáp án đúng, đáp án sai cùng các hoạt động liên quan.
-- [ ] Hạ mức nhạc nền mặc định và sửa hiệu ứng thao tác không nghe được trên GitHub Pages; xác minh độc lập nhạc nền và hiệu ứng trong Cài đặt.
+- [x] Hạ mức nhạc nền mặc định và sửa hiệu ứng thao tác không nghe được trên GitHub Pages; xác minh độc lập nhạc nền và hiệu ứng trong Cài đặt.
+- [ ] Thêm nút nghe thử hiệu ứng trong Cài đặt và xác minh trực tiếp trên GitHub Pages rằng Web Audio được khởi động, phát phản hồi và không lỗi runtime.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 

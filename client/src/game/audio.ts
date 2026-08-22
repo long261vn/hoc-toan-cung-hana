@@ -267,21 +267,32 @@ export class HanaAudio {
     return performance.now() - this.lastEffectAt < windowMs;
   }
 
+  private setEffectState(effect: SoundEffect, state: "queued" | "playing") {
+    if (typeof document === "undefined") return;
+    document.documentElement.dataset.hanaLastEffect = effect;
+    document.documentElement.dataset.hanaEffectState = state;
+  }
+
   play(effect: SoundEffect) {
     if (!this.enabled || this.effectsVolume === 0) return false;
     const context = this.getContext();
     if (!context) return false;
     this.lastEffectAt = performance.now();
+    this.setEffectState(effect, "queued");
     if (context.state !== "running") {
       void context
         .resume()
         .then(() => {
-          if (context.state === "running") this.scheduleEffect(effect, context);
+          if (context.state === "running") {
+            this.scheduleEffect(effect, context);
+            this.setEffectState(effect, "playing");
+          }
         })
         .catch(() => undefined);
       return true;
     }
     this.scheduleEffect(effect, context);
+    this.setEffectState(effect, "playing");
     return true;
   }
 

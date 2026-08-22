@@ -5944,6 +5944,29 @@ html[lang="vi"] .console-topline::after { content: none; }
 }
 .app-settings-sound-title { color: #ffe7a3; font-size: 14px; }
 .app-settings-sound .sound-master-toggle { border-radius: 12px; }
+.sound-effect-preview {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(169, 243, 223, 0.52);
+  border-radius: 10px;
+  background: rgba(78, 196, 171, 0.13);
+  color: #cffff1;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+.sound-effect-preview:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(78, 196, 171, 0.22);
+  border-color: rgba(206, 255, 241, 0.86);
+}
+.sound-effect-preview:active:not(:disabled) { transform: scale(0.98); }
+.sound-effect-preview:disabled { opacity: 0.48; cursor: not-allowed; }
 @media (max-width: 760px) {
   .app-settings-dock { top: 15px; right: 15px; }
   .app-settings-trigger { width: 40px; min-height: 40px; justify-content: center; padding: 8px; border-radius: 12px; }

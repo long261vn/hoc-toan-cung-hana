@@ -635,6 +635,7 @@ function AppSettings({
   effectsVolume,
   onMusicVolumeChange,
   onEffectsVolumeChange,
+  onPreviewEffects,
   defaultOpen = false,
 }: {
   language: Language;
@@ -647,6 +648,7 @@ function AppSettings({
   effectsVolume: number;
   onMusicVolumeChange: (volume: number) => void;
   onEffectsVolumeChange: (volume: number) => void;
+  onPreviewEffects: () => void;
   defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -784,6 +786,20 @@ function AppSettings({
               onValueChange={([value]) => onEffectsVolumeChange(value ?? 0)}
             />
           </label>
+          <button
+            className="sound-effect-preview"
+            type="button"
+            onClick={onPreviewEffects}
+            disabled={!enabled || effectsVolume === 0}
+            aria-label={
+              language === "en"
+                ? "Play a sound effect preview"
+                : "Nghe thử hiệu ứng âm thanh"
+            }
+          >
+            <Sparkles size={14} />
+            {language === "en" ? "Preview sound effect" : "Nghe thử hiệu ứng"}
+          </button>
         </div>
       </PopoverContent>
     </Popover>
@@ -4738,6 +4754,7 @@ export default function GameCanvas() {
             effectsVolume={effectsVolume}
             onMusicVolumeChange={changeMusicVolume}
             onEffectsVolumeChange={changeEffectsVolume}
+            onPreviewEffects={() => playSound("correct")}
             defaultOpen={isSoundSettingsDemo}
           />
         </div>
