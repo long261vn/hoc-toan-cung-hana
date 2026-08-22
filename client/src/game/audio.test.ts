@@ -7,10 +7,10 @@ import {
 } from "./audio";
 
 describe("HanaAudio", () => {
-  it("uses enabled sound with gentle 50 percent volumes before a browser storage value exists", () => {
+  it("uses enabled sound with a gentle music level and clearer effects before a browser storage value exists", () => {
     expect(getStoredSoundPreference()).toBe(true);
-    expect(getStoredMusicVolume()).toBe(50);
-    expect(getStoredEffectsVolume()).toBe(50);
+    expect(getStoredMusicVolume()).toBe(18);
+    expect(getStoredEffectsVolume()).toBe(70);
   });
 
   it("does not schedule an effect while the master sound switch is off", () => {

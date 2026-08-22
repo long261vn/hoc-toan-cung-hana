@@ -28,8 +28,8 @@ const STORAGE_KEY = "hana-sound-enabled";
 const MUSIC_VOLUME_STORAGE_KEY = "hana-music-volume";
 const EFFECTS_VOLUME_STORAGE_KEY = "hana-effects-volume";
 const AUDIO_SETTINGS_VERSION_KEY = "hana-audio-settings-version";
-const DEFAULT_MUSIC_VOLUME = 50;
-const DEFAULT_EFFECTS_VOLUME = 50;
+const DEFAULT_MUSIC_VOLUME = 18;
+const DEFAULT_EFFECTS_VOLUME = 70;
 
 type Tone = {
   frequency: number;
@@ -41,43 +41,43 @@ type Tone = {
 
 const soundPatterns: Record<SoundEffect, Tone[]> = {
   tap: [
-    { frequency: 660, delay: 0, duration: 0.055, volume: 0.045, type: "sine" },
+    { frequency: 660, delay: 0, duration: 0.055, volume: 0.07, type: "sine" },
   ],
   launch: [
-    { frequency: 392, delay: 0, duration: 0.08, volume: 0.05 },
-    { frequency: 523.25, delay: 0.07, duration: 0.1, volume: 0.05 },
-    { frequency: 783.99, delay: 0.15, duration: 0.14, volume: 0.045 },
+    { frequency: 392, delay: 0, duration: 0.08, volume: 0.095 },
+    { frequency: 523.25, delay: 0.07, duration: 0.1, volume: 0.09 },
+    { frequency: 783.99, delay: 0.15, duration: 0.14, volume: 0.08 },
   ],
   correct: [
-    { frequency: 523.25, delay: 0, duration: 0.09, volume: 0.06 },
-    { frequency: 659.25, delay: 0.08, duration: 0.1, volume: 0.06 },
-    { frequency: 783.99, delay: 0.17, duration: 0.15, volume: 0.055 },
+    { frequency: 523.25, delay: 0, duration: 0.09, volume: 0.13 },
+    { frequency: 659.25, delay: 0.08, duration: 0.1, volume: 0.125 },
+    { frequency: 783.99, delay: 0.17, duration: 0.15, volume: 0.115 },
   ],
   wrong: [
     {
       frequency: 293.66,
       delay: 0,
       duration: 0.11,
-      volume: 0.035,
+      volume: 0.08,
       type: "sine",
     },
     {
       frequency: 246.94,
       delay: 0.1,
       duration: 0.14,
-      volume: 0.03,
+      volume: 0.07,
       type: "sine",
     },
   ],
   next: [
-    { frequency: 587.33, delay: 0, duration: 0.075, volume: 0.045 },
-    { frequency: 698.46, delay: 0.065, duration: 0.095, volume: 0.04 },
+    { frequency: 587.33, delay: 0, duration: 0.075, volume: 0.08 },
+    { frequency: 698.46, delay: 0.065, duration: 0.095, volume: 0.07 },
   ],
   reward: [
-    { frequency: 523.25, delay: 0, duration: 0.09, volume: 0.055 },
-    { frequency: 659.25, delay: 0.08, duration: 0.1, volume: 0.055 },
-    { frequency: 783.99, delay: 0.17, duration: 0.11, volume: 0.052 },
-    { frequency: 1046.5, delay: 0.27, duration: 0.22, volume: 0.048 },
+    { frequency: 523.25, delay: 0, duration: 0.09, volume: 0.1 },
+    { frequency: 659.25, delay: 0.08, duration: 0.1, volume: 0.1 },
+    { frequency: 783.99, delay: 0.17, duration: 0.11, volume: 0.095 },
+    { frequency: 1046.5, delay: 0.27, duration: 0.22, volume: 0.085 },
   ],
 };
 
@@ -88,18 +88,24 @@ export function getStoredSoundPreference() {
 
 function getStoredVolume(key: string, fallback: number) {
   if (typeof window === "undefined") return fallback;
-  // Earlier versions treated an absent key as 0 and then persisted that value.
-  // Reset that legacy state once so children can hear the new audio by default.
-  if (window.localStorage.getItem(AUDIO_SETTINGS_VERSION_KEY) !== "2") {
-    window.localStorage.setItem(
-      MUSIC_VOLUME_STORAGE_KEY,
-      String(DEFAULT_MUSIC_VOLUME)
-    );
-    window.localStorage.setItem(
-      EFFECTS_VOLUME_STORAGE_KEY,
-      String(DEFAULT_EFFECTS_VOLUME)
-    );
-    window.localStorage.setItem(AUDIO_SETTINGS_VERSION_KEY, "2");
+  // Move only the old default 50/50 balance to the gentler 18/70 mix. A child
+  // or parent who adjusted either slider keeps their own saved preference.
+  if (window.localStorage.getItem(AUDIO_SETTINGS_VERSION_KEY) !== "3") {
+    const previousVersion = window.localStorage.getItem(AUDIO_SETTINGS_VERSION_KEY);
+    const storedMusic = Number(window.localStorage.getItem(MUSIC_VOLUME_STORAGE_KEY));
+    const storedEffects = Number(window.localStorage.getItem(EFFECTS_VOLUME_STORAGE_KEY));
+    const isPreviousDefault = storedMusic === 50 && storedEffects === 50;
+    if (previousVersion !== "2" || isPreviousDefault) {
+      window.localStorage.setItem(
+        MUSIC_VOLUME_STORAGE_KEY,
+        String(DEFAULT_MUSIC_VOLUME)
+      );
+      window.localStorage.setItem(
+        EFFECTS_VOLUME_STORAGE_KEY,
+        String(DEFAULT_EFFECTS_VOLUME)
+      );
+    }
+    window.localStorage.setItem(AUDIO_SETTINGS_VERSION_KEY, "3");
   }
   const rawValue = window.localStorage.getItem(key);
   if (rawValue === null) return fallback;
