@@ -52,7 +52,7 @@
 - [x] Kiểm thử trực tiếp Vercel cho luồng hồ sơ, Luyện tập/Bài kiểm tra, đáp án đúng/sai, tổng kết, âm thanh, ảnh PNG, VIE/ENG, deep link và refresh SPA; chỉ hoàn tất khi không có lỗi console/runtime.
 - [x] Bấm nghe thử hiệu ứng trên Vercel và xác nhận runtime ghi nhận Web Audio đang phát, không chỉ hiển thị thanh cài đặt.
 - [x] Xác nhận tệp PNG thật được tải xuống từ màn tổng kết Vercel và kiểm tra nhanh nội dung không bị lỗi trước khi đóng kiểm thử triển khai.
-- [ ] Tái hiện phản hồi mới rằng nhạc nền vẫn chưa nghe thấy trên Vercel ở phiên mới mở; điều chỉnh để người dùng có thể nhận biết và bật nhạc nền đáng tin cậy.
+- [x] Tái hiện phản hồi mới rằng nhạc nền vẫn chưa nghe thấy trên Vercel ở phiên mới mở; điều chỉnh để người dùng có thể nhận biết và bật nhạc nền đáng tin cậy.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 

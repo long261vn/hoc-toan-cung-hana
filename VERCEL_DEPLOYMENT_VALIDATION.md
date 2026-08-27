@@ -22,6 +22,10 @@ Chế độ Bài kiểm tra `?testgame&nowebgl` tải câu hỏi cộng, bốn �
 
 Trên chính bản Vercel, nút **Preview sound effect** tạo trạng thái `hanaLastEffect: correct`, `hanaEffectState: playing`, âm thanh tổng bật và hiệu ứng 70%. Tệp PNG tải từ màn tổng kết được tìm thấy tại thư mục Tải xuống, dung lượng khoảng 1 MB và mở đúng với nội dung tổng kết, số liệu, avatar, phần thưởng cùng bộ sưu tập huy hiệu. Không có lỗi console trong lượt kiểm tra cuối.
 
+## Cập nhật nhạc nền sau phản hồi mới
+
+Kiểm tra lại trong phiên Vercel mới cho thấy bản trước dùng sai URL `/manus-storage/...` theo hostname Vercel; phần tử audio có trạng thái `networkState: 3`, `readyState: 0` và lỗi không mở được media. Bản sửa dùng URL công khai tuyệt đối. Sau triển khai, audio có `readyState: 4`, không có lỗi và ở trạng thái `awaiting-gesture` khi trang vừa mở — đây là chính sách autoplay có tiếng của trình duyệt. Sau một lần bấm **Start**, audio chuyển sang `paused: false`, `muted: false`, `playbackState: playing`, âm lượng 18%, và thuộc tính yêu cầu phát là `true`.
+
 ## Lưu ý vận hành
 
 Vercel sẽ triển khai lại khi repository GitHub được liên kết nhận commit mới. Với bản game hiện tại, Vercel dùng bản frontend tĩnh; các API Express, đăng nhập và cơ sở dữ liệu Manus không được Vercel sử dụng bởi luồng chơi hiện có.
