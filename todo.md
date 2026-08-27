@@ -48,7 +48,10 @@
 - [x] Cải thiện khởi động nhạc nền khi mở game theo chính sách trình duyệt và rà soát/bổ sung hiệu ứng nhẹ nhàng cho bấm nút, đáp án đúng, đáp án sai cùng các hoạt động liên quan.
 - [x] Hạ mức nhạc nền mặc định và sửa hiệu ứng thao tác không nghe được trên GitHub Pages; xác minh độc lập nhạc nền và hiệu ứng trong Cài đặt.
 - [x] Thêm nút nghe thử hiệu ứng trong Cài đặt và xác minh trực tiếp trên GitHub Pages rằng Web Audio được khởi động, phát phản hồi và không lỗi runtime.
-- [ ] Tái hiện, chẩn đoán và sửa các lỗi của bản triển khai Vercel tại `hoc-toan-cung-hana.vercel.app`; kiểm tra lại bản công khai sau khi cập nhật.
+- [x] Tái hiện, chẩn đoán và sửa các lỗi của bản triển khai Vercel tại `hoc-toan-cung-hana.vercel.app`; kiểm tra lại bản công khai sau khi cập nhật.
+- [x] Kiểm thử trực tiếp Vercel cho luồng hồ sơ, Luyện tập/Bài kiểm tra, đáp án đúng/sai, tổng kết, âm thanh, ảnh PNG, VIE/ENG, deep link và refresh SPA; chỉ hoàn tất khi không có lỗi console/runtime.
+- [x] Bấm nghe thử hiệu ứng trên Vercel và xác nhận runtime ghi nhận Web Audio đang phát, không chỉ hiển thị thanh cài đặt.
+- [x] Xác nhận tệp PNG thật được tải xuống từ màn tổng kết Vercel và kiểm tra nhanh nội dung không bị lỗi trước khi đóng kiểm thử triển khai.
 
 ## Hoàn thiện bảng học và phản hồi desktop
 
