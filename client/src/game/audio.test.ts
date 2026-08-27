@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  BACKGROUND_TRACK,
   getStoredEffectsVolume,
   getStoredMusicVolume,
   getStoredSoundPreference,
@@ -11,6 +12,12 @@ describe("HanaAudio", () => {
     expect(getStoredSoundPreference()).toBe(true);
     expect(getStoredMusicVolume()).toBe(18);
     expect(getStoredEffectsVolume()).toBe(70);
+  });
+
+  it("uses the public music asset URL so static hosts do not request a missing local proxy", () => {
+    expect(BACKGROUND_TRACK).toBe(
+      "https://toan3game-yka3ffqo.manus.space/manus-storage/hana-gentle-orbit-background_2257ff98.mp3"
+    );
   });
 
   it("does not schedule an effect while the master sound switch is off", () => {

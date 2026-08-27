@@ -11,19 +11,15 @@ export type SoundEffect =
   | "next"
   | "reward";
 
-const BACKGROUND_TRACK_PATH =
-  "/manus-storage/hana-gentle-orbit-background_2257ff98.mp3";
 const MANUS_ASSET_ORIGIN = "https://toan3game-yka3ffqo.manus.space";
+export const BACKGROUND_TRACK =
+  `${MANUS_ASSET_ORIGIN}/manus-storage/hana-gentle-orbit-background_2257ff98.mp3`;
 
 /**
- * GitHub Pages has no `/manus-storage` proxy, so a root-relative track URL
- * becomes a 404 there. Keep the short project-relative path for Manus while
- * using the same public asset through an absolute URL on GitHub Pages.
+ * The music file lives in the public web asset store. Always use its absolute
+ * URL: GitHub Pages and Vercel have no `/manus-storage` proxy, while the same
+ * URL also works on the Manus domain and local development previews.
  */
-const BACKGROUND_TRACK =
-  typeof window !== "undefined" && window.location.hostname.endsWith("github.io")
-    ? `${MANUS_ASSET_ORIGIN}${BACKGROUND_TRACK_PATH}`
-    : BACKGROUND_TRACK_PATH;
 const STORAGE_KEY = "hana-sound-enabled";
 const MUSIC_VOLUME_STORAGE_KEY = "hana-music-volume";
 const EFFECTS_VOLUME_STORAGE_KEY = "hana-effects-volume";
